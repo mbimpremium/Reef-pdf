@@ -86,10 +86,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
-.app{height:100%;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto}
+.app{height:100%;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto}
 
 /* ---------- top bar ---------- */
-.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 16px;border-bottom:1px solid var(--line);background:var(--chrome)}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 16px 6px;background:var(--chrome)}
 .brand{display:flex;align-items:center;gap:8px;margin-right:4px}
 .brand svg{width:26px;height:26px;flex:none}
 .brand-name{font:700 17px/1 var(--f-display);letter-spacing:-.01em;white-space:nowrap}
@@ -98,6 +98,21 @@ button,input,select,textarea{font:inherit;color:inherit}
 .docname:focus{border-color:var(--accent);background:var(--raise);outline:none}
 .chip{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-weight:600;white-space:nowrap}
 .spacer{flex:1 1 0}
+/* open documents: a strip of tabs between the top bar and the tools; the shown one joins the tool row below it */
+.doctabs{display:flex;align-items:flex-end;gap:2px;min-width:0;padding:0 16px;background:var(--chrome);box-shadow:inset 0 -1px 0 var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.doctabs::-webkit-scrollbar{display:none}
+.dtab{position:relative;display:flex;align-items:center;gap:6px;flex:0 1 220px;min-width:96px;height:30px;padding:0 4px 0 11px;border:1px solid transparent;border-bottom:0;border-radius:7px 7px 0 0;color:var(--muted);cursor:pointer;user-select:none}
+.dtab:hover{background:var(--accent-soft);color:var(--ink)}
+.dtab.on{background:var(--panel);border-color:var(--line);color:var(--ink);font-weight:600;cursor:default}
+.dtab-name{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.dtab-dot{flex:none;width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.dtab-x,.dtab-add{flex:none;display:grid;place-items:center;padding:0;border:0;border-radius:5px;background:transparent;color:inherit;cursor:pointer}
+.dtab-x{width:20px;height:20px;opacity:.55}
+.dtab-x .ic{width:13px;height:13px}
+.dtab:hover .dtab-x,.dtab.on .dtab-x,.dtab-x:focus-visible{opacity:1}
+.dtab-x:hover{background:color-mix(in srgb,currentColor 16%,transparent)}
+.dtab-add{width:28px;height:28px;margin:0 0 1px 2px;color:var(--muted)}
+.dtab-add:hover{background:var(--accent-soft);color:var(--ink)}
 .grp{display:flex;align-items:center;gap:2px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 10px;border:1px solid var(--line);border-radius:5px;background:var(--raise);cursor:pointer;white-space:nowrap;font-weight:500}
 .btn:hover{border-color:var(--line-2)}
@@ -309,7 +324,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     <span id="sampleChip" class="chip" title="Open your own PDF to start working">Sample document</span>
     <div class="spacer"></div>
     <div class="grp">
-      <button id="btnOpen" class="btn" title="Open a PDF, an image or a saved project (Ctrl+O)"><i data-ic="open"></i><span>Open</span></button>
+      <button id="btnOpen" class="btn" title="Open a PDF, an image or a saved project in a new tab (Ctrl+O)"><i data-ic="open"></i><span>Open</span></button>
       <button id="btnMerge" class="btn" title="Insert pages from another PDF or image"><i data-ic="merge"></i><span>Merge</span></button>
     </div>
     <div class="grp">
@@ -330,6 +345,8 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     </div>
     <button id="btnSave" class="btn primary" title="Download the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Download PDF</span></button>
   </header>
+
+  <div id="tabs" class="doctabs" role="tablist" aria-label="Open documents"></div>
 
   <nav class="tools" id="tools" aria-label="Editing tools">
     <button class="tool" data-tool="select" title="Select and move (V)"><i data-ic="select"></i><span>Select</span></button>
@@ -976,6 +993,7 @@ function updateButtons() {
   $('#btnUndo').disabled = H.i <= 0; $('#btnRedo').disabled = H.i >= H.stack.length - 1;
   $('#sampleChip').hidden = !S.sample;
   $('#pageCount').textContent = S.pages.length;
+  renderTabs();
 }
 function updateStatus() {
   const pg = curPage(); if (!pg) return;
@@ -3134,7 +3152,7 @@ window.addEventListener('keydown', ev => {
 });
 window.addEventListener('paste', ev => {
   const ae = document.activeElement; if (ae && (ae.isContentEditable || /^(INPUT|TEXTAREA)$/.test(ae.tagName))) return;
-  if (document.querySelector('dialog[open]')) return;
+  if (document.querySelector('dialog[open]') || performance.now() - tabMidAt < 600) return;      // on some systems a middle click pastes: not when it was on a tab, where it closes one
   const f = [...(ev.clipboardData?.files || [])].find(f => f.type.startsWith('image/'));
   if (f) { ev.preventDefault(); insertImage(f).catch(e => toast('The image could not be pasted: ' + errMsg(e), 'err')); return; }
   if (S.clip && curPage()) { ev.preventDefault(); pasteObj(S.clipFrom === curPage().id ? S.clip : noPf(S.clip), curPage()); }
@@ -3398,7 +3416,7 @@ function renderProps(force) {
     if (S.tool === 'edittext') h += `<label class="check"><input type="checkbox" id="p_flow"${S.flow ? ' checked' : ''}><span>Move the rest of the page when a paragraph grows or shrinks</span></label>`;
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
-    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
+    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
     h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it.</p>`;
   }
   body.innerHTML = h;
@@ -3608,39 +3626,40 @@ function pickOpen(mode) { openMode = mode; const f = $('#fOpen'); f.value = ''; 
 $('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1); });
 $('#btnOpen').addEventListener('click', () => pickOpen('replace'));
 $('#btnMerge').addEventListener('click', () => pickOpen('insert'));
-async function openFiles(files, mode, at) {
-  const list = [...files];
-  if (mode === 'replace' && S.dirty && !S.sample && !(await confirmBox('Replace the open document?', 'Changes you have not downloaded will be lost.', 'Replace document'))) return;
+let openChain = Promise.resolve();
+function openFiles(files, mode, at) {      // one after the other: files can arrive from the file manager while others are still being opened
+  const p = openChain.then(() => openNow([...files], mode, at)); openChain = p.catch(e => { console.error(e); busy(false); }); return p;
+}
+async function openNow(list, mode, at) {
+  if (docBusy()) { toast('The file opens as soon as the current job has finished.'); while (docBusy()) await new Promise(r => setTimeout(r, 300)); }
   busy('Opening…'); await nextFrame();
-  const added = []; let project = null;
+  /* Open: every PDF and every project becomes a document with a tab of its own; pictures opened together become the pages of one document.
+     Merge: everything goes into the document that is shown. */
+  const groups = []; let pics = null;
   for (const f of list) {
     try {
       if (/\.json$/i.test(f.name) || f.type === 'application/json') {
-        try { project = await loadProject(await f.text()); added.push(...project.pages); } catch (e) { toast(`${f.name} is not a Reef PDF project file.`, 'err'); console.warn(e); }
+        try { const project = await loadProject(await f.text()); groups.push({ pages: project.pages, name: project.name || 'document.pdf', project }); } catch (e) { toast(`${f.name} is not a Reef PDF project file.`, 'err'); console.warn(e); }
         continue;
       }
       const head = new Uint8Array(await f.slice(0, 1024).arrayBuffer()), isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name) || String.fromCharCode(...head.slice(0, 1024)).includes('%PDF-');
-      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); added.push(...src.pages); }
+      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); groups.push({ pages: src.pages, name: f.name }); }
       else if (f.type.startsWith('image/')) {
         const a = await addAsset(f), land = a.w > a.h, pw = land ? A4[1] : A4[0], ph = land ? A4[0] : A4[1], k = Math.min(pw / a.w, ph / a.h), w = a.w * k, h = a.h * k;
-        added.push({ id: uid('p'), src: null, idx: 0, rot: 0, w: pw, h: ph, objs: [{ id: uid('o'), type: 'image', x: r2((pw - w) / 2), y: r2((ph - h) / 2), w: r2(w), h: r2(h), asset: a.id, rot: 0, opacity: 1 }] });
+        if (!pics) groups.push(pics = { pages: [], name: f.name.replace(/\.(png|jpe?g|webp|gif|bmp)$/i, '') + '.pdf' });
+        pics.pages.push({ id: uid('p'), src: null, idx: 0, rot: 0, w: pw, h: ph, objs: [{ id: uid('o'), type: 'image', x: r2((pw - w) / 2), y: r2((ph - h) / 2), w: r2(w), h: r2(h), asset: a.id, rot: 0, opacity: 1 }] });
       } else toast(`${f.name}: this format is not supported. Open a PDF, PNG or JPG.`, 'err');
     } catch (e) { toast(`${f.name} could not be opened. ${/password|destroy/i.test(errMsg(e)) ? 'No password was given.' : 'The file may be damaged or is not a PDF.'}`, 'err'); console.warn(e); }
   }
   busy(false);
-  if (!added.length) return;
+  if (!groups.length) return;
   if (mode === 'replace') {
-    if (S.editing) endEdit();
-    S.pages = added; S.sel = null; S.selPages.clear(); S.cur = 0; S.sample = false; S.find = { q: '', hits: [], i: -1 }; $('#findInput').value = ''; $('#findCount').textContent = '';
-    S.name = project ? (project.name || 'document.pdf') : list[0].name.replace(/\.(png|jpe?g|webp)$/i, '.pdf'); $('#docName').value = S.name;
-    S.flatten = !!(project && project.flatten); S.meta = { title: '', author: '', subject: '', keywords: '', ...(project && project.meta ? project.meta : await readMeta(added.find(p => p.src))) };
-    if (project) await relinkFonts();
-    resetHistory(); S.dirty = false; refresh();
-    setZoom(fitZoom('width'), 'width'); stage.scrollTop = 0; stage.scrollLeft = 0;
-    ocrHint(added).catch(() => { });
+    for (const g of groups) await docOpen(g);
+    ocrHint(groups[groups.length - 1].pages).catch(() => { });
   } else {
+    const added = groups.flatMap(g => g.pages);
     S.pages.splice(clamp(at, 0, S.pages.length), 0, ...added); S.sample = false; S.selPages = new Set(added.map(p => p.id));
-    if (project) await relinkFonts();
+    if (groups.some(g => g.project)) await relinkFonts();
     commit(); scrollToPage(pageIndex(added[0].id));
     toast(`${added.length} page${added.length === 1 ? '' : 's'} inserted.`);
   }
@@ -3740,7 +3759,7 @@ $('#tools').addEventListener('click', ev => { const b = ev.target.closest('.tool
 $('#btnUndo').addEventListener('click', () => travel(-1));
 $('#btnRedo').addEventListener('click', () => travel(1));
 $('#btnSave').addEventListener('click', () => doExport());
-$('#docName').addEventListener('change', e => { let n = e.target.value.trim() || 'document.pdf'; if (!/\.pdf$/i.test(n)) n += '.pdf'; S.name = e.target.value = n; });
+$('#docName').addEventListener('change', e => { let n = e.target.value.trim() || 'document.pdf'; if (!/\.pdf$/i.test(n)) n += '.pdf'; S.name = e.target.value = n; renderTabs(); });
 const narrow = () => window.matchMedia('(max-width:860px)').matches;
 $('#togThumbs').addEventListener('click', () => { $('#thumbs').hidden = !$('#thumbs').hidden; if (narrow() && !$('#thumbs').hidden) $('#props').hidden = true; });
 $('#togProps').addEventListener('click', () => { $('#props').hidden = !$('#props').hidden; if (narrow() && !$('#props').hidden) $('#thumbs').hidden = true; });
@@ -3749,7 +3768,7 @@ $('#findInput').addEventListener('input', e => { clearTimeout(findTimer); findTi
 $('#findInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); gotoHit(S.find.i + (e.shiftKey ? -1 : 1)); } else if (e.key === 'Escape') { e.target.value = ''; runFind(''); e.target.blur(); } });
 $('#findNext').addEventListener('click', () => gotoHit(S.find.i + 1));
 $('#findPrev').addEventListener('click', () => gotoHit(S.find.i - 1));
-window.addEventListener('beforeunload', ev => { if (S.dirty && !S.sample) { ev.preventDefault(); ev.returnValue = ''; } });
+window.addEventListener('beforeunload', ev => { if (DOCS.some(d => { const s = d === docNow ? S : d.st; return s.dirty && !s.sample; })) { ev.preventDefault(); ev.returnValue = ''; } });
 
 /* ---------- more tools: watermark, header/footer, crop, form fields, split, exports, properties, project files ---------- */
 const CRC = (() => { const t = new Uint32Array(256); for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
@@ -3995,6 +4014,115 @@ async function relinkFonts() {      // pdf.js numbers fonts per session, so find
     getParas(pg).catch(() => { });
   }
 }
+
+/* ---------- several documents in one window, each on a tab ----------
+   S always holds the document that is shown. The others wait in DOCS with their own pages, undo history, name, zoom and place on the page.
+   The PDFs behind the pages (S.sources) and pictures (S.assets) are shared, and are let go when the last document that uses them closes. */
+const DOCS = [];                    // { id, st } — st: the kept state of a document that is not shown; null for the one that is
+let docNow = null;
+const tabsEl = $('#tabs');
+const docBusy = () => exporting || OCR.running;
+const docState = d => (d === docNow ? S : d.st);
+function docKeep() {
+  return { pages: S.pages, sel: S.sel, selPages: S.selPages, cur: S.cur, name: S.name, dirty: S.dirty, sample: S.sample, flatten: S.flatten, meta: S.meta, find: S.find, zoom: S.zoom, zoomMode: S.zoomMode, stack: H.stack, hi: H.i, top: stage.scrollTop, left: stage.scrollLeft };
+}
+function docShow(st) {
+  Object.assign(S, { pages: st.pages, sel: st.sel, selPages: st.selPages, cur: st.cur, name: st.name, dirty: st.dirty, sample: st.sample, flatten: st.flatten, meta: st.meta, find: st.find });
+  H.stack = st.stack; H.i = st.hi;
+  $('#docName').value = S.name; $('#findInput').value = S.find.q || ''; $('#findCount').textContent = S.find.hits.length ? `${S.find.i + 1}/${S.find.hits.length}` : '';
+  refresh();
+  setZoom(st.zoomMode === 'custom' ? st.zoom : fitZoom(st.zoomMode), st.zoomMode); stage.scrollTop = st.top; stage.scrollLeft = st.left; drawFinds();
+}
+function docLeave() { if (S.editing) endEdit(); clearTsel(); if (docNow) docNow.st = docKeep(); }
+function docSwitch(d) {
+  if (!d || d === docNow) return;
+  if (docBusy()) { toast('Wait until the current job has finished, then switch.'); return; }
+  docLeave(); docNow = d; const st = d.st; d.st = null; docShow(st);
+}
+function docStart(name, pages, sample) {      // a new, untouched document becomes the one that is shown
+  Object.assign(S, { pages, sel: null, selPages: new Set(), cur: 0, name, dirty: false, sample: !!sample, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
+  $('#docName').value = name; $('#findInput').value = ''; $('#findCount').textContent = '';
+}
+async function docOpen(g) {         // g: { pages, name, project } — in a new tab, or in place of the sample document
+  let old = null;
+  if (S.sample || !docNow) { if (S.editing) endEdit(); clearTsel(); old = docNow ? docKeep() : null; if (!docNow) DOCS.push(docNow = { id: uid('d'), st: null }); }
+  else { docLeave(); DOCS.push(docNow = { id: uid('d'), st: null }); }
+  docStart(g.name, g.pages, false);
+  if (g.project) { S.flatten = !!g.project.flatten; if (g.project.meta) Object.assign(S.meta, g.project.meta); await relinkFonts(); }
+  else Object.assign(S.meta, await readMeta(g.pages.find(p => p.src)));
+  resetHistory(); S.dirty = false; refresh();
+  setZoom(fitZoom('width'), 'width'); stage.scrollTop = 0; stage.scrollLeft = 0;
+  if (old) docRelease(old);
+}
+async function docSample() {        // nothing is open: the sample document
+  const src = await addSource('sample-document.pdf', await makeSample());
+  DOCS.push(docNow = { id: uid('d'), st: null });
+  docStart('sample-document.pdf', src.pages, true);
+  resetHistory(); S.dirty = false; refresh();
+  setZoom(fitZoom('width'), 'width'); stage.scrollTop = 0; stage.scrollLeft = 0;
+}
+async function docClose(d) {
+  if (!d) return;
+  if (docBusy()) { toast('Wait until the current job has finished, then close the tab.'); return; }
+  const s = docState(d);
+  if (s.dirty && !s.sample && !(await confirmBox('Close this document?', `"${s.name}" has changes that were not downloaded. They will be lost.`, 'Close without downloading'))) return;
+  const k = DOCS.indexOf(d); if (k < 0) return;
+  const shown = d === docNow; if (shown && S.editing) endEdit();
+  const gone = shown ? docKeep() : d.st; DOCS.splice(k, 1);
+  if (shown) {
+    clearTsel(); docNow = null;
+    if (DOCS.length) { docNow = DOCS[Math.min(k, DOCS.length - 1)]; const st = docNow.st; docNow.st = null; docShow(st); }
+    else await docSample();
+  }
+  docRelease(gone); renderTabs();
+}
+function docRelease(gone) {         // PDFs and pictures that only the closed document used are dropped from memory
+  const text = st => JSON.stringify(st.pages) + st.stack.join(''), mine = text(gone);
+  setTimeout(() => {                // a moment later, so drawing that was still under way for those pages has finished
+    const rest = DOCS.map(d => (d === docNow ? JSON.stringify(S.pages) + H.stack.join('') : text(d.st))).join('') + JSON.stringify(S.clip || null) + (wm.asset ? `"${wm.asset.id}"` : '');
+    const only = id => mine.includes(`"${id}"`) && !rest.includes(`"${id}"`);
+    for (const [id, src] of [...S.sources]) if (only(id)) { S.sources.delete(id); try { src.pdf.loadingTask.destroy(); } catch { } }
+    for (const [id, a] of [...S.assets]) if (only(id)) { S.assets.delete(id); try { URL.revokeObjectURL(a.url); } catch { } }
+  }, 1500);
+}
+
+/* ---------- the tab strip ---------- */
+const TAB_X = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
+function renderTabs() {
+  if (!docNow) return;
+  const list = DOCS.map(d => { const s = docState(d); return { id: d.id, name: s.name, dirty: !!(s.dirty && !s.sample), on: d === docNow }; }), key = JSON.stringify(list);
+  if (tabsEl.dataset.k === key) return; tabsEl.dataset.k = key; tabsEl.textContent = '';
+  for (const t of list) {
+    const e = mk('div', 'dtab' + (t.on ? ' on' : '')); e.dataset.id = t.id; e.setAttribute('role', 'tab'); e.setAttribute('aria-selected', t.on ? 'true' : 'false'); e.tabIndex = t.on ? 0 : -1;
+    e.title = t.name + (t.dirty ? '\nChanges not downloaded yet' : '');
+    if (t.dirty) { const dot = mk('span', 'dtab-dot'); dot.setAttribute('aria-label', 'changes not downloaded yet'); e.append(dot); }
+    const n = mk('span', 'dtab-name'); n.textContent = t.name;
+    const x = mk('button', 'dtab-x', TAB_X); x.type = 'button'; x.tabIndex = -1; x.title = 'Close'; x.setAttribute('aria-label', 'Close ' + t.name);
+    e.append(n, x); tabsEl.append(e);
+  }
+  const add = mk('button', 'dtab-add', ic('plus')); add.type = 'button'; add.title = 'Open a PDF in a new tab (Ctrl+O)'; add.setAttribute('aria-label', 'Open a PDF in a new tab'); tabsEl.append(add);
+  tabsEl.querySelector('.dtab.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  document.title = S.sample ? 'Reef PDF' : S.name;
+}
+const tabDoc = el => { const t = el && el.closest('.dtab'); return t ? DOCS.find(d => d.id === t.dataset.id) : null; };
+tabsEl.addEventListener('click', ev => {
+  if (ev.target.closest('.dtab-add')) { pickOpen('replace'); return; }
+  const d = tabDoc(ev.target); if (!d) return;
+  if (ev.target.closest('.dtab-x')) docClose(d); else docSwitch(d);
+});
+let tabMidAt = -1e9;                 // when a tab was last middle-clicked
+for (const k of ['mousedown', 'mouseup']) tabsEl.addEventListener(k, ev => { if (ev.button === 1) { ev.preventDefault(); tabMidAt = performance.now(); } });      // no scroll mode, and no paste (see the paste handler)
+tabsEl.addEventListener('auxclick', ev => { if (ev.button === 1) { const d = tabDoc(ev.target); if (d) { ev.preventDefault(); docClose(d); } } });
+tabsEl.addEventListener('keydown', ev => {
+  const d = tabDoc(ev.target); if (!d) return; const k = DOCS.indexOf(d);
+  if (ev.key === 'ArrowRight' || ev.key === 'ArrowLeft') { ev.preventDefault(); docSwitch(DOCS[(k + (ev.key === 'ArrowRight' ? 1 : DOCS.length - 1)) % DOCS.length]); tabsEl.querySelector('.dtab.on')?.focus(); }
+  else if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); docSwitch(d); }
+  else if (ev.key === 'Delete') { ev.preventDefault(); docClose(d); }
+});
+window.addEventListener('keydown', ev => {       // Ctrl+Tab steps through the documents where the browser leaves that key to the page (the installed app)
+  if (ev.key !== 'Tab' || !ev.ctrlKey || DOCS.length < 2) return;
+  ev.preventDefault(); docSwitch(DOCS[(DOCS.indexOf(docNow) + (ev.shiftKey ? DOCS.length - 1 : 1)) % DOCS.length]);
+});
 
 /* ---------- export ---------- */
 const colL = h => L.rgb(...hexRgb(h));
@@ -4637,16 +4765,13 @@ async function boot() {
   cfBundledInit();
   stage.style.setProperty('--z', S.zoom); syncZoomSel(); setTool('select'); busy('Getting ready…');
   await setupWorker();
-  const bytes = await makeSample();
-  const src = await addSource('sample-document.pdf', bytes);
-  S.pages = src.pages; resetHistory(); S.dirty = false; refresh();
-  setZoom(fitZoom('width'), 'width'); busy(false);
+  await docSample(); busy(false);
   if ('launchQueue' in window) window.launchQueue.setConsumer(async lp => {     // when installed as a web app, PDFs opened from the file manager arrive here
     if (!lp.files || !lp.files.length) return;
     openFiles(await Promise.all(lp.files.map(h => h.getFile())), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

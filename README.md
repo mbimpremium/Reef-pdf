@@ -48,6 +48,15 @@ Aplikasi membawa font yang ukurannya sama dengan font Office: Carlito (setara Ca
 
 Untuk memakai font Office yang asli (Calibri, Cambria, Aptos, Tahoma, dan lainnya) yang sudah ter-install di komputer: pilih sebuah teks, buka daftar **Font**, lalu pilih **Use the fonts installed on this computer…** dan izinkan saat browser bertanya. Ini hanya tersedia di Edge dan Chrome di komputer, dan hanya bila aplikasi dibuka dari alamat ini atau dari aplikasi yang sudah di-install. Font tetap berada di komputer; hanya huruf yang dipakai yang ditanam ke PDF yang diunduh.
 
+## Beberapa PDF dalam satu jendela (tab)
+
+Setiap PDF yang dibuka mendapat tab sendiri, seperti di Adobe Acrobat. Tiap tab menyimpan suntingan, undo, zoom, dan posisi halamannya masing-masing. Titik biru di tab berarti ada perubahan yang belum diunduh.
+
+- **Open** atau tombol **+** di deretan tab membuka PDF di tab baru. **Merge** tetap menambahkan halaman ke dokumen yang sedang tampil.
+- PDF yang dibuka dari File Explorer saat Reef PDF sudah terbuka masuk sebagai tab baru di jendela yang sama, bukan jendela baru.
+- Tutup tab dengan tombol ×, klik tengah mouse, atau tombol Delete saat tab terfokus. Ctrl+Tab pindah ke tab berikutnya di aplikasi yang sudah di-install.
+- Aturan "satu jendela" ada di `manifest.webmanifest`. Aplikasi yang sudah ter-install baru mengikutinya setelah Chrome memperbarui data aplikasinya (bisa sampai sehari). Supaya langsung berlaku: uninstall Reef PDF, lalu install lagi dari alamat ini.
+
 ## OCR (teks dari hasil scan)
 
 Halaman hasil scan dan foto adalah gambar. Tombol **OCR** di toolbar membacanya, sehingga teksnya bisa dicari, dipilih, disalin, dan diedit dengan **Edit text**, dan PDF yang diunduh menjadi bisa dicari. Semua dikerjakan di browser; halaman tidak diunggah.

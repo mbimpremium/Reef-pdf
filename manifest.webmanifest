@@ -46,6 +46,12 @@
       "purpose": "maskable"
     }
   ],
+  "launch_handler": {
+    "client_mode": [
+      "focus-existing",
+      "auto"
+    ]
+  },
   "file_handlers": [
     {
       "action": "./",
@@ -76,7 +82,7 @@
           "type": "image/png"
         }
       ],
-      "launch_type": "multiple-clients"
+      "launch_type": "single-client"
     }
   ]
 }
