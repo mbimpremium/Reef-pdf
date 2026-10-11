@@ -16,6 +16,8 @@
   This file bundles two open-source libraries and five open font families (Carlito, Caladea, Liberation Sans, Serif and Mono;
   SIL Open Font License 1.1, full notice in the "font-licences" block near the end of this file), which stay under their own licences:
   pdf.js 6.2.108, Copyright Mozilla Foundation, Apache License 2.0 (notice kept inside the bundled code)
+  Tesseract OCR 5 (tesseract.js-core 7.0.0) with English and Indonesian language data, Apache License 2.0, and the Leptonica image
+  library (notices in the "ocr-licences" block near the end of this file)
   pdf-lib 1.17.1, under the following licence:
 
 MIT License
@@ -265,6 +267,10 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 #toasts{position:fixed;left:50%;bottom:calc(44px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:grid;gap:8px;z-index:100;width:min(520px,calc(100vw - 32px));pointer-events:none}
 .toast{pointer-events:auto;padding:10px 14px;border-radius:6px;background:var(--ink);color:var(--chrome);box-shadow:var(--shadow);font-size:13px;line-height:1.45;white-space:pre-line}
 .toast.err{background:var(--danger);color:var(--paper)}
+.toast-act{display:block;margin-top:8px;padding:5px 10px;border:1px solid currentColor;border-radius:5px;background:transparent;color:inherit;font:600 12px var(--f-ui);cursor:pointer}
+.toast-act:hover{background:color-mix(in srgb,currentColor 14%,transparent)}
+.busy-stop{margin-left:10px;padding:2px 9px;border:1px solid currentColor;border-radius:99px;background:transparent;color:inherit;font:600 11px var(--f-ui);cursor:pointer}
+.busy-stop:hover{background:color-mix(in srgb,currentColor 16%,transparent)}
 .busy{position:absolute;z-index:40;top:12px;left:50%;transform:translateX(-50%);padding:7px 14px;border-radius:99px;background:var(--ink);color:var(--chrome);font-size:12px;box-shadow:var(--shadow);white-space:nowrap}
 .fatal{margin:48px auto;max-width:520px;padding:0 16px;line-height:1.6}
 
@@ -345,6 +351,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     <button class="tool" data-tool="wipe" title="Cover an area with the background colour"><i data-ic="wipe"></i><span>Eraser</span></button>
     <button class="tool" data-tool="redact" title="Permanent redaction: content underneath is removed on download"><i data-ic="redact"></i><span>Redact</span></button>
     <span class="sep"></span>
+    <button class="tool" id="btnOcr" title="Recognize the text of scanned pages (OCR), so it can be found, selected and edited" aria-haspopup="dialog"><i data-ic="ocr"></i><span>OCR</span></button>
     <button class="tool" id="btnWm" title="Watermark" aria-haspopup="true"><i data-ic="drop"></i><span>Watermark</span></button>
     <button class="tool" id="btnMore" title="Header and footer, crop, form fields, split, export, properties" aria-haspopup="true"><i data-ic="more"></i><span>More</span></button>
     <button class="tool push" id="togThumbs" title="Pages panel" aria-label="Pages panel"><i data-ic="pages"></i></button>
@@ -469,6 +476,17 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
   </div>
   <p>The watermark sits on top of the page content and is locked in place. Open this dialog again to change or remove it.</p>
   <div class="acts"><button class="btn danger" id="wmRemove" type="button">Remove watermark</button><button class="btn" id="wmCancel" type="button">Cancel</button><button class="btn primary" id="wmApply" type="button">Apply</button></div>
+</div></dialog>
+
+<dialog id="dlgOcr"><div class="dlg">
+  <h2>Recognize text (OCR)</h2>
+  <p>Scanned pages and photos are pictures of text. This reads them, so the text can be found, selected, copied and edited, and the downloaded PDF becomes searchable. Everything happens in this browser; the pages are not uploaded.</p>
+  <div class="grid2">
+    <label class="fld"><span>Pages</span><select id="ocrScope" class="ctl"></select></label>
+    <label class="fld"><span>Language of the text</span><select id="ocrLang" class="ctl"><option value="ind+eng">Indonesian and English</option><option value="eng">English</option><option value="ind">Indonesian</option></select></label>
+  </div>
+  <p id="ocrNote"></p>
+  <div class="acts"><button class="btn danger" id="ocrRemove" type="button">Remove recognized text</button><button class="btn" id="ocrCancel" type="button">Cancel</button><button class="btn primary" id="ocrApply" type="button">Recognize text</button></div>
 </div></dialog>
 
 <dialog id="dlgSplit"><div class="dlg">
@@ -681,6 +699,43 @@ DAMAGES, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM OTHER
 DEALINGS IN THE FONT SOFTWARE.
 </script>
+<script type="text/plain" id="ocr-licences">Text recognition (OCR) in Reef PDF is done by open-source software that stays under its own licences:
+
+Tesseract OCR 5, as built for the web by the tesseract.js-core project (version 7.0.0, https://github.com/naptha/tesseract.js-core).
+Tesseract: Copyright the Tesseract OCR authors (originally Hewlett-Packard Company and Google Inc.). Apache License, Version 2.0.
+Language data for English and Indonesian from https://github.com/tesseract-ocr/tessdata_fast, unmodified (stored compressed). Apache License, Version 2.0.
+You may obtain a copy of the Apache License at https://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+The build also contains the Leptonica image library and the libraries it reads pictures with (zlib, libpng, libjpeg, libtiff, giflib,
+libwebp, OpenLibm), each under its own permissive licence. Leptonica:
+
+Copyright (C) 2001 Leptonica.  All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without
+ modification, are permitted provided that the following conditions
+ are met:
+ 1. Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+ 2. Redistributions in binary form must reproduce the above
+    copyright notice, this list of conditions and the following
+    disclaimer in the documentation and/or other materials
+    provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL ANY
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+</script>
+<script type="application/json" id="reef-ocr">{"files":{"core":"ocr-core.js","wasm":"ocr-core.bin","eng":"ocr-eng.bin","ind":"ocr-ind.bin","core0":"ocr-core0.js","wasm0":"ocr-core0.bin"}}</script>
 <script type="module">
 /* Reef PDF — in-browser PDF editor. Copyright (c) 2026 Hasbi Robbani. All rights reserved.
    All processing happens locally on this page. */
@@ -743,6 +798,7 @@ const ICONS = {
   alignc: '<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>',
   alignr: '<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
   alignj: '<path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
+  ocr: '<path d="M4 8.500V5h3.500M16.500 5H20v3.500M20 15.500V19h-3.500M7.500 19H4v-3.500"/><path d="M8.500 15.500L12 8l3.500 7.500M9.900 12.700h4.200"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -758,7 +814,7 @@ const STICKY = new Set(['ink', 'mark', 'edittext', 'redact', 'wipe', 'crop']);
 
 /* ---------- state ---------- */
 const S = {
-  sources: new Map(),   // id -> {id,name,bytes,pdf,lines:Map,annots:Map,form:{}}
+  sources: new Map(),   // id -> {id,name,bytes,pdf,lines:Map,annots:Map,form:{},ocr:Map}
   assets: new Map(),    // id -> {id,mime,bytes,url,w,h}
   pages: [],            // [{id,src,idx,rot,w,h,objs:[]}]  src=null → blank page
   sel: null,            // {pageId,objId}
@@ -790,11 +846,16 @@ const curPage = () => S.pages[clamp(S.cur, 0, S.pages.length - 1)];
 const getSel = () => { if (!S.sel) return null; const pg = pageById(S.sel.pageId); const o = pg && pg.objs.find(o => o.id === S.sel.objId); return o ? { pg, o } : null; };
 
 /* ---------- small UI helpers ---------- */
-function toast(msg, kind = 'info', ms = 4600) {
+function toast(msg, kind = 'info', ms = 4600, act) {      // act: { label, run } adds a button to the message
   const t = mk('div', 'toast' + (kind === 'err' ? ' err' : '')); t.textContent = msg;
+  if (act) { const b = mk('button', 'toast-act'); b.type = 'button'; b.textContent = act.label; b.addEventListener('click', () => { t.remove(); act.run(); }); t.append(b); }
   $('#toasts').append(t); setTimeout(() => t.remove(), ms);
 }
-function busy(text) { const b = $('#busy'); if (!text) { b.hidden = true; return; } b.textContent = text; b.hidden = false; }
+function busy(text, stop) {         // stop: a function makes the message carry a Stop button
+  const b = $('#busy'); if (!text) { b.hidden = true; return; } b.textContent = text;
+  if (stop) { const k = mk('button', 'busy-stop'); k.type = 'button'; k.textContent = 'Stop'; k.addEventListener('click', stop); b.append(k); }
+  b.hidden = false;
+}
 const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
 function confirmBox(title, text, yes = 'Continue') {
   return new Promise(res => {
@@ -934,11 +995,12 @@ async function addSource(name, bytes) {
   const task = PJ.getDocument({ data: bytes.slice(), BinaryDataFactory: EmbeddedData, useWorkerFetch: false, useSystemFonts: true, enableXfa: false, verbosity: 0 });
   task.onPassword = (update, reason) => { askPassword(reason === PJ.PasswordResponses.INCORRECT_PASSWORD).then(pw => { if (pw == null) task.destroy(); else update(pw); }); };
   const pdf = await task.promise;
-  const src = { id: uid('s'), name, bytes, pdf, lines: new Map(), paras: new Map(), annots: new Map(), fonts: new Map(), shows: new Map(), form: {}, pages: [] };
+  const src = { id: uid('s'), name, bytes, pdf, lines: new Map(), paras: new Map(), annots: new Map(), fonts: new Map(), shows: new Map(), ocr: new Map(), form: {}, pages: [] };
   for (let i = 1; i <= pdf.numPages; i++) {
     const p = await pdf.getPage(i), vp = p.getViewport({ scale: 1 });
     src.pages.push({ id: uid('p'), src: src.id, idx: i - 1, rot: 0, w: r2(vp.width), h: r2(vp.height), objs: [] });
   }
+  src.ocrSaved = await ocrSavedIn(bytes).catch(() => null);      // recognised text that Reef PDF stored in this file earlier
   S.sources.set(src.id, src);
   return src;
 }
@@ -1529,7 +1591,7 @@ async function getLines(pg) {
   if (src.lines.has(key)) return src.lines.get(key);
   const pj = await getPdfPage(pg), vp = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) });
   const tc = await pj.getTextContent();
-  const lines = []; let cur = null, space = false;
+  let lines = [], cur = null, space = false;
   for (const it of tc.items) {
     if (typeof it.str !== 'string') continue;
     if (it.str.trim() === '') { if (it.str.length) space = true; continue; }
@@ -1553,9 +1615,17 @@ async function getLines(pg) {
     space = false;
   }
   for (const ln of lines) { const t = ln.text.replace(/\s+$/, ''); if (t.length < ln.text.length && ln.text.length) { ln.w *= t.length / ln.text.length; ln.text = t; } }
+  const saved = !pg.rot && !src.ocr.has(key) && src.ocrSaved ? src.ocrSaved.get(pg.idx) : null;
+  if (saved || (src.ocr.has(key) && src.ocr.get(key).over)) {         // a hidden text layer lies under the picture
+    const gh = await ghostTest(pg).catch(() => null), ghosts = gh ? lines.filter(l => gh(l.parts[0][0], l.parts[0][1])) : [];
+    if (saved) { src.ocrSaved.delete(pg.idx); if (ocrSavedFits(saved, ghosts)) src.ocr.set(key, { v: 1, lang: saved.lang, font: saved.font, segs: saved.segs, rules: saved.rules || [], over: true }); }
+    if (src.ocr.has(key)) { src.ghosts = src.ghosts || new Map(); src.ghosts.set(key, ghosts.map(l => ({ x: l.x, y: l.y, w: l.w, h: l.h }))); lines = lines.filter(l => !ghosts.includes(l)); }
+  }
+  lines.push(...ocrLines(src, key));      // text recognised on a scan
   src.lines.set(key, lines); return lines;
 }
 function fontInfo(pj, ln) {
+  if (ln.ocr) return { font: ln.ofont, bold: ln.obold, italic: false };
   let name = '', bold = false, italic = false;
   try { if (pj.commonObjs.has(ln.fontName)) { const f = pj.commonObjs.get(ln.fontName); name = f.name || ''; bold = !!(f.bold || f.black); italic = !!f.italic; } } catch { }
   if (/bold|black|heavy|semibold|demi/i.test(name)) bold = true;
@@ -1625,7 +1695,8 @@ async function runFind(q) {
       const lines = pg.src ? await dLines(pg, true).catch(() => []) : []; if (tok !== findTok) return;
       for (const ln of lines) {
         const tl = ln.text.toLowerCase(), cw = ln.w / Math.max(1, ln.text.length); let k = -1;
-        while ((k = tl.indexOf(ql, k + 1)) >= 0) S.find.hits.push({ pageId: pg.id, x: ln.x + k * cw, y: ln.y, w: ql.length * cw, h: ln.h });
+        const bd = ln._b && !ln._g && ln._b.length === ln.text.length + 1 ? ln._b : null;
+        while ((k = tl.indexOf(ql, k + 1)) >= 0) S.find.hits.push(bd ? { pageId: pg.id, x: bd[k], y: ln.y, w: bd[k + ql.length] - bd[k], h: ln.h } : { pageId: pg.id, x: ln.x + k * cw, y: ln.y, w: ql.length * cw, h: ln.h });
       }
     }
   }
@@ -1667,11 +1738,13 @@ async function getParas(pg) {
     sh.starts.forEach((q, i) => { const k = hk(q[0], q[1]); if (!hue.has(k)) hue.set(k, sh.fills[i]); });
     rules = sh.rules.map(q => { const a = apply(T, q[0], q[1]), b = apply(T, q[2], q[3]), x = Math.min(a[0], b[0]), y = Math.min(a[1], b[1]), w = Math.abs(b[0] - a[0]), h = Math.abs(b[1] - a[1]); return { x, y, w, h, hor: w >= h }; });
   } catch (e) { console.warn('fonts', errMsg(e)); }
+  { const oc = src.ocr && src.ocr.get(key); if (oc && oc.rules) for (const q of oc.rules) rules.push({ x: q[0], y: q[1], w: q[2], h: q[3], hor: q[2] >= q[3] }); }      // lines found on a scanned page
   const pfOf = (fn, hs) => { const fe = src.fonts.get(fn); return top && fe && !fe.bad && top.has(fn) ? { src: pg.src, n: fn, fname: fe.name, fam: fe.fam, wt: fe.wt, st: fe.st, label: fe.label, hs: hs || 1 } : null; };
   const colAt = (x, y) => { for (const dx of [0, -1, 1]) for (const dy of [0, -1, 1]) { const c = hue.get(hk(x + dx, y + dy)); if (c) return c; } return null; };
   const items = [];
   for (const s of segs) {             // a change of colour inside a stretch of one font starts a new run
     if (!s.text || !(s.w > 0)) continue;
+    if (s.ocr) { items.push({ x: s.x, r: s.x + s.w, base: s.base, size: s.size, y: s.y, b: s.y + s.h, text: s.text, fn: s.fontName, lead: false, font: s.ofont, bold: s.obold, italic: false, pf: null, col: s.col || null, rise: 0 }); continue; }
     const fi = fontInfo(pj, s), pf = pfOf(s.fontName, s.hs); if (pf) { pf.b = fi.bold; pf.i = fi.italic; }
     const cuts = []; let lastCol;
     (s.parts || [[0, 0, 0, s.x]]).forEach((q, i) => { const c = colAt(q[0], q[1]) || lastCol || null; if (!i || (c !== lastCol && q[2] < s.text.length && q[3] > s.x)) cuts.push({ at: q[2], x: i ? q[3] : s.x, col: c }); lastCol = c; });
@@ -2234,6 +2307,474 @@ function stripPage(out, page, pg, T, covers, cx, info) {
   return partial;
 }
 
+/* ---------- OCR: reading the text of scanned pages ----------
+   A scanned page is a picture. Here the page is rendered and read by Tesseract (compiled to WebAssembly) inside this page; nothing is
+   sent anywhere. What it finds is kept per source page (src.ocr) and joins the text of the PDF: it can be found, selected, copied and
+   edited like other text, and the downloaded PDF gets it as an invisible layer over the picture. */
+const OCRCFG = (() => { try { return JSON.parse($('#reef-ocr')?.textContent || 'null'); } catch { return null; } })();
+const SIMD = (() => { try { return WebAssembly.validate(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0, 1, 5, 1, 96, 0, 1, 123, 3, 2, 1, 0, 10, 10, 1, 8, 0, 65, 0, 253, 15, 253, 98, 11])); } catch { return false; } })();
+const OCR = { ch: null, ready: null, langs: new Set(), wait: null, onProgress: null, running: false, stop: false };
+const OCR_LANGS = { 'ind+eng': 'Indonesian and English', eng: 'English', ind: 'Indonesian' };
+
+async function gunzip(u) {
+  if (!(u[0] === 0x1f && u[1] === 0x8b)) return u;      // some servers unpack it on the way
+  return new Uint8Array(await new Response(new Blob([u]).stream().pipeThrough(new DecompressionStream('gzip'))).arrayBuffer());
+}
+async function ocrPart(name) {      // one piece of the engine: stored in this page, or fetched from next to it (and then kept by the browser)
+  const c = OCRCFG;
+  if (c && c.data && c.data[name]) return gunzip(fromB64(c.data[name]));
+  const f = c && c.files && c.files[name]; if (!f) throw new Error('text recognition is not part of this copy of Reef PDF');
+  let r; try { r = await fetch(new URL(f, document.baseURI)); } catch (e) { r = null; }
+  if (!r || !r.ok) throw new Error('the text recognition engine could not be downloaded. Check the connection and try again');
+  return gunzip(new Uint8Array(await r.arrayBuffer()));
+}
+
+/* The engine. This function is also the whole program of the worker, so it may only use what is inside it. */
+function ocrEngine(scope) {
+  let M = null, api = null, cur = '';
+  const send = m => scope.postMessage(m);
+  scope.onmessage = async ev => {
+    const m = ev.data;
+    try {
+      if (m.type === 'init') {
+        M = await scope.TesseractCore({ wasmBinary: m.wasm, TesseractProgress: p => send({ type: 'progress', p }), print() { }, printErr() { } });
+        send({ type: 'ready' });
+      } else if (m.type === 'lang') {
+        M.FS.writeFile(m.name + '.traineddata', m.data); send({ type: 'lang' });
+      } else if (m.type === 'rec') {
+        if (!api) api = new M.TessBaseAPI();
+        if (cur !== m.lang) { cur = ''; if (api.Init(null, m.lang, 1) !== 0) throw new Error('the language data could not be read'); cur = m.lang; }      // 1: the neural (LSTM) recogniser
+        api.SetVariable('tessedit_pageseg_mode', '3'); api.SetVariable('user_defined_dpi', String(m.dpi));
+        M.FS.writeFile('/input', m.image); api.SetImageFile(); api.Recognize(null);
+        const lines = [], ri = api.GetIterator(); let ln = null;
+        if (ri) {
+          do {            // levels: 2 = text line, 3 = word
+            if (ri.IsAtBeginningOf(2)) { const b = ri.getBoundingBox(2), bl = ri.getBaseline(2); ln = { b: [b.x0, b.y0, b.x1, b.y1], bl: bl.has_baseline ? [bl.x0, bl.y0, bl.x1, bl.y1] : null, w: [] }; lines.push(ln); }
+            const t = ri.GetUTF8Text(3);
+            if (ln && t && t.trim()) { const b = ri.getBoundingBox(3); ln.w.push([t.trim(), b.x0, b.y0, b.x1, b.y1, Math.round(ri.Confidence(3))]); }
+          } while (ri.Next(3));
+          M.destroy(ri);
+        }
+        try { M.FS.unlink('/input'); } catch (e) { }
+        send({ type: 'result', lines: lines.filter(l => l.w.length) });
+      }
+    } catch (e) { send({ type: 'error', message: String((e && e.message) || e) }); }
+  };
+}
+function ocrHandle(m) {
+  if (m.type === 'progress') { if (OCR.onProgress) OCR.onProgress(m.p); return; }
+  const w = OCR.wait; if (!w) return; OCR.wait = null;
+  if (m.type === 'error') w.rej(new Error(m.message)); else w.res(m);
+}
+function ocrCall(msg, transfer) {
+  return new Promise((res, rej) => { OCR.wait = { res, rej }; OCR.ch.post(msg, transfer || []); });
+}
+async function ocrChannel(coreText, wasm) {       // a worker when the browser allows one, otherwise the engine runs on the page itself
+  const viaWorker = () => new Promise((resolve, reject) => {
+    let w = null; const fail = e => { try { if (w) w.terminate(); } catch { } reject(e || new Error('no worker')); };
+    try { w = new Worker(URL.createObjectURL(new Blob([coreText, '\n;(', ocrEngine.toString(), ')(self);'], { type: 'text/javascript' }))); } catch (e) { fail(e); return; }
+    const timer = setTimeout(() => fail(new Error('no answer')), 25000);
+    w.onerror = ev => { clearTimeout(timer); fail(new Error(ev.message || 'worker failed')); };
+    w.onmessage = ev => {
+      if (ev.data.type === 'error') { clearTimeout(timer); fail(new Error(ev.data.message)); return; }
+      if (ev.data.type !== 'ready') return;
+      clearTimeout(timer);
+      w.onmessage = e2 => ocrHandle(e2.data);
+      w.onerror = e2 => { const q = OCR.wait; OCR.wait = null; if (q) q.rej(new Error(e2.message || 'the text recognition engine stopped')); };
+      resolve({ post: (m, t) => w.postMessage(m, t || []), stop: () => w.terminate() });
+    };
+    w.postMessage({ type: 'init', wasm });
+  });
+  try { return await viaWorker(); } catch (e) { console.warn('ocr worker', errMsg(e)); }
+  const s = document.createElement('script'); s.textContent = coreText; document.head.append(s); s.remove();
+  if (typeof globalThis.TesseractCore !== 'function') throw new Error('the text recognition engine could not be started in this view');
+  const scope = { TesseractCore: globalThis.TesseractCore, onmessage: null, postMessage: m => setTimeout(() => ocrHandle(m), 0) };
+  ocrEngine(scope);
+  const ch = { post: m => setTimeout(() => scope.onmessage({ data: m }), 30), stop() { }, local: true };
+  OCR.ch = ch; await ocrCall({ type: 'init', wasm });
+  return ch;
+}
+function ocrStart() {               // the engine, started once and kept
+  if (OCR.ready) return OCR.ready;
+  OCR.ready = (async () => {
+    if (!OCRCFG) throw new Error('text recognition is not part of this copy of Reef PDF');
+    const basic = !SIMD;
+    if (basic && !(OCRCFG.files && OCRCFG.files.core0)) throw new Error('this browser is too old for text recognition. Update the browser and try again');
+    const [core, wasm] = await Promise.all([ocrPart(basic ? 'core0' : 'core'), ocrPart(basic ? 'wasm0' : 'wasm')]);
+    OCR.langs = new Set(); OCR.ch = null;
+    OCR.ch = await ocrChannel(new TextDecoder().decode(core), wasm);
+  })();
+  OCR.ready.catch(() => { OCR.ready = null; });
+  return OCR.ready;
+}
+async function ocrLang(lang) {
+  for (const l of lang.split('+')) { if (OCR.langs.has(l)) continue; const data = await ocrPart(l); await ocrCall({ type: 'lang', name: l, data }); OCR.langs.add(l); }
+}
+function ocrAbort() {               // stop at once: the engine is shut down and started again the next time
+  OCR.stop = true;
+  if (OCR.ch) { try { OCR.ch.stop(); } catch { } }
+  OCR.ch = null; OCR.ready = null; OCR.langs = new Set();
+  if (OCR.wait) { const q = OCR.wait; OCR.wait = null; q.rej(new Error('stopped')); }
+}
+
+/* ---------- the page as a picture ---------- */
+async function ocrImage(pg) {
+  const pj = await getPdfPage(pg); let k = 300 / 72; const max = 11e6;
+  if (pg.w * pg.h * k * k > max) k = Math.sqrt(max / (pg.w * pg.h));
+  const vp = pj.getViewport({ scale: k, rotation: pageRot(pj, pg) }), c = document.createElement('canvas');
+  c.width = Math.max(1, Math.round(vp.width)); c.height = Math.max(1, Math.round(vp.height));
+  await pj.render({ canvas: c, viewport: vp, annotationMode: PJ.AnnotationMode.DISABLE }).promise;
+  const W = c.width, Hh = c.height, d = c.getContext('2d').getImageData(0, 0, W, Hh).data, n = W * Hh;
+  const head = new TextEncoder().encode(`P5\n${W} ${Hh}\n255\n`), pgm = new Uint8Array(head.length + n), gray = new Uint8Array(n);
+  for (let i = 0, q = 0; i < n; i++, q += 4) gray[i] = (d[q] * 77 + d[q + 1] * 150 + d[q + 2] * 29) >> 8;
+  pgm.set(head); pgm.set(gray, head.length); c.width = c.height = 1;
+  return { k, W, Hh, d, gray, pgm, dpi: Math.round(k * 72) };
+}
+
+/* ---------- drawn lines on the picture (table borders, underlines): they keep table rows apart, as the lines of a real PDF do ---------- */
+function ocrRules(img) {
+  const { W, Hh, gray, k } = img, hist = new Uint32Array(256), out = [];
+  for (let i = 0; i < gray.length; i += 5) hist[gray[i]]++;
+  let bg = 255, bn = -1; for (let i = 0; i < 256; i++) if (hist[i] > bn) { bn = hist[i]; bg = i; }
+  if (bg < 120) return out;
+  const thr = bg - Math.max(55, bg * 0.3), minLen = Math.round(26 * k), maxT = Math.round(3.2 * k);
+  const collect = (len, lines, at) => {       // runs of dark pixels along one direction, joined across neighbouring rows into thin boxes
+    const open = [], done = [];
+    for (let y = 0; y < lines; y++) {
+      let x = 0;
+      while (x < len) {
+        if (at(x, y) >= thr) { x++; continue; }
+        let e = x + 1; while (e < len && at(e, y) < thr) e++;
+        if (e - x >= minLen) {
+          let hit = null; for (const q of open) if (q.last >= y - 1 && Math.min(q.e, e) - Math.max(q.a, x) >= Math.min(q.e - q.a, e - x) * 0.6) { hit = q; break; }
+          if (hit) { hit.a = Math.min(hit.a, x); hit.e = Math.max(hit.e, e); hit.last = y; } else open.push({ a: x, e, first: y, last: y });
+        }
+        x = e;
+      }
+      for (let i = open.length - 1; i >= 0; i--) if (open[i].last < y - 1) { done.push(open[i]); open.splice(i, 1); }
+    }
+    return done.concat(open).filter(q => q.last - q.first + 1 <= maxT);
+  };
+  for (const q of collect(W, Hh, (x, y) => gray[y * W + x])) out.push([r2(q.a / k), r2(q.first / k), r2((q.e - q.a) / k), r2((q.last - q.first + 1) / k)]);
+  for (const q of collect(Hh, W, (y, x) => gray[y * W + x])) out.push([r2(q.first / k), r2(q.a / k), r2((q.last - q.first + 1) / k), r2((q.e - q.a) / k)]);
+  return out.slice(0, 600);
+}
+
+/* ---------- from words on a picture to lines of text with a font, a size and a colour ---------- */
+const OCR_FONTS = ['serif', 'sans', 'Calibri', 'Cambria', 'mono'];
+const OCR_BOLD = 1.18;              // strokes this much thicker than the page's usual ones are bold
+const octx = document.createElement('canvas').getContext('2d');
+function ocrMeasure(font, bold) {   // per unit of font size: [ink width, height above the baseline, room left of the ink, room right of it] of a word
+  const css = cssFont({ font, bold, italic: false, size: 100 }), cache = new Map();
+  return t => { let v = cache.get(t); if (!v) { octx.font = css; try { octx.fontKerning = 'none'; } catch { } const m = octx.measureText(t); v = [Math.max(0.01, (m.actualBoundingBoxLeft + m.actualBoundingBoxRight) / 100), Math.max(0.01, m.actualBoundingBoxAscent / 100), -m.actualBoundingBoxLeft / 100, (m.width - m.actualBoundingBoxRight) / 100]; cache.set(t, v); } return v; };
+}
+const wmedian = list => { const s = list.filter(q => q[1] > 0).sort((a, b) => a[0] - b[0]); let tot = 0; for (const q of s) tot += q[1]; let acc = 0; for (const q of s) { acc += q[1]; if (acc >= tot / 2) return q[0]; } return s.length ? s[s.length - 1][0] : 0; };
+async function ocrLayout(pg, raw, img, old) {
+  const { k, W, Hh, d, gray } = img, AL = /[\p{L}\p{N}]/u;
+  const taken = (x, y) => old.some(l => x > l.x - 1 && x < l.x + l.w + 1 && y > l.y - 1 && y < l.y + l.h + 1);
+  const lines = []; let tall = 0, rawWords = 0;
+  for (const ln of raw) {
+    const bw = ln.b[2] - ln.b[0], bh = ln.b[3] - ln.b[1]; rawWords += ln.w.length; if (bh > bw * 2.5 && bh > 40 * k) tall++;
+    let ws = ln.w.filter(w => w[3] > w[1] && w[4] > w[2] && w[5] >= 25 && (AL.test(w[0]) || w[5] >= 60) && !taken((w[1] + w[3]) / 2 / k, (w[2] + w[4]) / 2 / k));
+    if (!ws.length || !ws.some(w => w[5] >= 55)) continue;                // nothing but guesses: a stamp, a signature, a speck
+    if (bh > bw * 2.5 && ws.reduce((a, w) => a + w[0].length, 0) > 2) continue;      // text running up or down the page
+    ws = ws.sort((a, b) => a[1] - b[1]);
+    const bl = ln.bl && ln.bl[2] > ln.bl[0] ? ln.bl : [ln.b[0], ln.b[3], ln.b[2], ln.b[3]], slope = (bl[3] - bl[1]) / (bl[2] - bl[0]);
+    if (Math.abs(slope) > 0.12) continue;
+    lines.push({ ws, slope, baseAt: x => bl[1] + slope * (x - bl[0]), chars: ws.reduce((a, w) => a + w[0].length, 0) });
+  }
+  if (!lines.length) return { segs: [], words: 0, font: 'sans', tall, rawWords };
+  /* A scan is rarely perfectly straight. Baselines are compared as if every line were measured at the same place across the page,
+     so the lines of a paragraph keep an even distance; where the ink really is stays known through dy. */
+  const tilt = wmedian(lines.filter(L => L.ws[L.ws.length - 1][3] - L.ws[0][1] > W * 0.25).map(L => [L.slope, L.chars])) || 0, xr = wmedian(lines.map(L => [(L.ws[0][1] + L.ws[L.ws.length - 1][3]) / 2, L.chars]));
+  for (const L of lines) { const cx = (L.ws[0][1] + L.ws[L.ws.length - 1][3]) / 2; L.base = L.baseAt(cx) + tilt * (xr - cx); }
+  /* which typeface: the one whose word widths fit the widths on the picture best */
+  const cands = [];
+  for (const f of OCR_FONTS) {
+    if (!FAM[f]) { const faces = [cfFace(f, false, false), cfFace(f, true, false)]; if (!faces[0]) continue; try { await Promise.all(faces.filter(Boolean).map(cfLoad)); } catch { continue; } }
+    cands.push({ f, reg: ocrMeasure(f, false), bold: ocrMeasure(f, true), err: 0, den: 0 });
+  }
+  for (const L of lines) {
+    if (L.ws.length < 2 || L.chars < 8) continue;
+    for (const c of cands) {
+      let sa = 0, sn = 0; for (const w of L.ws) { sa += w[3] - w[1]; sn += c.reg(w[0])[0]; }
+      const s = sa / sn; for (const w of L.ws) { const a = w[3] - w[1], e = a - s * c.reg(w[0])[0]; c.err += e * e; c.den += a * a; }
+    }
+  }
+  let best = cands[0]; for (const c of cands) if (c.den && (!best.den || c.err / c.den < best.err / best.den - 1e-6)) best = c;
+  /* how thick the strokes are (bold or not), and the colour of the ink */
+  const px = (x, y) => gray[y * W + x];
+  for (const L of lines) {
+    const x0 = clamp(Math.min(...L.ws.map(w => w[1])), 0, W - 1), x1 = clamp(Math.max(...L.ws.map(w => w[3])), 1, W), y0 = clamp(Math.min(...L.ws.map(w => w[2])), 0, Hh - 1), y1 = clamp(Math.max(...L.ws.map(w => w[4])), 1, Hh);
+    const hist = new Uint32Array(256); let cnt = 0;
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x += 2) { hist[px(x, y)]++; cnt++; }
+    let bg = 255, bn = -1; for (let i = 0; i < 256; i += 4) { const n = hist[i] + hist[i + 1] + hist[i + 2] + hist[i + 3]; if (n > bn) { bn = n; bg = i + 2; } }
+    const pct = p => { let a = 0; for (let i = 0; i < 256; i++) { a += hist[i]; if (a >= cnt * p) return i; } return 255; };
+    const inv = bg < 110, fg = inv ? pct(0.97) : pct(0.03), thr = (bg + fg) / 2, dark = (x, y) => (inv ? px(x, y) > thr : px(x, y) < thr);
+    L.contrast = Math.abs(bg - fg);
+    let sa = 0, sn = 0; for (const w of L.ws) { sa += w[3] - w[1]; sn += best.reg(w[0])[0]; }
+    L.s = sa / sn;                  // font size in pixels if the text is regular
+    { const hs = L.ws.map(w => [(L.baseAt((w[1] + w[3]) / 2) - w[2]) / best.reg(w[0])[1], w[0].length]); L.sh = wmedian(hs) || L.s; }
+    let r = 0, g = 0, b = 0, cn = 0; const core = inv ? fg - (fg - bg) * 0.3 : fg + (bg - fg) * 0.3;
+    for (const w of L.ws) {
+      let A = 0, P = 0; const a = clamp(w[1], 1, W - 2), e = clamp(w[3], 2, W - 1), t = clamp(w[2], 1, Hh - 2), u = clamp(w[4], 2, Hh - 1);
+      for (let y = t; y < u; y++) for (let x = a; x < e; x++) {
+        if (!dark(x, y)) continue; A++;
+        if (!dark(x - 1, y) || !dark(x + 1, y) || !dark(x, y - 1) || !dark(x, y + 1)) P++;
+        const v = px(x, y); if (inv ? v >= core : v <= core) { const q = (y * W + x) * 4; r += d[q]; g += d[q + 1]; b += d[q + 2]; cn++; }
+      }
+      w.A = A; w.P = P;
+    }
+    L.rgb = cn ? [r / cn, g / cn, b / cn] : [17, 17, 17];
+    const A = L.ws.reduce((q, w) => q + w.A, 0), P = L.ws.reduce((q, w) => q + w.P, 0);
+    L.stroke = P ? 2 * A / P / L.s : 0;
+  }
+  const mid = wmedian(lines.filter(L => L.stroke > 0 && L.contrast > 40).map(L => [L.stroke, L.chars])) || 0;
+  for (const L of lines) {
+    const can = mid > 0 && L.contrast > 40, thick = v => v > mid * OCR_BOLD;
+    const rel = L.ws.map(w => (can && w.P > 12 && (w[0].match(/[\p{L}\p{N}]/gu) || []).length >= 3 ? 2 * w.A / w.P / L.s : null));
+    let fl = rel.map(v => (v == null ? null : thick(v)));
+    const kn = fl.filter(f => f != null).length, nb = fl.filter(f => f).length;
+    if (nb > kn * 0.6) fl = rel.map(v => (v == null ? null : v > mid * (1 + (OCR_BOLD - 1) / 2)));      // in a mostly bold line a word needs less to count as bold
+    if (!kn) fl = fl.map(() => can && thick(L.stroke));
+    else if (!fl.some(f => f) || !fl.some(f => f === false)) fl = fl.map(() => nb > 0);      // one weight for the whole line
+    else fl = fl.map((f, i) => { if (f != null) return f; for (let d = 1; d < fl.length; d++) { const p = fl[i - d], n = fl[i + d]; if (p != null) return p; if (n != null) return n; } return false; });      // short words follow their neighbour
+    L.ws.forEach((w, i) => { w.bold = !!fl[i]; });
+    let sa = 0, sn = 0; for (const w of L.ws) { sa += w[3] - w[1]; sn += (w.bold ? best.bold : best.reg)(w[0])[0]; }
+    L.size = (L.chars >= 5 ? sa / sn : L.sh) / k; L.sure = L.chars >= 5;
+  }
+  /* lines set in the same size get exactly the same size, so they can form a paragraph */
+  const sure = lines.filter(L => L.sure).sort((a, b) => a.size - b.size), groups = [];
+  for (const L of sure) { const g = groups[groups.length - 1]; if (g && L.size <= g.min * 1.075) g.list.push(L); else groups.push({ min: L.size, list: [L] }); }
+  for (const g of groups) { g.size = r1(wmedian(g.list.map(L => [L.size, L.chars]))); for (const L of g.list) L.size = g.size; }
+  for (const L of lines) if (!L.sure) { let b = null; for (const g of groups) if (Math.abs(g.size - L.size) <= L.size * 0.14 && (!b || Math.abs(g.size - L.size) < Math.abs(b.size - L.size))) b = g; L.size = b ? b.size : r1(L.size); }
+  const dom = [0, 1, 2].map(i => wmedian(lines.map(L => [L.rgb[i], L.chars])));
+  const hex = c => { const q = c.map(v => clamp(Math.round(v / 17) * 17, 0, 255)); return rgbHex(...q); };
+  const segs = []; let words = 0;
+  for (const L of lines) {
+    if (!(L.size >= 3 && L.size <= 400)) continue;
+    const near = Math.abs(L.rgb[0] - dom[0]) + Math.abs(L.rgb[1] - dom[1]) + Math.abs(L.rgb[2] - dom[2]) < 70, col = hex(near ? dom : L.rgb), gapMax = L.size * k * 1.1; let cur = null;
+    for (const w of L.ws) {
+      if (!cur || w.bold !== cur.bold || w[1] - cur.end > gapMax) { cur = { bold: w.bold, ws: [], end: 0 }; segs.push(cur); cur.L = L; cur.col = col; }
+      cur.ws.push(w); cur.end = w[3]; words++;
+    }
+  }
+  return {
+    words, font: best.f, tall, rawWords,
+    segs: segs.map(s => {           // x and w follow the font's own spacing (a little room before the first and after the last letter), as text in a PDF does
+      const a = s.ws[0][1], e = s.end, M = s.bold ? best.bold : best.reg, sz = s.L.size,  x = a / k - clamp(M(s.ws[0][0])[2], -0.1, 0.2) * sz, r = e / k + clamp(M(s.ws[s.ws.length - 1][0])[3], -0.1, 0.2) * sz;
+      const o = { x: r2(x), w: r2(r - x), base: r2(s.L.base / k), size: sz, font: best.f, col: s.col, words: s.ws.map(w => [w[0], r2(w[1] / k), r2((w[3] - w[1]) / k)]) }; if (s.bold) o.bold = 1; const dy = r2((s.L.baseAt((a + e) / 2) - s.L.base) / k); if (Math.abs(dy) > 0.2) o.dy = dy; const sk = r2(Math.abs(s.L.slope) * (e - a) / 2 / k); if (sk > 0.3) o.sk = sk; return o;
+    }),
+  };
+}
+function ocrLines(src, key) {       // the recognised text of a page as text lines, like those read from the PDF itself
+  const oc = src.ocr && src.ocr.get(key); if (!oc) return [];
+  return oc.segs.map(s => {
+    const b = []; for (const [t, x, w] of s.words) { const n = t.length; for (let j = 0; j < n; j++) b.push(x + w * j / n); b.push(x + w); }
+    const tilt = s.sk || 0;      // the box around the ink of a tilted line is taller: one end sits higher than the other
+    return { x: s.x, base: s.base, w: s.w, size: s.size, y: s.base + (s.dy || 0) - 0.9 * s.size - tilt, h: 1.12 * s.size + 2 * tilt, text: s.words.map(w => w[0]).join(' '), fontName: 'ocr:' + s.font + (s.bold ? ':b' : ''), family: '', hs: 1, lead: false, parts: null,
+      ocr: true, ofont: s.font, obold: !!s.bold, odY: s.dy || 0, osk: s.sk || 0, col: s.col, words: s.words, _b: b, _g: null };
+  });
+}
+function ocrForget(src, idx) {      // the text of this source page changed: drop everything that was derived from it
+  for (const m of [src.lines, src.paras, src.gdisp, src.ink, src.ghosts]) if (m) for (const k of [...m.keys()]) if (String(k).split(':')[0] === String(idx)) m.delete(k);
+  for (const pg of S.pages) if (pg.src === src.id && pg.idx === idx) { const v = V.get(pg.id); if (v) { v.tlKey = null; v.tls.textContent = ''; } }
+}
+const ocrConf = raw => wmedian(raw.flatMap(l => l.w.filter(w => /[\p{L}\p{N}]/u.test(w[0])).map(w => [w[5], w[0].length])));      // how sure the engine was, 0 to 100
+const ocrToastsOff = () => { for (const e of $$('#toasts .toast')) if (e.querySelector('.toast-act')) e.remove(); };      // the offers to run OCR have done their job
+const ocrKey = pg => pg.idx + ':' + pg.rot;
+const hasOcr = pg => !!(pg.src && S.sources.get(pg.src).ocr && S.sources.get(pg.src).ocr.has(ocrKey(pg)));
+async function ocrPage(pg, lang, onProgress) {
+  const src = S.sources.get(pg.src), key = ocrKey(pg);
+  const all = (await getLines(pg)).filter(l => !l.ocr), gh = await ghostTest(pg).catch(() => null), had = src.ocr.get(key);
+  const old = gh ? all.filter(l => !gh(l.parts[0][0], l.parts[0][1])) : all, over = old.length < all.length || !!(had && had.over), img = await ocrImage(pg);
+  OCR.onProgress = onProgress || null;
+  const res = await ocrCall({ type: 'rec', lang, dpi: img.dpi, image: img.pgm }, OCR.ch.local ? [] : [img.pgm.buffer]);
+  OCR.onProgress = null;
+  const lay = await ocrLayout(pg, res.lines, img, old), conf = ocrConf(res.lines);
+  /* Text that lies on its side or stands on its head comes back as nonsense; that is not kept. */
+  const bad = lay.tall >= 3 && lay.tall >= res.lines.length * 0.5 ? 'side' : lay.rawWords >= 12 && conf < 60 ? 'unclear' : null;
+  if (bad) return { words: 0, bad };
+  const entry = { v: 1, lang, font: lay.font, segs: lay.segs, rules: ocrRules(img) }; if (over) entry.over = true;      // over: the page had a hidden text layer, which this text stands in for
+  src.ocr.set(key, entry);
+  ocrForget(src, pg.idx);
+  return { words: lay.words, bad: null };
+}
+async function ocrFlatten(pg) {     // a page made from a picture (or built here from nothing) becomes a PDF page of its own, so its text has a place to live
+  const { bytes } = await buildPdf([{ ...pg, crop: undefined }]), src = await addSource(S.name || 'page.pdf', bytes);
+  Object.assign(pg, { src: src.id, idx: 0, rot: 0, objs: [] });
+}
+async function scanKind(pg, deep = true) {      // 'pic': a picture without text · 'hid': a picture with a hidden text layer (an earlier OCR) · '': a page with real text
+  if (!pg.src) return pg.objs.some(o => o.type === 'image') ? 'pic' : '';
+  const ls = (await getLines(pg).catch(() => [])).filter(l => !l.ocr); if (hasOcr(pg)) return '';
+  let n = 0; for (const l of ls) n += l.text.length; if (n < 40) return 'pic';
+  if (!deep) return '';
+  const gh = await ghostTest(pg).catch(() => null); if (!gh) return '';
+  n = 0; for (const l of ls) if (!gh(l.parts[0][0], l.parts[0][1])) n += l.text.length;
+  return n < 40 ? 'hid' : '';
+}
+async function runOcr(pages, lang) {
+  if (OCR.running || exporting || !pages.length) return; if (S.editing) endEdit();
+  OCR.running = true; OCR.stop = false; clearTsel(); ocrToastsOff();
+  const stopBtn = () => { ocrAbort(); }, say = t => busy(t, stopBtn);
+  let done = 0, words = 0, flat = 0, failed = null; const side = [], unclear = [];
+  try {
+    say(OCRCFG && OCRCFG.files && !OCR.ready ? 'Getting the text recognition engine ready (downloaded once, about 4 MB)…' : 'Getting the text recognition engine ready…'); await nextFrame();
+    await ocrStart(); await ocrLang(lang);
+    for (let i = 0; i < pages.length && !OCR.stop; i++) {
+      const pg = pages[i], no = pageIndex(pg.id) + 1, label = pages.length > 1 ? `Reading page ${no} (${i + 1} of ${pages.length})` : `Reading page ${no}`;
+      say(label + '…'); await nextFrame();
+      if (!pg.src) { if (!pg.objs.some(o => o.type === 'image')) continue; await ocrFlatten(pg); flat++; }
+      const r = await ocrPage(pg, lang, p => say(`${label}… ${clamp(Math.round(p), 0, 100)}%`));
+      if (r.bad) (r.bad === 'side' ? side : unclear).push(no); else { words += r.words; done++; }
+    }
+  } catch (e) { if (!OCR.stop) { failed = e; console.error(e); } }
+  OCR.running = false; OCR.onProgress = null; busy(false);
+  if (flat) commit(); else refresh();
+  refreshTextLines(); if (S.find.q) runFind(S.find.q);
+  const list = a => (a.length === 1 ? 'Page ' + a[0] : 'Pages ' + a.slice(0, 8).join(', ') + (a.length > 8 ? ' and others' : '')), notes = [];
+  if (side.length) notes.push(`${list(side)}: the text lies on its side. Turn the page upright with the rotate buttons in the Pages panel, then run OCR again.`);
+  if (unclear.length) notes.push(`${list(unclear)} could not be read reliably. The page may be upside down (rotate it and try again), handwritten or too blurred.`);
+  if (failed) toast('Text recognition did not work: ' + errMsg(failed) + '.', 'err', 9000);
+  else if (!done) toast(notes.length ? notes.join('\n') : OCR.stop ? 'Text recognition stopped.' : 'There was nothing to read on the chosen pages.', 'info', notes.length ? 12000 : 4600);
+  else toast((OCR.stop ? 'Stopped. ' : '') + (words ? `${fmtNum(words)} word${words === 1 ? '' : 's'} recognized on ${done} page${done === 1 ? '' : 's'}. The text can now be found, selected and edited, and is saved into the PDF.` : `No text was found on ${done === 1 ? 'that page' : 'those pages'}.`) + (notes.length ? '\n' + notes.join('\n') : ''), 'info', notes.length ? 14000 : 7000);
+  return { done, words, side, unclear };
+}
+function removeOcr(pages) {
+  let n = 0;
+  for (const pg of pages) { if (!hasOcr(pg)) continue; const src = S.sources.get(pg.src); src.ocr.delete(ocrKey(pg)); ocrForget(src, pg.idx); n++; }
+  if (n) { clearTsel(); refresh(); refreshTextLines(); if (S.find.q) runFind(S.find.q); }
+  return n;
+}
+
+/* ---------- the recognised text in the downloaded PDF: an invisible layer, word by word, stretched to sit on the picture ---------- */
+async function paintOcr(page, pg, T, cx, pageNo) {
+  const all = await getLines(pg); if (!hasOcr(pg)) return 0;
+  const src = S.sources.get(pg.src), key = ocrKey(pg), oc = src.ocr.get(key), lines = all.filter(l => l.ocr); if (!lines.length) return 0;
+  const hid = hiddenTest(pg), cuts = cutsOf(pg), red = pg.objs.filter(o => o.type === 'redact').map(o => wipeO(pg, o)), theirs = (oc.over && src.ghosts && src.ghosts.get(key)) || [];
+  const inBox = (bs, x, y) => bs.some(c => x > c.x && x < c.x + c.w && y > c.y && y < c.y + c.h), gone = (x, y) => hid(x, y) || inBox(red, x, y);
+  const helv = await cx.font('Helvetica'), alt = cfFace(STD_ALT.sans, false, false); if (alt) await cfLoad(alt).catch(() => { });
+  const use = alt && alt.state === 2 ? cx.cf(alt) : null, Hh = pg.h, ops = [], keep = []; let hkey = null, n = 0;
+  for (const ln of lines) {
+    const cy = ln.y + ln.h / 2, sh = shAt(cuts, cy), yb = Hh - (ln.base + sh), ws = ln.words.filter(w => !gone(w[1] + w[2] / 2, cy)); if (!ws.length) continue;
+    keep.push({ ln, sh, ws });
+    ws.forEach((w, i) => {
+      const [t, x, ww] = w; if (inBox(theirs, x + ww / 2, cy)) return;      // the file's own hidden layer already has this word
+      const nx = ws[i + 1], span = nx && nx[1] > x + ww ? nx[1] - x : ww;      // a word carries the space after it, up to the next word
+      let toks = [...(nx ? t + ' ' : t)].filter(ch => ch.codePointAt(0) >= 32), wn = 0, fkey, str;
+      if (toks.every(ch => stdHas(helv, ch))) { for (const ch of toks) wn += stdW(helv, ch); fkey = hkey || (hkey = page.node.newFontDictionary(helv.name, helv.ref)); str = helv.encodeText(toks.join('')); }
+      else {
+        const F = use && use.face.ttf; toks = F ? toks.filter(ch => ch.length === (ch.codePointAt(0) > 0xFFFF ? 2 : 1) && F.gid(ch.codePointAt(0)) > 0) : []; if (!toks.length) return;
+        for (const ch of toks) wn += F.adv(F.gid(ch.codePointAt(0))) / F.upm; fkey = use.key(page); str = L.PDFHexString.of(use.hex(toks));
+      }
+      if (!(wn > 0)) return;
+      ops.push(L.setFontAndSize(fkey, ln.size), L.setTextMatrix(Math.round(clamp(span / (wn * ln.size), 0.1, 10) * 1000) / 1000, 0, 0, 1, x, yb), L.showText(str)); n++;
+    });
+  }
+  if (n) page.pushOperators(L.pushGraphicsState(), L.concatTransformationMatrix(...mul(inv(T), [1, 0, 0, -1, 0, Hh])), L.beginText(), L.setTextRenderingMode(L.TextRenderingMode.Invisible), ...ops, L.endText(), L.popGraphicsState());
+  if (keep.length) {                // what was recognised goes into the file as well, so opening the PDF here again gives the same editable text
+    const ox = pg.crop ? pg.crop.x : 0, oy = pg.crop ? pg.crop.y : 0, segs = [];
+    for (const { ln, sh, ws } of keep) {
+      const f = ln.words[0], l = ln.words[ln.words.length - 1], a = ws[0], e = ws[ws.length - 1], x = a === f ? ln.x : a[1], r = e === l ? ln.x + ln.w : e[1] + e[2];
+      const o = { x: r2(x - ox), w: r2(r - x), base: r2(ln.base + sh - oy), size: ln.size, font: ln.ofont, col: ln.col, words: ws.map(w => [w[0], r2(w[1] - ox), w[2]]) };
+      if (ln.obold) o.bold = 1; if (ln.odY) o.dy = ln.odY; if (ln.osk) o.sk = ln.osk; segs.push(o);
+    }
+    const rules = (oc.rules || []).map(q => [r2(q[0] - ox), r2(q[1] + shAt(cuts, q[1] + q[3] / 2) - oy), q[2], q[3]]), ctx = cx.out.context;
+    const ref = ctx.register(ctx.flateStream(new TextEncoder().encode(JSON.stringify({ v: 1, lang: oc.lang, font: oc.font, segs, rules })), { Type: 'ReefOCR', V: 1, Page: pageNo }));
+    const PI = L.PDFName.of('PieceInfo'); let pi = page.node.lookupMaybe(PI, L.PDFDict); if (!pi) { pi = ctx.obj({}); page.node.set(PI, pi); }
+    pi.set(L.PDFName.of('ReefPDF'), ctx.obj({ LastModified: L.PDFString.fromDate(new Date()), Private: { OCR: ref } }));
+  }
+  return n;
+}
+function ocrSweep(doc) {            // recognition data written by an earlier download of this file is replaced, not piled up
+  for (const [ref, obj] of doc.context.enumerateIndirectObjects()) {
+    const d = obj && obj.dict; if (!d || !(obj instanceof L.PDFRawStream)) continue;
+    const ty = d.get(L.PDFName.of('Type')); if (ty && ty.toString() === '/ReefOCR') doc.context.delete(ref);
+  }
+  for (const p of doc.getPages()) { const pi = p.node.lookupMaybe(L.PDFName.of('PieceInfo'), L.PDFDict); if (pi) { pi.delete(L.PDFName.of('ReefPDF')); if (!pi.keys().length) p.node.delete(L.PDFName.of('PieceInfo')); } }
+}
+async function ocrSavedIn(bytes) {  // page number → recognition data that Reef PDF stored in a PDF it wrote
+  const mark = [47, 84, 121, 112, 101, 32, 47, 82, 101, 101, 102, 79, 67, 82], n = bytes.length, out = new Map(), str = (a, b) => { let t = ''; for (let i = a; i < b; i++) t += String.fromCharCode(bytes[i]); return t; };
+  if (n > 3e8) return null;
+  for (let i = bytes.indexOf(47); i >= 0 && i < n - 20 && out.size < 5000; i = bytes.indexOf(47, i + 1)) {
+    let k = 1; while (k < mark.length && bytes[i + k] === mark[k]) k++; if (k < mark.length) continue;
+    let a = i; while (a > 0 && a > i - 400 && !(bytes[a] === 60 && bytes[a + 1] === 60)) a--;
+    let e = i; while (e < n - 1 && e < i + 400 && !(bytes[e] === 62 && bytes[e + 1] === 62)) e++;
+    const dict = str(a, e), len = /\/Length (\d+)/.exec(dict), pno = /\/Page (\d+)/.exec(dict); if (!len || !pno || !/FlateDecode/.test(dict)) continue;
+    let st = e + 2; while (st < n && (bytes[st] === 10 || bytes[st] === 13 || bytes[st] === 32)) st++;
+    if (str(st, st + 6) !== 'stream') continue; st += 6; if (bytes[st] === 13) st++; if (bytes[st] === 10) st++;
+    try {
+      const raw = new Uint8Array(await new Response(new Blob([bytes.subarray(st, st + +len[1])]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()), d = JSON.parse(new TextDecoder().decode(raw));
+      const c = ocrClean(d); if (c) out.set(+pno[1], c);
+    } catch { }
+  }
+  return out.size ? out : null;
+}
+function ocrClean(d) {              // recognition data read from a file: only well-formed values are taken over
+  if (!d || d.v !== 1 || !Array.isArray(d.segs) || d.segs.length > 20000) return null;
+  const num = v => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) < 1e5, segs = [];
+  for (const q of d.segs) {
+    if (!q || ![q.x, q.w, q.base, q.size].every(num) || !(q.size >= 3 && q.size <= 400) || !(q.w > 0) || !Array.isArray(q.words)) continue;
+    const words = q.words.filter(w => Array.isArray(w) && typeof w[0] === 'string' && w[0].length > 0 && w[0].length < 200 && num(w[1]) && num(w[2]) && w[2] > 0).map(w => [w[0], w[1], w[2]]); if (!words.length) continue;
+    const o = { x: q.x, w: q.w, base: q.base, size: q.size, font: OCR_FONTS.includes(q.font) ? q.font : 'sans', col: /^#[0-9a-f]{6}$/i.test(q.col) ? q.col.toLowerCase() : '#111111', words };
+    if (q.bold) o.bold = 1; if (num(q.dy)) o.dy = q.dy; if (num(q.sk) && q.sk > 0 && q.sk < 50) o.sk = q.sk; segs.push(o);
+  }
+  if (!segs.length) return null;
+  const rules = (Array.isArray(d.rules) ? d.rules : []).filter(r => Array.isArray(r) && r.length === 4 && r.every(num)).slice(0, 600).map(r => r.slice());
+  return { v: 1, lang: OCR_LANGS[d.lang] ? d.lang : 'ind+eng', font: OCR_FONTS.includes(d.font) ? d.font : 'sans', segs, rules, ...(d.over ? { over: true } : {}) };
+}
+function ocrSavedFits(saved, ghosts) {      // stored data belongs to this page only if the page's hidden text says the same
+  if (!ghosts.length || !saved.segs.length) return false;
+  const have = new Set(ghosts.flatMap(l => l.text.split(/\s+/))), first = saved.segs.slice(0, 10).map(q => q.words[0][0]);
+  return first.filter(w => have.has(w)).length >= Math.ceil(first.length * 0.6);
+}
+
+/* ---------- the OCR dialog ---------- */
+async function openOcr() {
+  if (S.editing) endEdit();
+  if (!OCRCFG) { toast('Text recognition is not part of this copy of Reef PDF.', 'err'); return; }
+  if (OCR.running) return;
+  ocrToastsOff();
+  const sel = [...S.selPages].map(pageById).filter(Boolean), scope = $('#ocrScope');
+  if (S.pages.length > 40) { busy('Looking at the pages…'); await nextFrame(); }
+  let scans = 0; try { for (const pg of S.pages) if (await scanKind(pg, S.pages.length <= 80)) scans++; } finally { busy(false); }
+  scope.textContent = '';
+  const add = (v, t) => scope.append(new Option(t, v));
+  if (scans) add('scan', `Scanned pages (${scans})`);
+  add('cur', `This page (page ${S.cur + 1})`);
+  if (sel.length > 1) add('sel', `Selected pages (${sel.length})`);
+  if (S.pages.length > 1) add('all', `All pages (${S.pages.length})`);
+  scope.value = scans ? 'scan' : 'cur';
+  try { const l = localStorage.getItem('reef.ocr.lang'); if (l && OCR_LANGS[l]) $('#ocrLang').value = l; } catch { }
+  $('#ocrRemove').hidden = !S.pages.some(hasOcr);
+  $('#ocrNote').textContent = (OCRCFG.files && !OCR.ready ? 'The first time, the recognition engine is downloaded (about 4 MB) and kept for later, also offline. ' : '') + 'Clean, printed text is read best. Handwriting, stamps and blurred photos are not read reliably, so check important figures against the page.';
+  $('#dlgOcr').showModal();
+}
+const ocrTargets = async scope => scope === 'all' ? S.pages.slice() : scope === 'sel' ? [...S.selPages].map(pageById).filter(Boolean).sort((a, b) => pageIndex(a.id) - pageIndex(b.id)) : scope === 'scan' ? (await Promise.all(S.pages.map(async pg => (await scanKind(pg, S.pages.length <= 80)) ? pg : null))).filter(Boolean) : [curPage()];
+$('#btnOcr').addEventListener('click', () => { openOcr(); });
+$('#ocrCancel').addEventListener('click', () => $('#dlgOcr').close());
+$('#ocrApply').addEventListener('click', async () => {
+  const lang = $('#ocrLang').value, pages = await ocrTargets($('#ocrScope').value);
+  try { localStorage.setItem('reef.ocr.lang', lang); } catch { }
+  $('#dlgOcr').close(); runOcr(pages, lang);
+});
+$('#ocrRemove').addEventListener('click', async () => {
+  const sc = $('#ocrScope').value, n = removeOcr(sc === 'scan' ? S.pages.slice() : await ocrTargets(sc));
+  $('#dlgOcr').close(); toast(n ? `Recognized text removed from ${n} page${n === 1 ? '' : 's'}.` : 'Those pages have no recognized text.');
+});
+let ocrHinted = null;
+async function ocrHint(pages) {     // a freshly opened scan: say that its text can be made usable
+  if (!OCRCFG || !pages.length) return; const kinds = [];
+  for (const pg of pages.slice(0, 3)) { const k = await scanKind(pg); if (!k) return; kinds.push(k); }
+  if (ocrHinted === pages[0].id || !pageById(pages[0].id)) return; ocrHinted = pages[0].id;
+  toast(kinds.includes('pic') ? 'This looks like a scan: its pages are pictures, so the text cannot be searched or edited yet.' : 'This is a scan with a hidden text layer from an earlier OCR. To edit its text in the look of the page, let Reef PDF read it again.', 'info', 14000, { label: 'Recognize text (OCR)', run: openOcr });
+}
+const ocrNudged = new Set();
+function ocrNudge(pg) {             // Edit text was clicked on a page that has no text of its own
+  if (!OCRCFG || OCR.running || ocrNudged.has(pg.id) || $('#toasts .toast-act')) return;
+  scanKind(pg, false).then(sp => { if (!sp || ocrNudged.has(pg.id)) return; ocrNudged.add(pg.id); toast('This page is a picture of text, so there are no words to click on yet.', 'info', 10000, { label: 'Recognize text (OCR)', run: openOcr }); }).catch(() => { });
+}
+
 /* ---------- tools ---------- */
 function setTool(t) {
   if (S.editing) endEdit();
@@ -2374,6 +2915,7 @@ function onDown(ev) {
     ev.preventDefault(); const tl = t.closest('.tl');
     if (tl) editPara(pg, v, +tl.dataset.i, { x: ev.clientX, y: ev.clientY }).catch(e => { console.warn(e); toast('This text cannot be edited: ' + errMsg(e), 'err'); });
     else if (hitObj && hitObj.type === 'text') startEdit(pg, hitObj, false, { x: ev.clientX, y: ev.clientY });
+    else ocrNudge(pg);
     return;
   }
   if (tool === 'note') { ev.preventDefault(); const o = { id: uid('o'), type: 'note', x: r2(p.x - 11), y: r2(p.y - 11), text: '', color: S.def.note.color }; pg.objs.push(o); S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); commit(); setTimeout(() => $('#p_note')?.focus(), 30); return; }
@@ -2857,7 +3399,7 @@ function renderProps(force) {
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
     h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
-    h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages have no editable text.</p>`;
+    h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it.</p>`;
   }
   body.innerHTML = h;
 }
@@ -3095,6 +3637,7 @@ async function openFiles(files, mode, at) {
     if (project) await relinkFonts();
     resetHistory(); S.dirty = false; refresh();
     setZoom(fitZoom('width'), 'width'); stage.scrollTop = 0; stage.scrollLeft = 0;
+    ocrHint(added).catch(() => { });
   } else {
     S.pages.splice(clamp(at, 0, S.pages.length), 0, ...added); S.sample = false; S.selPages = new Set(added.map(p => p.id));
     if (project) await relinkFonts();
@@ -3406,7 +3949,7 @@ function exportText() {
       }
     } finally { doc.loadingTask.destroy(); }
     busy(false);
-    if (!chars) { toast('No text was found. Scanned pages contain pictures of text, which need OCR first.'); return; }
+    if (!chars) { toast('No text was found. Scanned pages contain pictures of text: use OCR in the toolbar first.', 'info', 9000, OCRCFG ? { label: 'Recognize text (OCR)', run: openOcr } : null); return; }
     saveNote(await saveFile(`${baseName()}.txt`, out, 'text/plain'), `${baseName()}.txt · ${fmtNum(chars)} characters`);
   });
 }
@@ -3422,7 +3965,7 @@ function saveProject() {
     for (const p of S.pages) for (const o of p.objs) if (o.asset) usedA.add(o.asset);
     const proj = {
       app: 'reefpdf', v: 1, name: S.name, meta: S.meta, flatten: S.flatten, pages: S.pages,
-      sources: [...used].map(id => { const s = S.sources.get(id); return { id, name: s.name, form: s.form, b64: toB64(s.bytes) }; }),
+      sources: [...used].map(id => { const s = S.sources.get(id); const o = { id, name: s.name, form: s.form, b64: toB64(s.bytes) }; if (s.ocr && s.ocr.size) o.ocr = [...s.ocr]; return o; }),
       assets: [...usedA].map(id => S.assets.get(id)).filter(Boolean).map(a => ({ id: a.id, mime: a.mime, w: a.w, h: a.h, b64: toB64(a.bytes) })),
     };
     const name = `${baseName()}.reefpdf.json`; busy(false);
@@ -3432,7 +3975,7 @@ function saveProject() {
 async function loadProject(text) {
   const p = JSON.parse(text); if (!p || p.app !== 'reefpdf' || !Array.isArray(p.pages)) throw new Error('not a Reef PDF project');
   const ids = new Map();
-  for (const s of p.sources || []) { const src = await addSource(s.name, fromB64(s.b64)); src.form = s.form || {}; ids.set(s.id, src.id); }
+  for (const s of p.sources || []) { const src = await addSource(s.name, fromB64(s.b64)); src.form = s.form || {}; if (Array.isArray(s.ocr)) for (const e of s.ocr) { const c = Array.isArray(e) && /^\d+:(0|90|180|270)$/.test(e[0]) ? ocrClean(e[1]) : null; if (c) src.ocr.set(e[0], c); } ids.set(s.id, src.id); }
   for (const a of p.assets || []) { const bytes = fromB64(a.b64); S.assets.set(a.id, { id: a.id, mime: a.mime, w: a.w, h: a.h, bytes, url: URL.createObjectURL(new Blob([bytes], { type: a.mime })) }); }
   const pages = p.pages.filter(pg => !pg.src || ids.has(pg.src)).map(pg => ({ ...pg, id: uid('p'), src: pg.src ? ids.get(pg.src) : null, objs: (pg.objs || []).map(o => { const fix = r => (r.pf ? { ...r, pf: { ...r.pf, src: ids.get(r.pf.src) } } : r), n = fix(o); if (n.runs) n.runs = n.runs.map(fix); return n; }) }));
   if (!pages.length) throw new Error('the project has no pages');
@@ -3673,6 +4216,7 @@ async function buildPdf(pages, onProgress) {
       for (let i = orig.length - 1; i >= 0; i--) out.removePage(i);
     }
   } else out = await L.PDFDocument.create();
+  for (const d of lib.values()) if (d) { try { ocrSweep(d); } catch (e) { console.warn('ocr data', errMsg(e)); } }
   const copies = new Map();
   for (const [sid, list] of used) {
     if (sid === primary) continue; const d = lib.get(sid); if (!d) continue;
@@ -3724,6 +4268,7 @@ async function buildPdf(pages, onProgress) {
     }
     if (pg.crop) { const Ti = inv(T), c = pg.crop, a = apply(Ti, c.x, c.y), b = apply(Ti, c.x + c.w, c.y + c.h); page.setCropBox(Math.min(a[0], b[0]), Math.min(a[1], b[1]), Math.abs(b[0] - a[0]), Math.abs(b[1] - a[1])); }
     if (objs.length) await paintObjs(page, pg, T, objs, cx);
+    if (pg.src) { try { await paintOcr(page, pg, T, cx, i); } catch (e) { console.warn('ocr layer', pg.idx + 1, errMsg(e)); warn.add('The recognized text of a scanned page could not be written into the PDF.'); } }
     if (onProgress && (i % 3 === 0 || i === pages.length - 1)) { onProgress(i + 1, pages.length); await nextFrame(); }
   }
   for (const u of cx.cfs.values()) if (u.used.size) u.finish();      // embedded fonts get exactly the glyphs that were drawn
@@ -3808,8 +4353,8 @@ async function textShows(pg) {
   const src = S.sources.get(pg.src); if (src.shows.has(pg.idx)) return src.shows.get(pg.idx);
   const pj = await getPdfPage(pg);
   const ol = await pj.getOperatorList({ annotationMode: PJ.AnnotationMode.DISABLE }), O = PJ.OPS, ID = [1, 0, 0, 1, 0, 0];
-  let st = { ctm: ID, tm: ID, x: 0, y: 0, lx: 0, ly: 0, fs: 0, dir: 1, fm: 0.001, cs: 0, ws: 0, hs: 1, lead: 0, rise: 0, vert: false, fn: null, fe: null, fill: '#000000', lw: 1 };
-  const stack = [], shows = [], starts = [], fills = [], glyphs = [], rules = [], topFonts = new Set(); let depth = 0, deep = 0;
+  let st = { ctm: ID, tm: ID, x: 0, y: 0, lx: 0, ly: 0, fs: 0, dir: 1, fm: 0.001, cs: 0, ws: 0, hs: 1, lead: 0, rise: 0, vert: false, fn: null, fe: null, fill: '#000000', lw: 1, mode: 0 };
+  const stack = [], shows = [], starts = [], fills = [], glyphs = [], rules = [], topFonts = new Set(), ghost = new Set(); let depth = 0, deep = 0;
   const arr6 = a => { const m = a.length === 1 ? a[0] : a; return [m[0], m[1], m[2], m[3], m[4], m[5]]; };
   const setFont = (name, size) => { const fe = fontEntry(src, pj, name); st.dir = size < 0 ? -1 : 1; st.fs = Math.abs(size); st.fm = fe.fm; st.vert = fe.vert; st.fn = name; st.fe = fe; };
   for (let i = 0; i < ol.fnArray.length; i++) {
@@ -3831,6 +4376,7 @@ async function textShows(pg) {
       case O.setHScale: st.hs = a[0] / 100; break;
       case O.setTextRise: st.rise = a[0]; break;
       case O.setLineWidth: st.lw = a[0]; break;
+      case O.setTextRenderingMode: st.mode = a[0]; break;
       case O.setFillRGBColor: if (typeof a[0] === 'string' && /^#[0-9a-f]{6}$/i.test(a[0])) st.fill = a[0].toLowerCase(); break;
       case O.constructPath: {         // thin drawn lines (table borders, separators) tell paragraphs and cells apart
         const mm = a && a[2]; if (!mm || a[0] === O.endPath || mm.length < 4) break;
@@ -3850,13 +4396,17 @@ async function textShows(pg) {
           if (st.fe) noteGlyph(st.fe, g);
           const x0 = x; x += g.width * was + ((g.isSpace ? st.ws : 0) + st.cs) * st.dir;
           const p = apply(M, sx + (x0 + x) / 2 * hs, sy), q = apply(M, sx + x0 * hs, sy);
-          run.push({ adv: x - x0, c: p }); starts.push(q); fills.push(st.fill); glyphs.push({ a: q, b: apply(M, sx + x * hs, sy), u: typeof g.unicode === 'string' ? g.unicode : '', sp: !!g.isSpace });
+          run.push({ adv: x - x0, c: p }); starts.push(q); fills.push(st.fill); if (st.mode === 3) ghost.add(Math.round(q[0]) + ':' + Math.round(q[1])); glyphs.push({ a: q, b: apply(M, sx + x * hs, sy), u: typeof g.unicode === 'string' ? g.unicode : '', sp: !!g.isSpace });
         }
         st.x += x * hs;
         if (depth === 0) { shows.push(rec); if (st.fn) topFonts.add(st.fn); } else deep++; break; }
     }
   }
-  const res = { shows, starts, fills, glyphs, topFonts, rules, deep }; src.shows.set(pg.idx, res); return res;
+  const res = { shows, starts, fills, glyphs, topFonts, rules, deep, ghost }; src.shows.set(pg.idx, res); return res;
+}
+async function ghostTest(pg) {      // tells whether text that starts at a point (in PDF units) is invisible; null when the page has no such text
+  const g = (await textShows(pg)).ghost; if (!g.size) return null;
+  return (x, y) => { const rx = Math.round(x), ry = Math.round(y); for (const dx of [0, -1, 1]) for (const dy of [0, -1, 1]) if (g.has((rx + dx) + ':' + (ry + dy))) return true; return false; };
 }
 function tokenizeContent(b) {      // text-showing operators with the byte ranges of their operands
   const n = b.length, shows = [], fstack = []; let i = 0, operands = [], curFont = null;
@@ -4096,7 +4646,7 @@ async function boot() {
     openFiles(await Promise.all(lp.files.map(h => h.getFile())), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });
