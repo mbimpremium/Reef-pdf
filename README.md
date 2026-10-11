@@ -13,7 +13,8 @@ Font yang ikut tertanam (Carlito, Caladea, Liberation Sans, Liberation Serif, Li
 | `index.html` | Aplikasinya (semua mesin PDF sudah tertanam) |
 | `manifest.webmanifest` | Membuat aplikasi bisa di-install dan mendaftarkannya sebagai pembuka `.pdf` |
 | `sw.js` | Membuat aplikasi tetap jalan tanpa internet setelah kunjungan pertama |
-| `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Ikon aplikasi |
+| `icon-*.png` | Logo aplikasi dalam beberapa ukuran |
+| `file-*.png` | Ikon yang dipakai file PDF di File Explorer setelah Reef PDF dijadikan pembuka PDF |
 | `FONT-LICENCES.txt` | Lisensi font yang ikut tertanam di aplikasi |
 
 ## 1. Unggah ke GitHub Pages
