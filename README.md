@@ -4,6 +4,7 @@ Editor PDF yang berjalan sepenuhnya di browser. File PDF diproses di komputer pe
 
 Copyright (c) 2026 Hasbi Robbani. All rights reserved.
 Pustaka sumber terbuka di dalamnya (pdf-lib, MIT; pdf.js, Apache 2.0) tetap mengikuti lisensinya masing-masing; teks lisensinya ada di kepala `index.html`.
+Font yang ikut tertanam (Carlito, Caladea, Liberation Sans, Liberation Serif, Liberation Mono) berlisensi SIL Open Font License 1.1; teksnya ada di `FONT-LICENCES.txt`.
 
 ## Isi folder
 
@@ -13,6 +14,7 @@ Pustaka sumber terbuka di dalamnya (pdf-lib, MIT; pdf.js, Apache 2.0) tetap meng
 | `manifest.webmanifest` | Membuat aplikasi bisa di-install dan mendaftarkannya sebagai pembuka `.pdf` |
 | `sw.js` | Membuat aplikasi tetap jalan tanpa internet setelah kunjungan pertama |
 | `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Ikon aplikasi |
+| `FONT-LICENCES.txt` | Lisensi font yang ikut tertanam di aplikasi |
 
 ## 1. Unggah ke GitHub Pages
 
@@ -33,6 +35,12 @@ Pustaka sumber terbuka di dalamnya (pdf-lib, MIT; pdf.js, Apache 2.0) tetap meng
 3. Saat pertama kali membuka, browser bertanya apakah Reef PDF boleh membuka file itu. Pilih izinkan dan centang agar diingat.
 
 Setiap PDF yang dibuka dengan cara ini tampil di jendela Reef PDF sendiri.
+
+## Font Microsoft Office
+
+Aplikasi membawa font yang ukurannya sama dengan font Office: Carlito (setara Calibri), Caladea (Cambria), Liberation Sans (Arial), Liberation Serif (Times New Roman), dan Liberation Mono (Courier New).
+
+Untuk memakai font Office yang asli (Calibri, Cambria, Aptos, Tahoma, dan lainnya) yang sudah ter-install di komputer: pilih sebuah teks, buka daftar **Font**, lalu pilih **Use the fonts installed on this computer…** dan izinkan saat browser bertanya. Ini hanya tersedia di Edge dan Chrome di komputer, dan hanya bila aplikasi dibuka dari alamat ini atau dari aplikasi yang sudah di-install. Font tetap berada di komputer; hanya huruf yang dipakai yang ditanam ke PDF yang diunduh.
 
 ## Memperbarui
 
