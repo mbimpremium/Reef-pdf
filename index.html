@@ -354,7 +354,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
       <button id="findNext" class="btn ico ghost" title="Next" aria-label="Next match"><i data-ic="chevd"></i></button>
     </div>
     <button id="btnPrint" class="btn ico" title="Print the document (Ctrl+P)" aria-label="Print"><i data-ic="print"></i></button>
-    <button id="btnSave" class="btn primary" title="Download the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Download PDF</span></button>
+    <button id="btnSave" class="btn primary" title="Save the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Save PDF</span></button>
   </header>
 
   <div id="tabs" class="doctabs" role="tablist" aria-label="Open documents"></div>
@@ -434,6 +434,10 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
   <div class="acts"><button class="btn" value="no" id="cfNo">Cancel</button><button class="btn primary" value="yes" id="cfYes">Continue</button></div>
 </form></dialog>
 
+<dialog id="dlgSave"><form method="dialog" class="dlg">
+  <h2>Save changes</h2><p id="svText"></p>
+  <div class="acts"><button class="btn" value="no" type="submit">Cancel</button><button class="btn" value="as" id="svAs" type="submit">Save as…</button><button class="btn primary" value="over" id="svOver" type="submit" autofocus>Overwrite</button></div>
+</form></dialog>
 <dialog id="dlgPass"><form method="dialog" class="dlg">
   <h2>This PDF is password protected</h2><p id="pwText">Enter the password to open it.</p>
   <input id="pwInput" class="ctl" type="password" autocomplete="off" aria-label="Password">
@@ -854,6 +858,7 @@ const S = {
   sources: new Map(),   // id -> {id,name,bytes,pdf,lines:Map,annots:Map,form:{},ocr:Map}
   assets: new Map(),    // id -> {id,mime,bytes,url,w,h}
   pages: [],            // [{id,src,idx,rot,w,h,objs:[]}]  src=null → blank page
+  handle: null,         // the file on this computer the document came from or was last saved to (File System Access), when the browser gives one
   sel: null,            // {pageId,objId}
   selPages: new Set(),
   tool: 'select',
@@ -3145,7 +3150,7 @@ window.addEventListener('keydown', ev => {
   const typing = ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
   if (mod && k === 'p' && !ev.altKey) { ev.preventDefault(); if (!document.querySelector('dialog[open]')) printDoc(); return; }      // the document, not the editor
   if (document.querySelector('dialog[open]')) return;
-  if (mod && k === 's') { ev.preventDefault(); doExport(); return; }
+  if (mod && k === 's') { ev.preventDefault(); saveDoc(ev.shiftKey ? 'as' : undefined); return; }
   if (mod && k === 'o') { ev.preventDefault(); pickOpen('replace'); return; }
   if (mod && k === 'f') { ev.preventDefault(); $('#findInput').focus(); $('#findInput').select(); return; }
   if (typing) return;
@@ -3440,7 +3445,7 @@ function renderProps(force) {
     if (S.tool === 'edittext') h += `<label class="check"><input type="checkbox" id="p_flow"${S.flow ? ' checked' : ''}><span>Move the rest of the page when a paragraph grows or shrinks</span></label>`;
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
-    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
+    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Save</span><b>Ctrl Shift S</b><span>Save as</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
     h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it. Convert rebuilds the document in Word, Excel or PowerPoint from what it can read on the pages: text, tables, lines and pictures. Charts and drawings stay pictures (in PowerPoint they form the background of each slide), and a line can wrap at a different word when a font is not installed on the computer that opens the file.</p>`;
   }
   body.innerHTML = h;
@@ -3646,7 +3651,19 @@ $('#pgExtract').addEventListener('click', () => { const t = targetPages(); doExp
 
 /* ---------- open / merge ---------- */
 let openMode = 'replace';
-function pickOpen(mode) { openMode = mode; const f = $('#fOpen'); f.value = ''; f.click(); }
+const fileHandles = new WeakMap();  // File → the handle it was read from
+const fsAccess = () => typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function' && window.self === window.top;      // not inside another site's frame
+async function pickOpen(mode) {
+  openMode = mode;
+  if (fsAccess()) {
+    let hs;
+    try { hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: 'PDF, pictures or Reef PDF projects', accept: { 'application/pdf': ['.pdf'], 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'], 'image/webp': ['.webp'], 'application/json': ['.json'] } }] }); }
+    catch (e) { if (e && e.name === 'AbortError') return; console.warn('file picker', e); hs = null; }
+    if (hs) { const files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })); if (files.length) openFiles(files, mode, S.cur + 1); return; }
+  }
+  const f = $('#fOpen'); f.value = ''; f.click();
+}
+const dropHandles = dt => [...(dt?.items || [])].filter(i => i.kind === 'file').map(i => (typeof i.getAsFileSystemHandle === 'function' ? i.getAsFileSystemHandle().catch(() => null) : Promise.resolve(null)));
 $('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1); });
 $('#btnOpen').addEventListener('click', () => pickOpen('replace'));
 $('#btnMerge').addEventListener('click', () => pickOpen('insert'));
@@ -3667,7 +3684,7 @@ async function openNow(list, mode, at) {
         continue;
       }
       const head = new Uint8Array(await f.slice(0, 1024).arrayBuffer()), isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name) || String.fromCharCode(...head.slice(0, 1024)).includes('%PDF-');
-      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); groups.push({ pages: src.pages, name: f.name }); }
+      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); groups.push({ pages: src.pages, name: f.name, handle: fileHandles.get(f) || null }); }
       else if (f.type.startsWith('image/')) {
         const a = await addAsset(f), land = a.w > a.h, pw = land ? A4[1] : A4[0], ph = land ? A4[0] : A4[1], k = Math.min(pw / a.w, ph / a.h), w = a.w * k, h = a.h * k;
         if (!pics) groups.push(pics = { pages: [], name: f.name.replace(/\.(png|jpe?g|webp|gif|bmp)$/i, '') + '.pdf' });
@@ -3696,9 +3713,9 @@ async function readMeta(pg) {
 stage.addEventListener('dragover', ev => { if ([...(ev.dataTransfer?.types || [])].includes('Files')) ev.preventDefault(); });
 stage.addEventListener('drop', ev => {
   const fs = ev.dataTransfer?.files; if (!fs || !fs.length) return; ev.preventDefault();
-  const imgs = [...fs].every(f => f.type.startsWith('image/'));
-  if (imgs && fs.length === 1) insertImage(fs[0]).catch(e => toast('The image could not be inserted: ' + errMsg(e), 'err'));
-  else openFiles(fs, 'replace');
+  const list = [...fs], imgs = list.every(f => f.type.startsWith('image/'));
+  if (imgs && list.length === 1) insertImage(list[0]).catch(e => toast('The image could not be inserted: ' + errMsg(e), 'err'));
+  else { const hp = dropHandles(ev.dataTransfer); Promise.all(hp).then(hs => { hs.forEach((h, i) => { if (h && h.kind === 'file' && list[i]) fileHandles.set(list[i], h); }); openFiles(list, 'replace'); }); }      // the handles let the files be saved over later
 });
 $('#fImg').addEventListener('change', ev => { const f = ev.target.files[0]; ev.target.value = ''; if (f) insertImage(f).catch(e => toast('The image could not be inserted: ' + errMsg(e), 'err')); });
 
@@ -3782,7 +3799,7 @@ $('#sigUse').addEventListener('click', async () => {
 $('#tools').addEventListener('click', ev => { const b = ev.target.closest('.tool[data-tool]'); if (b) setTool(b.dataset.tool); });
 $('#btnUndo').addEventListener('click', () => travel(-1));
 $('#btnRedo').addEventListener('click', () => travel(1));
-$('#btnSave').addEventListener('click', () => doExport());
+$('#btnSave').addEventListener('click', () => saveDoc());
 $('#docName').addEventListener('change', e => { let n = e.target.value.trim() || 'document.pdf'; if (!/\.pdf$/i.test(n)) n += '.pdf'; S.name = e.target.value = n; renderTabs(); });
 const narrow = () => window.matchMedia('(max-width:860px)').matches;
 $('#togThumbs').addEventListener('click', () => { $('#thumbs').hidden = !$('#thumbs').hidden; if (narrow() && !$('#thumbs').hidden) $('#props').hidden = true; });
@@ -4039,6 +4056,58 @@ async function relinkFonts() {      // pdf.js numbers fonts per session, so find
   }
 }
 
+/* ---------- Save: over the file the document came from, or as a new file ----------
+   Where the browser gives access to files on the computer (Chrome and Edge, not inside another site's frame), a document opened with Open,
+   dropped on the window or opened from the file manager keeps a handle to its file. Ctrl+S then asks: overwrite that file, or save as a new one.
+   Without such access (other browsers, the page shown inside another site) saving is a download, as before. */
+function askSave() {
+  return new Promise(res => {
+    const d = $('#dlgSave'); $('#svText').textContent = `Overwrite "${S.handle.name}" with the edited document, or save it as a new file?`;
+    d.returnValue = ''; d.addEventListener('close', () => res(d.returnValue === 'over' || d.returnValue === 'as' ? d.returnValue : null), { once: true }); d.showModal(); $('#svOver').focus();
+  });
+}
+const saveSize = n => { const kb = n / 1024; return kb > 1024 ? fmtNum(kb / 1024, 1) + ' MB' : fmtNum(kb) + ' KB'; };
+async function saveDoc(how) {       // how: 'over', 'as', or nothing to ask
+  if (exporting || OCR.running) return; if (S.editing) endEdit();
+  if (!fsAccess()) return doExport();
+  if (!how) { if (!S.handle) how = 'as'; else { how = await askSave(); if (!how) return; } }
+  if (how === 'over' && !S.handle) how = 'as';
+  /* first the file (the browser asks for it only right after a click or key), then the PDF */
+  let h = null;
+  try {
+    if (how === 'as') {
+      const base = (S.name || 'document.pdf').replace(/\.pdf$/i, '') || 'document';
+      h = await window.showSaveFilePicker({ suggestedName: base + '.pdf', id: 'reef-save', types: [{ description: 'PDF document', accept: { 'application/pdf': ['.pdf'] } }] });
+    } else {
+      h = S.handle;
+      const p = await h.queryPermission({ mode: 'readwrite' }).catch(() => 'prompt');
+      if (p !== 'granted' && (await h.requestPermission({ mode: 'readwrite' })) !== 'granted') throw Object.assign(new Error('not allowed'), { name: 'NotAllowedError' });
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;       // the save dialog was closed
+    if (how === 'over') toast(`Reef PDF was not allowed to change "${S.handle.name}". Nothing was saved.`, 'info', 9000, { label: 'Save as…', run: () => saveDoc('as') });
+    else { console.warn(e); doExport(); }           // no save dialog here: a download instead
+    return;
+  }
+  const docAt = docNow, pages = S.pages;
+  exporting = true; busy('Building PDF…'); await nextFrame();
+  try {
+    const { bytes, warn, rasterCount } = await buildPdf(pages, (i, n) => busy(`Building PDF… ${i}/${n}`));
+    busy('Saving…');
+    const w = await h.createWritable();
+    try { await w.write(new Blob([bytes], { type: 'application/pdf' })); await w.close(); }
+    catch (e) { try { await w.abort(); } catch { } throw e; }
+    if (docNow === docAt) { S.dirty = false; if (how === 'as') { S.handle = h; S.name = h.name; S.sample = false; $('#docName').value = h.name; } }
+    else if (docAt && docAt.st) { docAt.st.dirty = false; if (how === 'as') Object.assign(docAt.st, { handle: h, name: h.name, sample: false }); }
+    updateButtons();
+    const extra = (rasterCount ? `\n${rasterCount} page${rasterCount === 1 ? ' was' : 's were'} saved as an image.` : '') + (warn.length ? '\n' + warn.join('\n') : '');
+    toast(`${how === 'as' ? 'Saved as' : 'Saved to'} ${h.name} · ${pages.length} page${pages.length === 1 ? '' : 's'} · ${saveSize(bytes.length)}${extra}`, 'info', extra ? 9000 : 4600);
+  } catch (e) {
+    const busyFile = e && /NoModificationAllowed|InvalidState/.test(e.name || ''); if (!busyFile) console.error(e);
+    toast(busyFile ? `"${h.name}" could not be replaced. It may be open in another program: close it there and try again, or save as a new file.` : 'The PDF could not be saved: ' + errMsg(e), 'err', 10000, { label: 'Save as…', run: () => saveDoc('as') });
+  } finally { exporting = false; busy(false); }
+}
+
 /* ---------- several documents in one window, each on a tab ----------
    S always holds the document that is shown. The others wait in DOCS with their own pages, undo history, name, zoom and place on the page.
    The PDFs behind the pages (S.sources) and pictures (S.assets) are shared, and are let go when the last document that uses them closes. */
@@ -4048,10 +4117,10 @@ const tabsEl = $('#tabs');
 const docBusy = () => exporting || OCR.running;
 const docState = d => (d === docNow ? S : d.st);
 function docKeep() {
-  return { pages: S.pages, sel: S.sel, selPages: S.selPages, cur: S.cur, name: S.name, dirty: S.dirty, sample: S.sample, flatten: S.flatten, meta: S.meta, find: S.find, zoom: S.zoom, zoomMode: S.zoomMode, stack: H.stack, hi: H.i, top: stage.scrollTop, left: stage.scrollLeft };
+  return { pages: S.pages, sel: S.sel, selPages: S.selPages, cur: S.cur, name: S.name, handle: S.handle, dirty: S.dirty, sample: S.sample, flatten: S.flatten, meta: S.meta, find: S.find, zoom: S.zoom, zoomMode: S.zoomMode, stack: H.stack, hi: H.i, top: stage.scrollTop, left: stage.scrollLeft };
 }
 function docShow(st) {
-  Object.assign(S, { pages: st.pages, sel: st.sel, selPages: st.selPages, cur: st.cur, name: st.name, dirty: st.dirty, sample: st.sample, flatten: st.flatten, meta: st.meta, find: st.find });
+  Object.assign(S, { pages: st.pages, sel: st.sel, selPages: st.selPages, cur: st.cur, name: st.name, handle: st.handle || null, dirty: st.dirty, sample: st.sample, flatten: st.flatten, meta: st.meta, find: st.find });
   H.stack = st.stack; H.i = st.hi;
   $('#docName').value = S.name; $('#findInput').value = S.find.q || ''; $('#findCount').textContent = S.find.hits.length ? `${S.find.i + 1}/${S.find.hits.length}` : '';
   refresh();
@@ -4064,14 +4133,14 @@ function docSwitch(d) {
   docLeave(); docNow = d; const st = d.st; d.st = null; docShow(st);
 }
 function docStart(name, pages, sample) {      // a new, untouched document becomes the one that is shown
-  Object.assign(S, { pages, sel: null, selPages: new Set(), cur: 0, name, dirty: false, sample: !!sample, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
+  Object.assign(S, { pages, sel: null, selPages: new Set(), cur: 0, name, handle: null, dirty: false, sample: !!sample, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
   $('#docName').value = name; $('#findInput').value = ''; $('#findCount').textContent = '';
 }
 async function docOpen(g) {         // g: { pages, name, project } — in a new tab, or in place of the sample document
   let old = null;
   if (S.sample || !docNow) { if (S.editing) endEdit(); clearTsel(); old = docNow ? docKeep() : null; if (!docNow) DOCS.push(docNow = { id: uid('d'), st: null }); }
   else { docLeave(); DOCS.push(docNow = { id: uid('d'), st: null }); }
-  docStart(g.name, g.pages, false);
+  docStart(g.name, g.pages, false); S.handle = g.handle || null;
   if (g.project) { S.flatten = !!g.project.flatten; if (g.project.meta) Object.assign(S.meta, g.project.meta); await relinkFonts(); }
   else Object.assign(S.meta, await readMeta(g.pages.find(p => p.src)));
   resetHistory(); S.dirty = false; refresh();
@@ -5400,7 +5469,7 @@ async function boot() {
   await docSample(); busy(false);
   if ('launchQueue' in window) window.launchQueue.setConsumer(async lp => {     // when installed as a web app, PDFs opened from the file manager arrive here
     if (!lp.files || !lp.files.length) return;
-    openFiles(await Promise.all(lp.files.map(h => h.getFile())), 'replace');
+    openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
   globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };

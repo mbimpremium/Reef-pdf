@@ -77,6 +77,15 @@ Tombol **Convert** di toolbar mengubah dokumen yang sedang tampil, lengkap denga
 - Halaman hasil scan ditawari OCR dulu, supaya teksnya ikut bisa diedit. Kalau tidak, halaman itu masuk sebagai gambar.
 - Bagan dan gambar vektor tetap menjadi gambar. Bila font aslinya tidak ada di komputer yang membuka file, baris bisa terpotong di kata yang berbeda.
 
+## Simpan (Ctrl+S)
+
+**Save PDF** atau **Ctrl+S** menanyakan dua pilihan: **Overwrite** (menimpa file asli di tempatnya) atau **Save as…** (simpan sebagai file baru, pilih nama dan folder). **Ctrl+Shift+S** langsung ke Save as.
+
+- Menimpa file asli bisa untuk PDF yang dibuka dengan **Open**, diseret ke jendela, atau dibuka dari File Explorer, di Chrome dan Edge. Pertama kali, browser meminta izin untuk mengubah file itu.
+- Setelah Save as, tab itu mengikuti file barunya, jadi Ctrl+S berikutnya menimpa file baru tersebut.
+- Bila file sedang dibuka di program lain (misalnya Adobe Reader), penimpaan bisa gagal; tutup dulu di sana atau pakai Save as.
+- Di browser lain, atau saat Reef PDF dibuka di dalam halaman situs lain, menyimpan berarti mengunduh salinan seperti sebelumnya.
+
 ## Print
 
 Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman dokumen saja (lengkap dengan suntingan dan isian formulir), bukan tampilan editornya. Ukuran dan arah tiap halaman (portrait/landscape) ikut. Kalau print dibuka dari menu browser, yang tercetak hanya petunjuk untuk memakai tombol Print.
