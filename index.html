@@ -255,9 +255,7 @@ input[type="range"]{width:100%;accent-color:var(--accent)}
 
 /* ---------- status ---------- */
 .status{display:flex;align-items:center;gap:6px 18px;flex-wrap:wrap;padding:5px 16px;border-top:1px solid var(--line);background:var(--chrome);font-size:11px;color:var(--muted)}
-.status .lock{margin-left:auto;display:inline-flex;align-items:center;gap:5px}
-.status .lock .ic{width:13px;height:13px}
-.status .copy{white-space:nowrap}
+.status .copy{margin-left:auto;white-space:nowrap}
 
 /* ---------- dialogs, toasts ---------- */
 dialog{border:1px solid var(--line-2);border-radius:8px;background:var(--chrome);color:var(--ink);padding:0;width:min(560px,calc(100vw - 32px));box-shadow:var(--shadow)}
@@ -309,9 +307,21 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
   .docname{flex:1 1 0;max-width:none}
   #btnSave{order:1} .top .grp{order:2} .top .zoom{margin-left:auto}
   .zoom select{max-width:124px}
-  .status .lock{display:none} .status .copy{margin-left:auto}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* print: only the pages of the document (see 048-print.js) */
+#printArea{display:none}
+@media print{
+  html,body{background:#fff!important;margin:0!important;padding:0!important;height:auto!important;min-height:0!important;overflow:visible!important}
+  #app,body>input,dialog,.menu.pop,#toasts{display:none!important}
+  #printArea{display:block!important}
+  body.printing .print-note,body:not(.printing) #printPages{display:none!important}
+  .print-note{margin:2cm;font:14pt/1.4 system-ui,sans-serif;color:#000}
+  .pp{overflow:hidden;break-after:page;page-break-after:always;break-inside:avoid}
+  .pp:last-child{break-after:auto;page-break-after:auto}
+  .pp img{display:block;width:100%;height:100%;object-fit:fill}
+}
 
 </style>
 <div id="app" class="app">
@@ -343,6 +353,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
       <button id="findPrev" class="btn ico ghost" title="Previous" aria-label="Previous match"><i data-ic="chevu"></i></button>
       <button id="findNext" class="btn ico ghost" title="Next" aria-label="Next match"><i data-ic="chevd"></i></button>
     </div>
+    <button id="btnPrint" class="btn ico" title="Print the document (Ctrl+P)" aria-label="Print"><i data-ic="print"></i></button>
     <button id="btnSave" class="btn primary" title="Download the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Download PDF</span></button>
   </header>
 
@@ -369,6 +380,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     <button class="tool" data-tool="redact" title="Permanent redaction: content underneath is removed on download"><i data-ic="redact"></i><span>Redact</span></button>
     <span class="sep"></span>
     <button class="tool" id="btnOcr" title="Recognize the text of scanned pages (OCR), so it can be found, selected and edited" aria-haspopup="dialog"><i data-ic="ocr"></i><span>OCR</span></button>
+    <button class="tool" id="btnConvert" title="Convert the document to Word, Excel or PowerPoint" aria-haspopup="true"><i data-ic="convert"></i><span>Convert</span></button>
     <button class="tool" id="btnWm" title="Watermark" aria-haspopup="true"><i data-ic="drop"></i><span>Watermark</span></button>
     <button class="tool" id="btnMore" title="Header and footer, crop, form fields, split, export, properties" aria-haspopup="true"><i data-ic="more"></i><span>More</span></button>
     <button class="tool push" id="togThumbs" title="Pages panel" aria-label="Pages panel"><i data-ic="pages"></i></button>
@@ -407,7 +419,6 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     <span id="stPage">Page –</span>
     <span id="stSize" class="hide-s"></span>
     <span id="stPos" class="hide-s"></span>
-    <span class="lock"><i data-ic="lock"></i><span>Processed in this browser, files are never uploaded</span></span>
     <span class="copy">© 2026 Hasbi Robbani</span>
   </footer>
 </div>
@@ -533,6 +544,11 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
   <button data-wm="add" role="menuitem">Add or update watermark…</button>
   <button data-wm="remove" role="menuitem">Remove watermark</button>
 </div>
+<div class="menu pop" id="cvMenu" role="menu" hidden>
+  <button data-cv="docx" role="menuitem">Word document (.docx)</button>
+  <button data-cv="xlsx" role="menuitem">Excel workbook (.xlsx)</button>
+  <button data-cv="pptx" role="menuitem">PowerPoint slides (.pptx)</button>
+</div>
 <div class="menu pop" id="ctxMenu" role="menu" hidden></div>
 <div class="menu pop" id="moreMenu" role="menu" hidden>
   <button data-more="hf" role="menuitem">Header, footer and page numbers…</button>
@@ -550,6 +566,8 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 </div>
 
 <div id="toasts" aria-live="polite"></div>
+<div id="printArea" aria-hidden="true"><p class="print-note">To print the document, use the Print button in Reef PDF or press Ctrl+P.</p><div id="printPages"></div></div>
+<style id="printCss"></style>
 
 <!-- The PDF engine is embedded in the page (no CDN): pdf-lib 1.17.1 (MIT) and pdf.js 6.2.108 (Apache-2.0). -->
 <script>!function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"function"==typeof define&&define.amd?define(["exports"],e):e((t=t||self).PDFLib={})}(this,(function(t){"use strict";
@@ -815,6 +833,8 @@ const ICONS = {
   alignc: '<path d="M4 6h16M7 10h10M4 14h16M7 18h10"/>',
   alignr: '<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
   alignj: '<path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
+  print: '<path d="M7 9V4h10v5M7 17H5a1.500 1.500 0 01-1.500-1.500v-5A1.500 1.500 0 015 9h14a1.500 1.500 0 011.500 1.500v5A1.500 1.500 0 0119 17h-2"/><rect x="7" y="14" width="10" height="6" rx=".5"/>',
+  convert: '<path d="M6 3.500h6l3.500 3.500V11M12 3.500V7h3.500M6 3.500V20h4"/><path d="M14 14.500h6.500M18 12l2.500 2.500L18 17M20.500 19.500H14M16.500 17L14 19.500l2.500 2.500"/>',
   ocr: '<path d="M4 8.500V5h3.500M16.500 5H20v3.500M20 15.500V19h-3.500M7.500 19H4v-3.500"/><path d="M8.500 15.500L12 8l3.500 7.500M9.900 12.700h4.200"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -875,9 +895,12 @@ function busy(text, stop) {         // stop: a function makes the message carry 
 }
 const nextFrame = () => new Promise(r => requestAnimationFrame(() => r()));
 function confirmBox(title, text, yes = 'Continue') {
+  return askBox(title, text, yes).then(v => v === 'yes');
+}
+function askBox(title, text, yes, no) {     // with a label for the other button: 'yes', 'no', or null when the dialog is dismissed (Esc)
   return new Promise(res => {
-    const d = $('#dlgConfirm'); $('#cfTitle').textContent = title; $('#cfText').textContent = text; $('#cfYes').textContent = yes;
-    d.returnValue = 'no'; d.addEventListener('close', () => res(d.returnValue === 'yes'), { once: true }); d.showModal();
+    const d = $('#dlgConfirm'), n = $('#cfNo'); $('#cfTitle').textContent = title; $('#cfText').textContent = text; $('#cfYes').textContent = yes || 'Continue'; n.textContent = no || 'Cancel';
+    d.returnValue = no ? '' : 'no'; d.addEventListener('close', () => { n.textContent = 'Cancel'; res(d.returnValue === 'yes' ? 'yes' : d.returnValue === 'no' ? 'no' : null); }, { once: true }); d.showModal();
   });
 }
 function askPassword(wrong) {
@@ -1754,7 +1777,7 @@ async function getParas(pg) {
   try {
     const sh = await textShows(pg), T = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) }).transform; top = sh.topFonts;
     sh.starts.forEach((q, i) => { const k = hk(q[0], q[1]); if (!hue.has(k)) hue.set(k, sh.fills[i]); });
-    rules = sh.rules.map(q => { const a = apply(T, q[0], q[1]), b = apply(T, q[2], q[3]), x = Math.min(a[0], b[0]), y = Math.min(a[1], b[1]), w = Math.abs(b[0] - a[0]), h = Math.abs(b[1] - a[1]); return { x, y, w, h, hor: w >= h }; });
+    rules = sh.rules.map(q => { const a = apply(T, q[0], q[1]), b = apply(T, q[2], q[3]), x = Math.min(a[0], b[0]), y = Math.min(a[1], b[1]), w = Math.abs(b[0] - a[0]), h = Math.abs(b[1] - a[1]); return { x, y, w, h, hor: w >= h, col: q[4] || '#000000' }; });
   } catch (e) { console.warn('fonts', errMsg(e)); }
   { const oc = src.ocr && src.ocr.get(key); if (oc && oc.rules) for (const q of oc.rules) rules.push({ x: q[0], y: q[1], w: q[2], h: q[3], hor: q[2] >= q[3] }); }      // lines found on a scanned page
   const pfOf = (fn, hs) => { const fe = src.fonts.get(fn); return top && fe && !fe.bad && top.has(fn) ? { src: pg.src, n: fn, fname: fe.name, fam: fe.fam, wt: fe.wt, st: fe.st, label: fe.label, hs: hs || 1 } : null; };
@@ -2857,7 +2880,7 @@ function startEdit(pg, o, selectAll, pt) {
     else if (ev.key === 'Enter' && !PLAIN) { ev.preventDefault(); document.execCommand('insertLineBreak'); }
     else if (mod && (k === 'b' || k === 'i')) { ev.preventDefault(); if (styleSelection({ [k === 'b' ? 'bold' : 'italic']: 'toggle' })) renderProps(true); }
     else if (mod && hasPf && (ev.key === 'ArrowLeft' || ev.key === 'ArrowRight')) { ev.preventDefault(); wordMove(e, o, ev.key === 'ArrowRight' ? 1 : -1, ev.shiftKey); }
-    else if (mod && k === 's') return;     // let Ctrl+S reach the app
+    else if (mod && (k === 's' || k === 'p')) return;     // let Ctrl+S and Ctrl+P reach the app
     ev.stopPropagation();
   });
   if (!PLAIN) e.addEventListener('paste', ev => { ev.preventDefault(); document.execCommand('insertText', false, ev.clipboardData.getData('text/plain')); });
@@ -3120,6 +3143,7 @@ const TOOL_KEYS = { v: 'select', e: 'edittext', t: 'text', h: 'mark', p: 'ink', 
 window.addEventListener('keydown', ev => {
   const mod = ev.ctrlKey || ev.metaKey, k = ev.key.toLowerCase(), ae = document.activeElement;
   const typing = ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+  if (mod && k === 'p' && !ev.altKey) { ev.preventDefault(); if (!document.querySelector('dialog[open]')) printDoc(); return; }      // the document, not the editor
   if (document.querySelector('dialog[open]')) return;
   if (mod && k === 's') { ev.preventDefault(); doExport(); return; }
   if (mod && k === 'o') { ev.preventDefault(); pickOpen('replace'); return; }
@@ -3416,8 +3440,8 @@ function renderProps(force) {
     if (S.tool === 'edittext') h += `<label class="check"><input type="checkbox" id="p_flow"${S.flow ? ' checked' : ''}><span>Move the rest of the page when a paragraph grows or shrinks</span></label>`;
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
-    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
-    h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it.</p>`;
+    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Download PDF</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
+    h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it. Convert rebuilds the document in Word, Excel or PowerPoint from what it can read on the pages: text, tables, lines and pictures. Charts and drawings stay pictures (in PowerPoint they form the background of each slide), and a line can wrap at a different word when a font is not installed on the computer that opens the file.</p>`;
   }
   body.innerHTML = h;
 }
@@ -4124,6 +4148,598 @@ window.addEventListener('keydown', ev => {       // Ctrl+Tab steps through the d
   ev.preventDefault(); docSwitch(DOCS[(DOCS.indexOf(docNow) + (ev.shiftKey ? DOCS.length - 1 : 1)) % DOCS.length]);
 });
 
+/* ---------- Print: only the document, not the editor around it ----------
+   The finished document (every edit, form fields filled in) is drawn page by page as pictures at print resolution and handed to the browser's
+   print dialog; while that dialog is open, only those pages are shown to the printer. Printing from the browser's own menu, which cannot wait
+   for the pages to be drawn, prints a note pointing to Print instead of the editor. */
+const printArea = $('#printArea'), printPages = $('#printPages'), printCss = $('#printCss');
+let printUrls = [];
+function printClear() {
+  document.body.classList.remove('printing'); printPages.textContent = ''; printCss.textContent = '';
+  for (const u of printUrls) URL.revokeObjectURL(u); printUrls = [];
+}
+async function printDoc() {
+  if (exporting || OCR.running) return; if (S.editing) endEdit();
+  printClear(); exporting = true; busy('Preparing to print…'); await nextFrame();
+  let ready = false;
+  try {
+    const doc = await PJ.getDocument({ data: (await convBytes()).slice(), BinaryDataFactory: EmbeddedData, useWorkerFetch: false, useSystemFonts: true, verbosity: 0 }).promise;
+    try {
+      const n = doc.numPages, dpi = n <= 20 ? 240 : n <= 60 ? 180 : 130, sizes = new Map(); let css = '';
+      for (let i = 1; i <= n; i++) {
+        busy(`Preparing to print… page ${i} of ${n}`); await nextFrame();
+        const pj = await doc.getPage(i), v1 = pj.getViewport({ scale: 1 }), w = +v1.width.toFixed(2), h = +v1.height.toFixed(2);
+        let s = dpi / 72; if (w * h * s * s > 20e6) s = Math.sqrt(20e6 / (w * h));
+        const vp = pj.getViewport({ scale: s }), c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+        await pj.render({ canvas: c, viewport: vp, intent: 'print' }).promise;
+        let blob = await new Promise(r => c.toBlob(r, 'image/png'));
+        if (blob && blob.size > 1.5e6) blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.92)) || blob;      // photos and scans: smaller as JPEG
+        c.width = c.height = 1; pj.cleanup();
+        if (!blob) throw new Error('page ' + i + ' could not be drawn');
+        const key = `${w}x${h}`; if (!sizes.has(key)) { const nm = 'rp' + sizes.size; sizes.set(key, nm); css += `@page ${nm}{size:${w}pt ${h}pt;margin:0}.pp.${nm}{page:${nm};width:${w}pt;height:${Math.max(1, h - 0.4)}pt}`; if (sizes.size === 1) css = `@page{size:${w}pt ${h}pt;margin:0}` + css; }
+        const url = URL.createObjectURL(blob), img = new Image(); printUrls.push(url); img.alt = ''; img.src = url; await img.decode().catch(() => { });
+        const box = mk('div', 'pp ' + sizes.get(key)); box.append(img); printPages.append(box);
+      }
+      printCss.textContent = `@media print{${css}}`; ready = n > 0;
+    } finally { doc.loadingTask.destroy(); }
+  } catch (e) { console.error(e); toast('The document could not be prepared for printing: ' + errMsg(e), 'err', 8000); }
+  finally { exporting = false; busy(false); }
+  if (!ready) { printClear(); return; }
+  document.body.classList.add('printing');
+  let opened = false; const seen = () => { opened = true; };
+  window.addEventListener('beforeprint', seen, { once: true });
+  window.addEventListener('afterprint', printClear, { once: true });
+  try { window.print(); } catch { }
+  window.removeEventListener('beforeprint', seen);
+  if (!opened) {        // the page is not allowed to open the print dialog here (for example inside another site)
+    window.removeEventListener('afterprint', printClear); printClear();
+    toast('The print dialog cannot be opened from here. Download the PDF and print it from your PDF viewer.', 'info', 10000, { label: 'Download PDF', run: () => doExport() });
+  }
+}
+$('#btnPrint').addEventListener('click', () => printDoc());
+
+/* ---------- Convert: the document as a Word, Excel or PowerPoint file ----------
+   The finished PDF (with every edit) is read again the way Edit text reads a page: paragraphs with their fonts, sizes, weights, colours,
+   alignment, indents and line spacing; drawn lines that form tables; pictures. From that a .docx, .xlsx or .pptx is written here. */
+const XE = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g, '');
+const XML = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+const tw = v => Math.round(v * 20), emu = v => Math.round(v * 12700);
+
+async function zipPack(files) {     // a .zip with compressed entries, as Office writes them
+  const enc = new TextEncoder(), out = [], central = [], d = new Date(); let off = 0;
+  const time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1), date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const f of files) {
+    const raw = typeof f.data === 'string' ? enc.encode(f.data) : f.data, nm = enc.encode(f.name), crc = crc32(raw);
+    let body = raw, method = 0;
+    if (!f.stored && typeof CompressionStream === 'function') { try { body = new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer()); method = 8; } catch { body = raw; method = 0; } }
+    const h = new DataView(new ArrayBuffer(30)), c = new DataView(new ArrayBuffer(46));
+    h.setUint32(0, 0x04034b50, true); h.setUint16(4, 20, true); h.setUint16(6, 0x0800, true); h.setUint16(8, method, true); h.setUint16(10, time, true); h.setUint16(12, date, true);
+    h.setUint32(14, crc, true); h.setUint32(18, body.length, true); h.setUint32(22, raw.length, true); h.setUint16(26, nm.length, true);
+    c.setUint32(0, 0x02014b50, true); c.setUint16(4, 20, true); c.setUint16(6, 20, true); c.setUint16(8, 0x0800, true); c.setUint16(10, method, true); c.setUint16(12, time, true); c.setUint16(14, date, true);
+    c.setUint32(16, crc, true); c.setUint32(20, body.length, true); c.setUint32(24, raw.length, true); c.setUint16(28, nm.length, true); c.setUint32(42, off, true);
+    out.push(new Uint8Array(h.buffer), nm, body); central.push(new Uint8Array(c.buffer), nm); off += 30 + nm.length + body.length;
+  }
+  const csize = central.reduce((a, p) => a + p.length, 0), e = new DataView(new ArrayBuffer(22));
+  e.setUint32(0, 0x06054b50, true); e.setUint16(8, files.length, true); e.setUint16(10, files.length, true); e.setUint32(12, csize, true); e.setUint32(16, off, true);
+  return new Uint8Array(await new Blob([...out, ...central, new Uint8Array(e.buffer)]).arrayBuffer());
+}
+
+/* ---------- reading the finished document ---------- */
+async function convBytes() {        // the document with all edits, form fields flattened into the pages (their boxes and what was filled in become page content)
+  const keep = S.flatten; S.flatten = true;
+  try { return (await buildPdf(S.pages)).bytes; } finally { S.flatten = keep; }
+}
+async function convSource() {       // ... opened as a PDF of its own for reading (not shown, not in a tab)
+  return addSource((S.name || 'document.pdf'), await convBytes());
+}
+function convDrop(src) { S.sources.delete(src.id); try { src.pdf.loadingTask.destroy(); } catch { } }
+function findTables(rules, W, Hh) { // drawn lines that cross each other form a grid: a table
+  const H = [], Vl = [];
+  for (const q of rules || []) { if (q.hor) H.push({ y: q.y + q.h / 2, a: q.x, b: q.x + q.w, t: q.h, c: q.col }); else Vl.push({ x: q.x + q.w / 2, a: q.y, b: q.y + q.h, t: q.w, c: q.col }); }
+  const join = (list, k) => {
+    list.sort((p, q) => p[k] - q[k] || p.a - q.a); const out = [];
+    for (const l of list) { const m = out.find(o => Math.abs(o[k] - l[k]) <= 1.2 && l.a <= o.b + 2.5 && l.b >= o.a - 2.5); if (m) { m.a = Math.min(m.a, l.a); m.b = Math.max(m.b, l.b); m.t = Math.max(m.t, l.t); } else out.push({ ...l }); }
+    return out;
+  };
+  const hs = join(H, 'y'), vs = join(Vl, 'x'), all = [...hs.map(l => ({ l, h: true })), ...vs.map(l => ({ l, h: false }))], up = all.map((_, i) => i);
+  const root = i => { while (up[i] !== i) i = up[i] = up[up[i]]; return i; };
+  const hit = (h, v) => v.x >= h.a - 2.5 && v.x <= h.b + 2.5 && h.y >= v.a - 2.5 && h.y <= v.b + 2.5;
+  for (let i = 0; i < hs.length; i++) for (let j = 0; j < vs.length; j++) if (hit(hs[i], vs[j])) up[root(i)] = root(hs.length + j);
+  const groups = new Map(); all.forEach((e, i) => { const r = root(i); if (!groups.has(r)) groups.set(r, []); groups.get(r).push(e); });
+  const cluster = (vals, tol) => { const s = [...vals].sort((a, b) => a - b), out = []; for (const v of s) { const c = out[out.length - 1]; if (c && v - c.last <= tol) { c.sum += v; c.n++; c.last = v; } else out.push({ sum: v, n: 1, last: v }); } return out.map(c => c.sum / c.n); };
+  const tables = [];
+  for (const g of groups.values()) {
+    const gh = g.filter(e => e.h).map(e => e.l), gv = g.filter(e => !e.h).map(e => e.l); if (gh.length < 2 || gv.length < 2) continue;
+    const xs = cluster(gv.map(v => v.x), 2.5), ys = cluster(gh.map(h => h.y), 2.5); if (xs.length < 2 || ys.length < 2) continue;
+    if (xs.length === 2 && ys.length === 2 && (xs[1] - xs[0]) * (ys[1] - ys[0]) > W * Hh * 0.45) continue;      // a frame around the whole page, not a table
+    const hasV = (x, ya, yb) => { const m = (ya + yb) / 2; return gv.find(v => Math.abs(v.x - x) <= 2.5 && v.a <= m && v.b >= m) || null; };       // the line there, if any
+    const hasH = (y, xa, xb) => { const m = (xa + xb) / 2; return gh.find(h => Math.abs(h.y - y) <= 2.5 && h.a <= m && h.b >= m) || null; };
+    const R = ys.length - 1, C = xs.length - 1, own = Array.from({ length: R }, () => Array(C).fill(null)), cells = [];
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      if (own[r][c]) continue; let cs = 1; while (c + cs < C && !hasV(xs[c + cs], ys[r], ys[r + 1])) cs++;
+      const above = r > 0 ? own[r - 1][c] : null;
+      if (above && above.c === c && above.cs === cs && !hasH(ys[r], xs[c], xs[c + cs])) { above.rs++; for (let k = 0; k < cs; k++) own[r][c + k] = above; continue; }
+      const cell = { r, c, rs: 1, cs, paras: [], top: hasH(ys[r], xs[c], xs[c + cs]), left: hasV(xs[c], ys[r], ys[r + 1]) }; cells.push(cell);
+      for (let k = 0; k < cs; k++) own[r][c + k] = cell;
+    }
+    for (const cell of cells) { const r1 = cell.r + cell.rs, c1 = cell.c + cell.cs; cell.bottom = hasH(ys[r1], xs[cell.c], xs[c1]); cell.right = hasV(xs[c1], ys[cell.r], ys[r1]); }
+    tables.push({ xs, ys, own, cells, x: xs[0], r: xs[C], y: ys[0], b: ys[R] });
+  }
+  return tables.filter(t => !tables.some(o => o !== t && o.x <= t.x + 1 && o.r >= t.r - 1 && o.y <= t.y + 1 && o.b >= t.b - 1 && (o.r - o.x) * (o.b - o.y) > (t.r - t.x) * (t.b - t.y)));      // a box inside a table cell is part of that cell
+}
+function cellAt(t, x, y) {
+  if (x < t.x - 1 || x > t.r + 1 || y < t.y - 1 || y > t.b + 1) return null;
+  let r = t.ys.findIndex((v, i) => i < t.ys.length - 1 && y >= v && y < t.ys[i + 1]), c = t.xs.findIndex((v, i) => i < t.xs.length - 1 && x >= v && x < t.xs[i + 1]);
+  if (r < 0) r = y < t.ys[0] ? 0 : t.ys.length - 2; if (c < 0) c = x < t.xs[0] ? 0 : t.xs.length - 2;
+  return t.own[r][c];
+}
+async function pageImages(pg, T) {  // pictures on the page, where they are shown, as PNG or JPEG
+  const pj = await getPdfPage(pg), ol = await pj.getOperatorList({ annotationMode: PJ.AnnotationMode.DISABLE }), O = PJ.OPS, out = [], ID = [1, 0, 0, 1, 0, 0];
+  let ctm = ID; const stack = [];
+  const arr6 = a => { const m = a.length === 1 ? a[0] : a; return [m[0], m[1], m[2], m[3], m[4], m[5]]; };
+  const objOf = id => new Promise(res => { const store = String(id).startsWith('g_') ? pj.commonObjs : pj.objs; let done = false; const t = setTimeout(() => { if (!done) { done = true; res(null); } }, 4000); try { store.get(id, v => { if (!done) { done = true; clearTimeout(t); res(v); } }); } catch { clearTimeout(t); res(null); } });
+  const place = (img, m) => {
+    const pts = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([u, v]) => apply(T, ...apply(m, u, v))), xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+    const x = Math.min(...xs), y = Math.min(...ys), w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+    const p00 = apply(T, ...apply(m, 0, 0)), p01 = apply(T, ...apply(m, 0, 1)), p10 = apply(T, ...apply(m, 1, 0));      // the first row of an image is its top (v = 1)
+    if (w >= 6 && h >= 6 && out.length < 60) out.push({ img, x, y, w, h, flipV: p01[1] > p00[1], flipH: p10[0] < p00[0] });
+  };
+  for (let i = 0; i < ol.fnArray.length; i++) {
+    const a = ol.argsArray[i];
+    switch (ol.fnArray[i]) {
+      case O.save: stack.push(ctm); break;
+      case O.restore: if (stack.length) ctm = stack.pop(); break;
+      case O.transform: ctm = mul(ctm, arr6(a)); break;
+      case O.paintFormXObjectBegin: stack.push(ctm); if (a && a[0]) ctm = mul(ctm, arr6([a[0]])); break;
+      case O.paintFormXObjectEnd: if (stack.length) ctm = stack.pop(); break;
+      case O.paintImageXObject: { const im = await objOf(a[0]); if (im) place(im, ctm); break; }
+      case O.paintInlineImageXObject: if (a && a[0]) place(a[0], ctm); break;
+    }
+  }
+  const res = [];
+  for (const q of out) {
+    const im = q.img, iw = im.width, ih = im.height; if (!(iw > 0 && ih > 0)) continue;
+    const c = document.createElement('canvas'), k = Math.min(1, 2400 / Math.max(iw, ih)); c.width = Math.max(1, Math.round(iw * k)); c.height = Math.max(1, Math.round(ih * k)); const g = c.getContext('2d');
+    let alpha = false;
+    try {
+      if (im.bitmap) g.drawImage(im.bitmap, 0, 0, c.width, c.height);
+      else if (im.data) {
+        const id = new ImageData(iw, ih), d = id.data, s = im.data, n = iw * ih;
+        if (im.kind === 3) { d.set(s.subarray(0, n * 4)); for (let j = 3; j < n * 4; j += 4) if (d[j] < 255) { alpha = true; break; } }
+        else if (im.kind === 2) for (let j = 0, p = 0; j < n; j++, p += 3) { d[j * 4] = s[p]; d[j * 4 + 1] = s[p + 1]; d[j * 4 + 2] = s[p + 2]; d[j * 4 + 3] = 255; }
+        else if (im.kind === 1) { const rb = (iw + 7) >> 3; for (let y = 0; y < ih; y++) for (let x = 0; x < iw; x++) { const v = (s[y * rb + (x >> 3)] >> (7 - (x & 7))) & 1 ? 255 : 0, j = (y * iw + x) * 4; d[j] = d[j + 1] = d[j + 2] = v; d[j + 3] = 255; } }
+        else continue;
+        const t0 = document.createElement('canvas'); t0.width = iw; t0.height = ih; t0.getContext('2d').putImageData(id, 0, 0); g.drawImage(t0, 0, 0, c.width, c.height);
+      } else continue;
+      if (im.bitmap) { const d = g.getImageData(0, 0, Math.min(c.width, 64), Math.min(c.height, 64)).data; for (let j = 3; j < d.length; j += 4) if (d[j] < 255) { alpha = true; break; } }
+    } catch { continue; }
+    if (q.flipV || q.flipH) { const f = document.createElement('canvas'); f.width = c.width; f.height = c.height; const fg = f.getContext('2d'); fg.translate(q.flipH ? c.width : 0, q.flipV ? c.height : 0); fg.scale(q.flipH ? -1 : 1, q.flipV ? -1 : 1); fg.drawImage(c, 0, 0); g.clearRect(0, 0, c.width, c.height); g.drawImage(f, 0, 0); }
+    const jpg = !alpha && c.width * c.height > 90000, blob = await new Promise(r => c.toBlob(r, jpg ? 'image/jpeg' : 'image/png', 0.9));
+    if (blob) res.push({ x: q.x, y: q.y, w: q.w, h: q.h, ext: jpg ? 'jpeg' : 'png', bytes: new Uint8Array(await blob.arrayBuffer()) });
+    c.width = c.height = 1;
+  }
+  return res;
+}
+const paraText = P => P.runs.map(r => r.t).join('').replace(/​/g, '').replace(/[ \t]+$/, '');
+async function readPage(pg) {       // paragraphs, tables, lines and pictures of one page of the finished document
+  const pj = await getPdfPage(pg), T = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) }).transform;
+  const got = await getParas(pg), paras = got.filter(P => paraText(P).trim()), rules = got.rules || [], tables = findTables(rules, pg.w, pg.h);
+  const free = [];
+  for (const P of paras) { const cx = (P.x + P.r) / 2, cy = (P.y + P.b) / 2; let cell = null; for (const t of tables) if ((cell = cellAt(t, cx, cy))) break; if (cell) cell.paras.push(P); else free.push(P); }
+  const tlines = new Set(); for (const t of tables) for (const q of rules) if (q.x >= t.x - 3 && q.x + q.w <= t.r + 3 && q.y >= t.y - 3 && q.y + q.h <= t.b + 3) tlines.add(q);
+  const seps = rules.filter(q => q.hor && !tlines.has(q) && q.w >= pg.w * 0.25);
+  let images = [];
+  try { images = await pageImages(pg, T); } catch (e) { console.warn('pictures', errMsg(e)); }
+  if (hasOcr(pg)) images = images.filter(im => im.w * im.h < pg.w * pg.h * 0.55);      // the scan itself: its text was recognised
+  return { W: pg.w, H: pg.h, paras, free, tables, seps, images };
+}
+async function scanCheck() {        // pages that are pictures of text: offer to read them first
+  const scans = []; for (const pg of S.pages) if (await scanKind(pg)) scans.push(pg);
+  if (!scans.length || !OCRCFG) return true;
+  const ans = await askBox('Some pages are scans', `${scans.length === 1 ? 'One page is' : scans.length + ' pages are'} only a picture of text. Read the text first, so it becomes editable in the converted file? Otherwise ${scans.length === 1 ? 'that page goes in' : 'those pages go in'} as a picture.`, 'Read the text first', 'Keep as pictures');
+  if (!ans) return false;
+  if (ans === 'yes') { const r = await runOcr(scans, (() => { try { return localStorage.getItem('reef.ocr.lang') || 'ind+eng'; } catch { return 'ind+eng'; } })()); if (!r || OCR.stop) return false; }
+  return true;
+}
+
+/* ---------- Word ---------- */
+const WFONT = { timesnewroman: 'Times New Roman', times: 'Times New Roman', timesroman: 'Times New Roman', arial: 'Arial', helvetica: 'Arial', couriernew: 'Courier New', courier: 'Courier New', carlito: 'Calibri', caladea: 'Cambria', liberationsans: 'Arial', liberationserif: 'Times New Roman', liberationmono: 'Courier New', arimo: 'Arial', tinos: 'Times New Roman', cousine: 'Courier New', segoeui: 'Segoe UI', bookmanoldstyle: 'Bookman Old Style', bookantiqua: 'Book Antiqua', centurygothic: 'Century Gothic', palatinolinotype: 'Palatino Linotype', trebuchetms: 'Trebuchet MS', comicsansms: 'Comic Sans MS', franklingothicmedium: 'Franklin Gothic Medium', lucidasansunicode: 'Lucida Sans Unicode', arialnarrow: 'Arial Narrow', arialblack: 'Arial Black', calibrilight: 'Calibri Light' };
+function wordFont(r) {
+  let n = r.pf && r.pf.fname ? String(r.pf.fname).replace(/^[A-Z]{6}\+/, '').split(/[-,]/)[0].replace(/(PSMT|PS|MT)$/, '') : '';
+  const k = n.toLowerCase().replace(/[\s_]/g, '');
+  if (WFONT[k]) return WFONT[k];
+  if (n && !/^(f\d+|t\d+|font\d*|glyphless.*)$/i.test(n)) return n.replace(/([a-z])([A-Z])/g, '$1 $2');
+  if (r.font === 'sans') return 'Arial'; if (r.font === 'serif') return 'Times New Roman'; if (r.font === 'mono') return 'Courier New';
+  const fam = cfFamily(r.font); return WFONT[cfKey(fam ? fam.name : r.font).replace(/[\s_]/g, '')] || (fam && fam.like) || r.font || 'Calibri';
+}
+function wRun(r, text) {
+  const t = text.replace(/​/g, ''); if (!t) return '';
+  const f = XE(wordFont(r)), col = r.col && /^#[0-9a-f]{6}$/i.test(r.col) && !/^#(000000|111111)$/i.test(r.col) ? `<w:color w:val="${r.col.slice(1).toUpperCase()}"/>` : '';
+  const pos = r.rise ? `<w:position w:val="${Math.round(r.rise * 2)}"/>` : '', sz = Math.max(2, Math.round((r.size || 11) * 2));
+  return `<w:r><w:rPr><w:rFonts w:ascii="${f}" w:hAnsi="${f}" w:cs="${f}"/>${r.bold ? '<w:b/><w:bCs/>' : ''}${r.italic ? '<w:i/><w:iCs/>' : ''}${col}${pos}<w:sz w:val="${sz}"/><w:szCs w:val="${sz}"/></w:rPr><w:t xml:space="preserve">${XE(t)}</w:t></w:r>`;
+}
+const JC = { left: 'left', center: 'center', right: 'right', justify: 'both' };
+function wPara(P, o) {              // o: { before, L, R (the text area), cell }
+  const lead = P.lines.length > 1 && P.lead > 0 ? P.lead : P.size * 1.2;
+  let ind = '';
+  if (!o.cell) {
+    let il = 0, ir = 0, fl = 0;
+    if (P.align === 'center') { const c = (P.x + P.r) / 2; il = 2 * c - o.R - o.L; if (il < 0) { ir = -il; il = 0; } }
+    else if (P.align === 'right') ir = Math.max(0, o.R - P.r);
+    else { il = Math.max(0, (P.lines.length > 1 ? P.left : P.x) - o.L); fl = P.lines.length > 1 ? P.ti || 0 : 0; if (P.lines.length > 1) ir = P.align === 'justify' ? Math.max(0, o.R - P.r - 0.8) : o.R - P.r > 12 ? o.R - P.r - 3 : 0; }
+    if (il > 0.5 || ir > 0.5 || Math.abs(fl) > 0.5) ind = `<w:ind w:left="${tw(il)}" w:right="${tw(ir)}"${fl > 0.5 ? ` w:firstLine="${tw(fl)}"` : fl < -0.5 ? ` w:hanging="${tw(Math.min(-fl, il))}"` : ''}/>`;
+  }
+  const runs = P.runs.map(r => wRun(r, r.t)).join('');
+  return `<w:p><w:pPr><w:spacing w:before="${tw(Math.max(0, o.before || 0))}" w:after="0" w:line="${tw(lead)}" w:lineRule="exact"/>${ind}<w:jc w:val="${JC[P.align] || 'left'}"/></w:pPr>${runs}</w:p>`;
+}
+const wMain = list => list.reduce((m, P) => (paraText(P).length * P.size > paraText(m).length * m.size ? P : m), list[0]);      // the piece that sets the baseline
+function wOneLine(list) {           // single lines side by side, on one baseline or raised a little (a footnote mark), not overlapping
+  if (!list.every(P => P.lines.length === 1)) return false;
+  const s = [...list].sort((a, b) => a.x - b.x), main = wMain(s), b0 = main.lines[0].base;
+  for (let i = 1; i < s.length; i++) if (s[i].x < s[i - 1].r - 1) return false;
+  return s.every(P => Math.abs(P.lines[0].base - b0) < (P === main ? 0.1 : Math.max(2.5, Math.min(P.size, main.size) * 0.55)));
+}
+function wTabs(list, o) {           // single lines side by side on one baseline: one paragraph with tab stops
+  const s = [...list].sort((a, b) => a.x - b.x), stops = [], parts = [], b0 = wMain(s).lines[0].base;
+  s.forEach((P, i) => {
+    const kind = P.align === 'right' ? 'right' : P.align === 'center' ? 'center' : 'left', pos = kind === 'right' ? P.r : kind === 'center' ? (P.x + P.r) / 2 : P.x;
+    if (i || pos - o.L > 1) { stops.push(`<w:tab w:val="${kind}" w:pos="${tw(Math.max(0, pos - o.L))}"/>`); parts.push('<w:r><w:tab/></w:r>'); }
+    const up = b0 - P.lines[0].base; parts.push(P.runs.map(r => wRun(Math.abs(up) > 0.4 ? { ...r, rise: (r.rise || 0) + up } : r, r.t)).join(''));
+  });
+  const size = Math.max(...s.map(P => P.size));
+  return `<w:p><w:pPr>${stops.length ? `<w:tabs>${stops.join('')}</w:tabs>` : ''}<w:spacing w:before="${tw(Math.max(0, o.before || 0))}" w:after="0" w:line="${tw(size * 1.2)}" w:lineRule="exact"/></w:pPr>${parts.join('')}</w:p>`;
+}
+const wEmpty = (before, line = 1) => `<w:p><w:pPr><w:spacing w:before="${tw(Math.max(0, before))}" w:after="0" w:line="${tw(line)}" w:lineRule="exact"/></w:pPr></w:p>`;
+const wBlocks = (paras, tables = [], seps = []) => [...paras.map(P => ({ k: 'p', P, x: P.x, r: P.r, y: P.y, b: P.b })), ...tables.map(t => ({ k: 't', t, x: t.x, r: t.r, y: t.y, b: t.b })), ...seps.map(q => ({ k: 'r', q, x: q.x, r: q.x + q.w, y: q.y, b: q.y + q.h }))].sort((a, b) => a.y - b.y || a.x - b.x);
+/* Word puts the baseline of a line with exact spacing at 80% of its height; from that, where each paragraph has to start so its lines land where they were */
+const wLead = P => (P.lines.length > 1 && P.lead > 0 ? P.lead : P.size * 1.2);
+const wTop = P => P.lines[0].base - 0.8 * wLead(P);
+function wBands(blocks) {           // blocks that share height (next to each other) form one band
+  const bands = [];
+  for (const bl of blocks) { const g = bands[bands.length - 1]; if (g && bl.y < g.b - 1.5) { g.items.push(bl); g.b = Math.max(g.b, bl.b); } else bands.push({ items: [bl], y: bl.y, b: bl.b }); }
+  return bands;
+}
+function wGroups(items) {           // columns: groups of blocks with a clear gap between them that nothing crosses
+  const s = [...items].sort((a, b) => a.x - b.x), out = [];
+  for (const it of s) { const g = out[out.length - 1]; if (g && it.x < g.r + 8) { g.r = Math.max(g.r, it.r); g.items.push(it); } else out.push({ x: it.x, r: it.r, items: [it] }); }
+  return out;
+}
+const wCol = c => (c && /^#[0-9a-f]{6}$/i.test(c) ? c.slice(1).toUpperCase() : '000000');
+const wGap = h => `<w:p><w:pPr><w:spacing w:before="${tw(Math.max(0, h - 1))}" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr></w:p>`;       // h points of space (at least 1)
+function wOne(it, cur, o) {         // one block below the point cur; returns its xml and where it ends
+  if (it.k === 'p') { const P = it.P, top = Math.max(cur, wTop(P)); return { xml: wPara(P, { before: top - cur, ...o }), end: top + P.lines.length * wLead(P) }; }
+  if (it.k === 't') { const pre = it.t.y - cur > 1 ? wGap(it.t.y - cur) : '', y0 = pre ? it.t.y : cur, tb = wTable(it.t, o, true, y0); return { xml: pre + tb.xml + wGap(1), end: tb.end + 1 }; }
+  const q = it.q, top = Math.max(cur, q.y - 1);
+  return { xml: `<w:p><w:pPr><w:pBdr><w:bottom w:val="single" w:sz="${clamp(Math.round(q.h * 8), 2, 96)}" w:space="0" w:color="${wCol(q.col)}"/></w:pBdr><w:spacing w:before="${tw(top - cur)}" w:after="0" w:line="20" w:lineRule="exact"/><w:ind w:left="${tw(Math.max(0, q.x - o.L))}" w:right="${tw(Math.max(0, o.R - q.x - q.w))}"/></w:pPr></w:p>`, end: top + 1 + Math.max(0.5, q.h) };
+}
+/* the blocks of a page (or of a column or a table cell) from top to bottom, starting at the point cur. segs: the page's sections, { cols, xml };
+   a stretch of text in columns becomes a section with Word columns, unless nested (inside a column or cell), where a table without borders is used */
+function wProse(groups) {           // columns of running text (most lines belong to wide paragraphs of several lines), not a table
+  let all = 0, run = 0;
+  for (const c of groups) for (const q of c.items) if (q.k === 'p') { const n = q.P.lines.length; all += n; if (n >= 2 && q.P.r - q.P.x >= 120) run += n; }
+  return all > 0 && run >= all * 0.5;
+}
+const wLineP = (l, P) => ({ lines: [l], runs: l.runs.map(r => ({ ...r })), x: l.x, r: l.r, y: l.y, b: l.b, left: l.x, size: l.size || P.size, lead: 0, ti: 0, align: P.lines.length > 1 && P.align === 'justify' ? 'left' : P.align });       // one line of a paragraph, as a paragraph of its own
+function wRows(groups, o, cur) {    // figures and labels in columns (a table drawn without lines): a table without borders, a row for every line
+  const lines = [];
+  groups.forEach((c, gi) => { for (const q of c.items) for (const l of q.P.lines) lines.push({ gi, l, P: q.P, size: l.size || q.P.size }); });
+  lines.sort((a, b) => a.l.base - b.l.base || a.l.x - b.l.x);
+  const rws = []; for (const it of lines) { const rw = rws[rws.length - 1]; if (rw && it.l.base - rw.base <= Math.min(rw.size, it.size) * 0.5) { rw.items.push(it); rw.size = Math.max(rw.size, it.size); } else rws.push({ base: it.l.base, size: it.size, items: [it] }); }
+  const xs = groups.map((c, i) => (i ? (groups[i - 1].r + c.x) / 2 : c.x - 1)); xs.push(Math.min(Math.max(o.R, groups[groups.length - 1].r + 1), groups[groups.length - 1].r + 6));
+  const tops = rws.map(rw => Math.min(...rw.items.map(it => it.l.base - 0.96 * it.size))), top = Math.max(cur, tops[0]);
+  const ys = tops.map((v, i) => (i ? Math.max(v, tops[i - 1] + 1) : top)); ys.push(Math.max(...rws[rws.length - 1].items.map(it => it.l.base - 0.96 * it.size + 1.2 * it.size), ys[ys.length - 1] + 1));
+  const own = rws.map((rw, r) => groups.map((_, c) => ({ r, c, rs: 1, cs: 1, paras: [], blocks: wBlocks(rw.items.filter(it => it.gi === c).map(it => wLineP(it.l, it.P))) })));
+  const t = { xs, ys, own, cells: own.flat(), x: xs[0], r: xs[xs.length - 1], y: ys[0], b: ys[ys.length - 1] };
+  const pre = top - cur > 1 ? wGap(top - cur) : '', tb = wTable(t, o, false, pre ? top : cur);
+  return { xml: pre + tb.xml + wGap(1), end: tb.end + 1 };
+}
+function wTableRun(bands, i) {      // bands from i on that together make one table without lines: rows of labels and figures that keep their columns
+  const rowLike = b => b.items.every(q => q.k === 'p') && !wProse([{ items: b.items }]);
+  if (!rowLike(bands[i]) || wGroups(bands[i].items).length < 2) return null;
+  let items = [...bands[i].items], j = i + 1, bottom = bands[i].b, multi = 1;
+  while (j < bands.length && rowLike(bands[j])) {
+    const nb = bands[j], lh = Math.max(...nb.items.map(q => q.P.size)) * 1.2;
+    if (nb.y - bottom > 2.5 * lh) break;
+    const next = [...items, ...nb.items], gs = wGroups(next);
+    if (gs.length < 2 || gs.length < wGroups(items).length) break;      // a row across the columns ends the table
+    items = next; bottom = Math.max(bottom, nb.b); if (wGroups(nb.items).length > 1) multi++; j++;
+  }
+  return multi >= 2 ? { end: j, groups: wGroups(items) } : null;
+}
+function wFlow(blocks, o, cur, segs, nested) {
+  const add = x => { segs[segs.length - 1].xml += x; };
+  const bands = wBands(blocks);
+  for (let bi = 0; bi < bands.length; bi++) {
+    const g = bands[bi], its = g.items, run = wTableRun(bands, bi);
+    if (run) { const r = wRows(run.groups, o, cur); add(r.xml); cur = r.end; bi = run.end - 1; continue; }
+    if (its.length === 1) { const r = wOne(its[0], cur, o); add(r.xml); cur = r.end; continue; }
+    const ps = its.filter(q => q.k === 'p'), groups = wGroups(its);
+    if (ps.length === its.length && wOneLine(ps.map(q => q.P))) {
+      const main = wMain(ps.map(q => q.P)), lead = Math.max(...ps.map(q => q.P.size)) * 1.2, top = Math.max(cur, main.lines[0].base - 0.8 * lead);
+      add(wTabs(ps.map(q => q.P), { before: top - cur, ...o })); cur = top + lead;
+    } else if (groups.length > 1 && its.every(q => q.k === 'p') && !wProse(groups)) {
+      const r = wRows(groups, o, cur); add(r.xml); cur = r.end;
+    } else if (groups.length > 1 && !nested && groups.length <= 4 && (g.b - g.y > 110 || groups.every(c => c.items.length > 1))) {
+      /* Word columns: a section of its own, the columns ending in column breaks */
+      const n = groups.length, cols = groups.map((c, i) => ({ a: i ? c.x : o.L, b: i < n - 1 ? Math.min(c.r + 1, groups[i + 1].x - 4) : Math.max(o.R, c.r) }));
+      /* the space above goes before the section break, so every column starts at the top of the section (LibreOffice moves all columns down by the space above the first one) */
+      const top = Math.max(cur, Math.min(...groups.map(c => Math.min(...c.items.map(q => (q.k === 'p' ? wTop(q.P) : q.y)))))), now = segs[segs.length - 1];
+      if (!now.xml && !now.cols && top - cur < 2) now.cols = cols;
+      else { if (top - cur > 1.5) now.xml += wGap(top - cur - 1); now.keep = true; segs.push({ cols, xml: '' }); cur = Math.max(top, cur + 1); }      // (LibreOffice drops the paragraph that ends a section, Word keeps it: 1 point)
+      let end = cur;
+      groups.forEach((c, i) => {
+        const sub = [{ cols: null, xml: '' }], e = wFlow(c.items.sort((a, b) => a.y - b.y || a.x - b.x), { L: cols[i].a, R: cols[i].b }, i ? cur + 1 : cur, sub, true);
+        add((i ? `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr><w:r><w:br w:type="column"/></w:r></w:p>` : '') + sub.map(q => q.xml).join(''));
+        end = Math.max(end, e + (i === n - 1 ? 1 : 0));
+      });
+      segs.push({ cols: null, xml: '' }); cur = end;
+    } else if (groups.length > 1) {
+      /* side by side: a table without borders, one cell per column, each filled the same way */
+      const xs = groups.map(c => c.x); xs.push(Math.max(groups[groups.length - 1].r + 1, Math.min(o.R, groups[groups.length - 1].r + 4)));
+      const cells = groups.map((c, i) => ({ r: 0, c: i, rs: 1, cs: 1, paras: [], blocks: c.items }));
+      const t = { xs, ys: [g.y, g.b], own: [cells], cells, x: xs[0], r: xs[xs.length - 1], y: g.y, b: g.b };
+      const top = Math.max(cur, Math.min(...its.map(q => (q.k === 'p' ? wTop(q.P) : q.y))));
+      t.ys = [top, Math.max(top + 1, g.b)];
+      const pre = top - cur > 1 ? wGap(top - cur) : '', tb = wTable(t, o, false, pre ? top : cur); add(pre + tb.xml + wGap(1)); cur = tb.end + 1;
+    } else {
+      for (const it of its.sort((a, b) => a.y - b.y)) { const r = wOne(it, cur, o); add(r.xml); cur = r.end; }
+    }
+  }
+  return cur;
+}
+function wTable(t, o, grid, y0) {   // grid: a drawn table; otherwise blocks side by side, without borders. y0: where it starts. Returns its xml and end
+  const xs = t.xs, cols = xs.length - 1, widths = []; for (let c = 0; c < cols; c++) widths.push(Math.max(1, xs[c + 1] - xs[c]));
+  const edge = (side, l) => l ? `<w:${side} w:val="single" w:sz="${clamp(Math.round((l.t || 0.5) * 8), 2, 96)}" w:space="0" w:color="${wCol(l.c)}"/>` : `<w:${side} w:val="nil"/>`, pad = grid ? 2.85 : 0;
+  let rows = '', shift = (y0 ?? t.ys[0]) - t.ys[0];           // how far the table has moved down (rows that grew push the rest)
+  const R = t.ys.length - 1;
+  for (let r = 0; r < R; r++) {
+    let tcs = '', need = t.ys[r + 1] + shift;
+    for (let c = 0; c < cols;) {
+      const cell = t.own[r][c], cs = cell.cs, w = widths.slice(c, c + cs).reduce((a, b) => a + b, 0), first = cell.r === r;
+      const borders = grid ? `<w:tcBorders>${edge('top', cell.top)}${edge('left', cell.left)}${edge('bottom', cell.bottom)}${edge('right', cell.right)}</w:tcBorders>` : '';
+      let body = '';
+      if (first) {
+        const sub = [{ cols: null, xml: '' }], bl = cell.blocks || wBlocks(cell.paras), y = t.ys[r] + (grid ? 0.5 : 0);
+        const e = wFlow(bl.map(q => q), { L: xs[c] + pad, R: xs[c + cs] - pad }, y, sub, true); body = sub.map(q => q.xml).join('');
+        if (cell.rs === 1) need = Math.max(need, e + shift);
+      }
+      tcs += `<w:tc><w:tcPr><w:tcW w:w="${tw(w)}" w:type="dxa"/>${cs > 1 ? `<w:gridSpan w:val="${cs}"/>` : ''}${cell.rs > 1 ? `<w:vMerge${first ? ' w:val="restart"' : ''}/>` : ''}${borders}<w:vAlign w:val="top"/></w:tcPr>${body || wEmpty(0, 2)}</w:tc>`;
+      c += cs;
+    }
+    const hgt = t.ys[r + 1] - t.ys[r]; shift = need - t.ys[r + 1];
+    rows += `<w:tr><w:trPr>${grid ? '' : '<w:cantSplit/>'}<w:trHeight w:val="${tw(hgt)}" w:hRule="atLeast"/></w:trPr>${tcs}</w:tr>`;
+  }
+  const noB = grid ? '' : '<w:tblBorders><w:top w:val="nil"/><w:left w:val="nil"/><w:bottom w:val="nil"/><w:right w:val="nil"/><w:insideH w:val="nil"/><w:insideV w:val="nil"/></w:tblBorders>';
+  return { end: t.ys[R] + shift, xml: `<w:tbl><w:tblPr><w:tblW w:w="${tw(xs[cols] - xs[0])}" w:type="dxa"/><w:tblInd w:w="${tw(Math.max(-o.L + 6, xs[0] - o.L))}" w:type="dxa"/>${noB}<w:tblLayout w:type="fixed"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="${tw(pad)}" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="${tw(pad)}" w:type="dxa"/></w:tblCellMar></w:tblPr><w:tblGrid>${widths.map(w => `<w:gridCol w:w="${tw(w)}"/>`).join('')}</w:tblGrid>${rows}</w:tbl>` };
+}
+async function toWord() {
+  const src = await convSource(), media = [], body = [], fonts = new Map();
+  try {
+    for (let i = 0; i < src.pages.length; i++) {
+      busy(`Converting to Word… page ${i + 1} of ${src.pages.length}`, null); await nextFrame();
+      const pg = src.pages[i], pd = await readPage(pg), all = [...pd.free, ...pd.tables.flatMap(t => t.cells.flatMap(c => c.paras))];
+      for (const P of all) for (const r of P.runs) { const f = wordFont(r); fonts.set(f, (fonts.get(f) || 0) + r.t.length); }
+      const ext = [...all, ...pd.tables, ...pd.seps.map(q => ({ x: q.x, r: q.x + q.w, y: q.y, b: q.y + q.h }))];
+      const box = ext.length ? { x: Math.min(...ext.map(P => P.x)), r: Math.max(...ext.map(P => P.r)), y: Math.min(...ext.map(P => P.y)), b: Math.max(...ext.map(P => P.b)) } : { x: 72, r: pd.W - 72, y: 72, b: pd.H - 72 };
+      const first = Math.min(box.y, ...pd.free.map(wTop)), L = clamp(box.x - 2, 14, 144), Rm = clamp(pd.W - box.r - 2, 14, 144), Tm = clamp(first - 1, 14, 144), Bm = clamp(pd.H - box.b - 6, 14, 72), o = { L, R: pd.W - Rm };
+      /* pictures stay where they are on the page, fixed to it */
+      let pics = '';
+      for (const im of pd.images) {
+        const id = media.length + 1, name = `image${id}.${im.ext}`; media.push({ name, bytes: im.bytes, ext: im.ext });
+        const full = im.w * im.h > pd.W * pd.H * 0.5;
+        pics += `<w:r><w:drawing><wp:anchor distT="0" distB="0" distL="0" distR="0" simplePos="0" relativeHeight="${id + 2}" behindDoc="${full ? 1 : 0}" locked="0" layoutInCell="1" allowOverlap="1"><wp:simplePos x="0" y="0"/><wp:positionH relativeFrom="page"><wp:posOffset>${emu(im.x)}</wp:posOffset></wp:positionH><wp:positionV relativeFrom="page"><wp:posOffset>${emu(im.y)}</wp:posOffset></wp:positionV><wp:extent cx="${emu(im.w)}" cy="${emu(im.h)}"/><wp:effectExtent l="0" t="0" r="0" b="0"/><wp:wrapNone/><wp:docPr id="${id}" name="Picture ${id}"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="${id}" name="${name}"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg${id}"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="${emu(im.w)}" cy="${emu(im.h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing></w:r>`;
+      }
+      const segs = [{ cols: null, xml: pics ? `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/></w:pPr>${pics}</w:p>` : '' }];
+      wFlow(wBlocks(pd.free, pd.tables, pd.seps), o, Tm + (pics ? 1 : 0), segs, false);
+      let keep = segs.filter(q => q.xml || q.keep); if (!keep.length) keep = [segs[0]];
+      keep.forEach((q, j) => {
+        const cols = q.cols ? `<w:cols w:num="${q.cols.length}" w:equalWidth="0">${q.cols.map((c, k) => `<w:col w:w="${tw(c.b - c.a)}"${k < q.cols.length - 1 ? ` w:space="${tw(q.cols[k + 1].a - c.b)}"` : ''}/>`).join('')}</w:cols>` : '';
+        const sect = `<w:sectPr>${j ? '<w:type w:val="continuous"/>' : ''}<w:pgSz w:w="${tw(pd.W)}" w:h="${tw(pd.H)}"${pd.W > pd.H ? ' w:orient="landscape"' : ''}/><w:pgMar w:top="${tw(Tm)}" w:right="${tw(Rm)}" w:bottom="${tw(Bm)}" w:left="${tw(L)}" w:header="0" w:footer="0" w:gutter="0"/>${cols}</w:sectPr>`;
+        const last = i === src.pages.length - 1 && j === keep.length - 1;
+        body.push(last ? q.xml + sect : q.xml + `<w:p><w:pPr><w:spacing w:before="0" w:after="0" w:line="20" w:lineRule="exact"/>${sect}</w:pPr></w:p>`);
+      });
+    }
+  } finally { convDrop(src); }
+  let main = 'Calibri', mn = -1; for (const [f, n] of fonts) if (n > mn) { mn = n; main = f; }
+  const NS = 'xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"';
+  const files = [
+    { name: '[Content_Types].xml', data: XML + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/settings.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>` },
+    { name: '_rels/.rels', data: XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/></Relationships>` },
+    { name: 'docProps/core.xml', data: officeCore() },
+    { name: 'docProps/app.xml', data: XML + '<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>Reef PDF</Application></Properties>' },
+    { name: 'word/document.xml', data: XML + `<w:document ${NS}><w:body>${body.join('')}</w:body></w:document>` },
+    { name: 'word/styles.xml', data: XML + `<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="${XE(main)}" w:hAnsi="${XE(main)}" w:cs="${XE(main)}" w:eastAsia="${XE(main)}"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="id-ID"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style><w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style></w:styles>` },
+    { name: 'word/settings.xml', data: XML + '<w:settings xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:defaultTabStop w:val="720"/><w:compat><w:compatSetting w:name="compatibilityMode" w:uri="http://schemas.microsoft.com/office/word" w:val="15"/></w:compat></w:settings>' },
+    { name: 'word/_rels/document.xml.rels', data: XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rIdSettings" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings" Target="settings.xml"/>${media.map((m, i) => `<Relationship Id="rIdImg${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/${m.name}"/>`).join('')}</Relationships>` },
+    ...media.map(m => ({ name: 'word/media/' + m.name, data: m.bytes, stored: true })),
+  ];
+  return zipPack(files);
+}
+function officeCore() {
+  const now = new Date().toISOString().replace(/\.\d+Z$/, 'Z'), m = S.meta || {};
+  return XML + `<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>${XE(m.title || baseName())}</dc:title>${m.author ? `<dc:creator>${XE(m.author)}</dc:creator>` : ''}<dcterms:created xsi:type="dcterms:W3CDTF">${now}</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">${now}</dcterms:modified></cp:coreProperties>`;
+}
+
+/* ---------- Excel ---------- */
+function numStyle(texts) {          // does the document write 1.250.000,50 (Indonesian) or 1,250,000.50 ?
+  let id = 0, en = 0;
+  for (const t of texts) { id += (t.match(/\d\.\d{3}(?![\d.])|\d,\d{1,2}(?!\d)/g) || []).length; en += (t.match(/\d,\d{3}(?![\d,])|\d\.\d{1,2}(?!\d)/g) || []).length; }
+  return en > id ? 'en' : 'id';
+}
+function asNumber(text, style) {    // a figure written in the document, as a number Excel can count with
+  let s = text.trim().replace(/ /g, ' '); if (!s || s.length > 30) return null;
+  let neg = false, paren = false; if (/^\(.*\)$/.test(s)) { neg = paren = true; s = s.slice(1, -1).trim(); }
+  if (/^[-−]/.test(s)) { neg = !neg; s = s.slice(1).trim(); }
+  s = s.replace(/^(Rp\.?|IDR|USD|US\$|\$)\s*/i, ''); if (/^[-−]/.test(s)) { neg = !neg; s = s.slice(1).trim(); }
+  let pct = false; if (/%$/.test(s)) { pct = true; s = s.slice(0, -1).trim(); }
+  const th = style === 'en' ? ',' : '.', dc = style === 'en' ? '.' : ',', esc = c => (c === '.' ? '\\.' : c);
+  if (!new RegExp(`^(\\d{1,3}(${esc(th)}\\d{3})+|\\d+)(${esc(dc)}\\d+)?$`).test(s)) return null;
+  const intPart = s.split(dc)[0].split(th).join('');
+  if (intPart.length > 1 && intPart[0] === '0' && !s.includes(th)) return null;      // a number with a leading zero is a code, not an amount
+  if (!s.includes(th) && !s.includes(dc) && intPart.length >= 12) return null;          // long digit strings: tax and account numbers
+  const v = Number(intPart + (s.includes(dc) ? '.' + s.split(dc)[1] : '')); if (!Number.isFinite(v)) return null;
+  const dec = s.includes(dc) ? s.split(dc)[1].length : 0;
+  return { v: (neg ? -v : v) / (pct ? 100 : 1), fmt: pct ? (dec ? 10 : 9) : paren ? (dec ? 165 : 164) : dec === 2 ? 4 : dec ? 2 : (s.includes(th) ? 3 : 0) };       // 164, 165: negatives in brackets, as accountants write them
+}
+const colName = n => { let s = ''; n++; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+async function toExcel() {
+  const src = await convSource(), sheets = [], styles = new Map([['0|0|0|0', 0]]), styleOf = (bold, fmt, border, wrap) => { const k = `${bold ? 1 : 0}|${fmt}|${border ? 1 : 0}|${wrap ? 1 : 0}`; if (!styles.has(k)) styles.set(k, styles.size); return styles.get(k); };
+  try {
+    const texts = []; const pages = [];
+    for (let i = 0; i < src.pages.length; i++) { busy(`Converting to Excel… page ${i + 1} of ${src.pages.length}`, null); await nextFrame(); const pd = await readPage(src.pages[i]); pages.push(pd); for (const P of pd.paras) texts.push(paraText(P)); }
+    const style = numStyle(texts);
+    pages.forEach((pd, pi) => {
+      /* every piece of text becomes a cell: a paragraph, or a cell of a drawn table */
+      const items = [];
+      for (const P of pd.free) {
+        /* a column of names or figures (narrow, or holding numbers) goes in line by line; running text stays in one cell */
+        const lineOf = l => l.runs.map(r => r.t).join('').replace(/\u200B/g, '').trim();
+        if (P.lines.length > 1 && (P.align === 'right' || P.align === 'center' || P.r - P.x < pd.W * 0.35 || P.lines.some(l => asNumber(lineOf(l), style))))
+          for (const l of P.lines) items.push({ text: lineOf(l), x: l.x, r: l.r, ky: l.base, size: l.size || P.size, align: P.align === 'justify' ? 'left' : P.align, bold: l.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
+        else items.push({ text: paraText(P), x: P.x, r: P.r, ky: P.lines[0].base, size: P.size, align: P.align, bold: P.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
+      }
+      for (const t of pd.tables) for (const c of t.cells) {
+        if (!c.paras.length) continue; const ps = [...c.paras].sort((a, b) => a.y - b.y), P = ps[0];
+        items.push({ text: ps.map(paraText).join('\n'), x: Math.min(...ps.map(q => q.x)), r: Math.max(...ps.map(q => q.r)), ky: t.ys[c.r] + 0.01 * c.c, row: `${pd.tables.indexOf(t)}:${c.r}`, size: P.size, align: P.align, bold: ps.every(q => q.runs.every(r => r.bold || !r.t.trim())), wrap: ps.length > 1, border: true, tx: t.xs[c.c], tr: t.xs[c.c + c.cs] });
+      }
+      for (const it of items) { it.num = asNumber(it.text, style); it.right = !!it.num || it.align === 'right'; }
+      /* rows: pieces on one baseline, or cells of one table row */
+      items.sort((a, b) => a.ky - b.ky || a.x - b.x); const rows = [];
+      for (const it of items) { const rw = rows[rows.length - 1]; if (rw && (it.row ? rw.key === it.row : !rw.key && it.ky - rw.ky <= it.size * 0.6)) rw.items.push(it); else rows.push({ ky: it.ky, key: it.row || null, items: [it] }); }
+      /* columns: text that starts at the same place, or figures that end at the same place */
+      /* (only rows with several pieces, and the cells of drawn tables, which go by the table's own columns; a piece alone on its row joins
+         a column it lines up with, or goes in the first) */
+      for (const rw of rows) if (rw.items.length > 1) for (const it of rw.items) it.multi = true;
+      const anchors = items.filter(it => it.tx != null || it.multi).map(it => (it.tx != null ? { it, k: 'L', p: it.tx } : { it, k: it.right ? 'R' : 'L', p: it.right ? it.r : it.x })), cols = [];
+      for (const kind of ['L', 'R']) { const list = anchors.filter(a => a.k === kind).sort((a, b) => a.p - b.p); let cur = null; for (const a of list) { if (cur && a.p - cur.last <= 8) { cur.as.push(a); cur.last = a.p; } else cols.push(cur = { k: kind, as: [a], last: a.p }); } }
+      const span = it => (it.tx != null ? [it.tx, it.tr] : [it.x, it.r]);
+      for (const c of cols) { c.cx = median(c.as.map(a => (span(a.it)[0] + span(a.it)[1]) / 2)); c.w = median(c.as.map(a => span(a.it)[1] - span(a.it)[0])); c.p = median(c.as.map(a => a.p)); }
+      /* a heading over figures: left-aligned above, right-aligned below, one column when they share the space and never a row */
+      const rowOf = new Map(); rows.forEach((rw, i) => { for (const it of rw.items) rowOf.set(it, i); });
+      const ext = c => [Math.min(...c.as.map(a => span(a.it)[0])), Math.max(...c.as.map(a => span(a.it)[1]))];
+      for (let again = true; again;) {
+        again = false;
+        for (let i = 0; i < cols.length && !again; i++) for (let j = i + 1; j < cols.length && !again; j++) {
+          const A = cols[i], B = cols[j]; if (A.k === B.k) continue;
+          const [a0, a1] = ext(A), [b0, b1] = ext(B), ov = Math.min(a1, b1) - Math.max(a0, b0);
+          if (ov < 0.5 * Math.min(a1 - a0, b1 - b0)) continue;
+          const ra = new Set(A.as.map(a => rowOf.get(a.it))); if (B.as.some(b => ra.has(rowOf.get(b.it)))) continue;
+          if (cols.some(C => C !== A && C !== B && (() => { const [c0, c1] = ext(C); return Math.min(c1, Math.max(a1, b1)) - Math.max(c0, Math.min(a0, b0)) > 2 && C.cx > Math.min(A.cx, B.cx) && C.cx < Math.max(A.cx, B.cx); })())) continue;
+          A.as.push(...B.as); A.k = A.as.filter(a => a.k === 'R').length > A.as.length / 2 ? 'R' : 'L'; A.p = median(A.as.filter(a => a.k === A.k).map(a => a.p)); A.cx = (Math.min(a0, b0) + Math.max(a1, b1)) / 2; A.w = Math.max(a1, b1) - Math.min(a0, b0);
+          cols.splice(j, 1); again = true;
+        }
+      }
+      cols.sort((a, b) => a.cx - b.cx); cols.forEach((c, i) => { for (const a of c.as) a.it.col = i; });
+      for (const it of items) if (it.col == null) { const k = it.right ? 'R' : 'L', p = it.right ? it.r : it.x, c = cols.find(c => c.k === k && Math.abs(c.p - p) <= 8); it.col = c ? cols.indexOf(c) : 0; }
+      let xml = '';
+      rows.forEach((rw, ri) => {
+        const byCol = new Map(); for (const it of rw.items.sort((a, b) => a.x - b.x)) { const e = byCol.get(it.col); if (e) { e.text += ' ' + it.text; e.num = null; } else byCol.set(it.col, { ...it }); }
+        const cells = [...byCol.entries()].sort((a, b) => a[0] - b[0]).map(([c, it]) => {
+          const ref = colName(c) + (ri + 1), s = styleOf(it.bold, it.num ? it.num.fmt : 0, it.border, it.wrap || /\n/.test(it.text));
+          return it.num ? `<c r="${ref}"${s ? ` s="${s}"` : ''}><v>${it.num.v}</v></c>` : `<c r="${ref}"${s ? ` s="${s}"` : ''} t="inlineStr"><is><t xml:space="preserve">${XE(it.text)}</t></is></c>`;
+        }).join('');
+        xml += `<row r="${ri + 1}">${cells}</row>`;
+      });
+      const widths = cols.map((c, i) => { const next = cols[i + 1], room = next ? next.cx - c.cx : c.w; return clamp(Math.round(Math.max(Math.min(c.w, 320), Math.min(room, 200)) / 5.6 + 2), 4, 70); });
+      sheets.push({ name: `Page ${pi + 1}`, xml: `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView workbookViewId="0"${pi ? '' : ' tabSelected="1"'}/></sheetViews><sheetFormatPr defaultRowHeight="15"/>${widths.length ? `<cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : ''}<sheetData>${xml}</sheetData><pageMargins left="0.5" right="0.5" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>` });
+    });
+  } finally { convDrop(src); }
+  const xfs = [...styles.keys()].map(k => { const [b, f, br, w] = k.split('|').map(Number); return `<xf numFmtId="${f}" fontId="${b}" fillId="0" borderId="${br}" xfId="0"${f ? ' applyNumberFormat="1"' : ''}${b ? ' applyFont="1"' : ''}${br ? ' applyBorder="1"' : ''}${w ? ' applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf>' : '/>'}`; });
+  const files = [
+    { name: '[Content_Types].xml', data: XML + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((s, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>` },
+    { name: '_rels/.rels', data: XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>` },
+    { name: 'docProps/core.xml', data: officeCore() },
+    { name: 'xl/workbook.xml', data: XML + `<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView/></bookViews><sheets>${sheets.map((s, i) => `<sheet name="${XE(s.name)}" sheetId="${i + 1}" r:id="rId${i + 1}"/>`).join('')}</sheets></workbook>` },
+    { name: 'xl/_rels/workbook.xml.rels', data: XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${sheets.map((s, i) => `<Relationship Id="rId${i + 1}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet${i + 1}.xml"/>`).join('')}<Relationship Id="rIdStyles" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/></Relationships>` },
+    { name: 'xl/styles.xml', data: XML + `<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><numFmts count="2"><numFmt numFmtId="164" formatCode="#,##0;(#,##0)"/><numFmt numFmtId="165" formatCode="#,##0.00;(#,##0.00)"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><name val="Calibri"/><family val="2"/></font></fonts><fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style="thin"><color auto="1"/></left><right style="thin"><color auto="1"/></right><top style="thin"><color auto="1"/></top><bottom style="thin"><color auto="1"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="${xfs.length}">${xfs.join('')}</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>` },
+    ...sheets.map((s, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, data: XML + s.xml })),
+  ];
+  return zipPack(files);
+}
+
+/* ---------- PowerPoint: every page as a picture on a slide of its own ---------- */
+async function toSlides() {
+  const src = await convSource(), imgs = [];
+  try {
+    for (let i = 0; i < src.pages.length; i++) {
+      busy(`Converting to PowerPoint… page ${i + 1} of ${src.pages.length}`, null); await nextFrame();
+      const pg = src.pages[i], pj = await getPdfPage(pg), v0 = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) });
+      /* a page that is a picture of text stays a picture; otherwise its text becomes text boxes over the page's drawing without the text */
+      await getLines(pg).catch(() => null);
+      const scan = hasOcr(pg) || !!(await scanKind(pg).catch(() => ''));
+      const paras = scan ? [] : (await getParas(pg)).filter(P => paraText(P).trim());
+      let s = 170 / 72; if (v0.width * v0.height * s * s > 16e6) s = Math.sqrt(16e6 / (v0.width * v0.height));
+      const vp = pj.getViewport({ scale: s, rotation: pageRot(pj, pg) }), c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+      const g = c.getContext('2d'); if (paras.length) { g.fillText = () => { }; g.strokeText = () => { }; }
+      await pj.render({ canvas: c, viewport: vp, annotationMode: PJ.AnnotationMode.ENABLE }).promise;
+      const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.9)); imgs.push({ w: v0.width, h: v0.height, paras, bytes: new Uint8Array(await blob.arrayBuffer()) }); c.width = c.height = 1;
+    }
+  } finally { convDrop(src); }
+  const W = clamp(imgs[0].w, 72, 4032), Hh = clamp(imgs[0].h, 72, 4032);
+  const P = 'xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+  const tree = inner => `<p:cSld><p:spTree><p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>${inner}</p:spTree></p:cSld>`;
+  const ALG = { left: 'l', center: 'ctr', right: 'r', justify: 'just' };
+  const slides = imgs.map((im, i) => {
+    const k = Math.min(W / im.w, Hh / im.h), w = im.w * k, h = im.h * k, ox = (W - w) / 2, oy = (Hh - h) / 2;
+    let id = 3, boxes = '';
+    for (const Pp of im.paras) {
+      const lead = wLead(Pp), n = Pp.lines.length, one = n === 1, top = wTop(Pp);
+      const bw = (Pp.r - Pp.x) + (one ? 4 : Pp.align === 'justify' ? 0.8 : 3), x = Pp.align === 'right' && one ? Pp.r - bw : Pp.align === 'center' && one ? (Pp.x + Pp.r) / 2 - bw / 2 : Pp.x;
+      const ind = !one && Pp.align !== 'center' && Pp.align !== 'right' ? { marL: Math.max(0, Pp.left - Pp.x), indent: Pp.ti || 0 } : { marL: 0, indent: 0 };
+      const runs = Pp.runs.map(r => {
+        const t = r.t.replace(/​/g, ''); if (!t) return '';
+        const f = XE(wordFont(r)), col = r.col && /^#[0-9a-f]{6}$/i.test(r.col) ? r.col.slice(1).toUpperCase() : '000000', sz = Math.max(100, Math.round((r.size || Pp.size) * k * 100));
+        const base = r.rise ? ` baseline="${clamp(Math.round(r.rise / (Pp.size || 11) * 100000), -100000, 100000)}"` : '';
+        return `<a:r><a:rPr lang="id-ID" sz="${sz}"${r.bold ? ' b="1"' : ''}${r.italic ? ' i="1"' : ''}${base} dirty="0"><a:solidFill><a:srgbClr val="${col}"/></a:solidFill><a:latin typeface="${f}"/><a:cs typeface="${f}"/></a:rPr><a:t>${XE(t)}</a:t></a:r>`;
+      }).join('');
+      if (!runs) continue;
+      boxes += `<p:sp><p:nvSpPr><p:cNvPr id="${id}" name="Text ${id - 2}"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="${emu(ox + x * k)}" y="${emu(oy + top * k)}"/><a:ext cx="${emu(Math.max(4, bw) * k)}" cy="${emu(n * lead * k)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="${one ? 'none' : 'square'}" lIns="0" tIns="0" rIns="0" bIns="0" rtlCol="0" anchor="t"><a:noAutofit/></a:bodyPr><a:lstStyle/><a:p><a:pPr algn="${ALG[Pp.align] || 'l'}"${ind.marL ? ` marL="${emu(ind.marL * k)}"` : ''}${ind.indent ? ` indent="${emu(ind.indent * k)}"` : ''}><a:lnSpc><a:spcPts val="${Math.round(lead * k * 100)}"/></a:lnSpc><a:spcBef><a:spcPts val="0"/></a:spcBef><a:spcAft><a:spcPts val="0"/></a:spcAft></a:pPr>${runs}</a:p></p:txBody></p:sp>`;
+      id++;
+    }
+    return XML + `<p:sld ${P}>${tree(`<p:pic><p:nvPicPr><p:cNvPr id="2" name="Page ${i + 1}"/><p:cNvPicPr><a:picLocks noChangeAspect="1"/></p:cNvPicPr><p:nvPr/></p:nvPicPr><p:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></p:blipFill><p:spPr><a:xfrm><a:off x="${emu(ox)}" y="${emu(oy)}"/><a:ext cx="${emu(w)}" cy="${emu(h)}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></p:spPr></p:pic>${boxes}`)}<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>`;
+  });
+  const rel = (id, type, target) => `<Relationship Id="${id}" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/${type}" Target="${target}"/>`, RELS = inner => XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">${inner}</Relationships>`;
+  const theme = XML + `<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Reef"><a:themeElements><a:clrScheme name="Reef"><a:dk1><a:srgbClr val="000000"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="123A5F"/></a:dk2><a:lt2><a:srgbClr val="EDF1EE"/></a:lt2><a:accent1><a:srgbClr val="1B5FCF"/></a:accent1><a:accent2><a:srgbClr val="FF7B63"/></a:accent2><a:accent3><a:srgbClr val="1D7A4F"/></a:accent3><a:accent4><a:srgbClr val="E8910C"/></a:accent4><a:accent5><a:srgbClr val="7A3FC4"/></a:accent5><a:accent6><a:srgbClr val="C0261C"/></a:accent6><a:hlink><a:srgbClr val="1B5FCF"/></a:hlink><a:folHlink><a:srgbClr val="7A3FC4"/></a:folHlink></a:clrScheme><a:fontScheme name="Reef"><a:majorFont><a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme><a:fmtScheme name="Reef"><a:fillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:fillStyleLst><a:lnStyleLst><a:ln w="6350"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="12700"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln><a:ln w="19050"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>`;
+  const files = [
+    { name: '[Content_Types].xml', data: XML + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>${slides.map((_, i) => `<Override PartName="/ppt/slides/slide${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>`).join('')}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>` },
+    { name: '_rels/.rels', data: RELS(`<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="ppt/presentation.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>`) },
+    { name: 'docProps/core.xml', data: officeCore() },
+    { name: 'ppt/presentation.xml', data: XML + `<p:presentation ${P}><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>${slides.map((_, i) => `<p:sldId id="${256 + i}" r:id="rId${i + 3}"/>`).join('')}</p:sldIdLst><p:sldSz cx="${emu(W)}" cy="${emu(Hh)}"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>` },
+    { name: 'ppt/_rels/presentation.xml.rels', data: RELS(rel('rId1', 'slideMaster', 'slideMasters/slideMaster1.xml') + rel('rId2', 'theme', 'theme/theme1.xml') + slides.map((_, i) => rel(`rId${i + 3}`, 'slide', `slides/slide${i + 1}.xml`)).join('')) },
+    { name: 'ppt/slideMasters/slideMaster1.xml', data: XML + `<p:sldMaster ${P}>${tree('')}<p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst></p:sldMaster>` },
+    { name: 'ppt/slideMasters/_rels/slideMaster1.xml.rels', data: RELS(rel('rId1', 'slideLayout', '../slideLayouts/slideLayout1.xml') + rel('rId2', 'theme', '../theme/theme1.xml')) },
+    { name: 'ppt/slideLayouts/slideLayout1.xml', data: XML + `<p:sldLayout ${P} type="blank" preserve="1">${tree('').replace('<p:cSld>', '<p:cSld name="Blank">')}<p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>` },
+    { name: 'ppt/slideLayouts/_rels/slideLayout1.xml.rels', data: RELS(rel('rId1', 'slideMaster', '../slideMasters/slideMaster1.xml')) },
+    { name: 'ppt/theme/theme1.xml', data: theme },
+    ...slides.flatMap((s, i) => [
+      { name: `ppt/slides/slide${i + 1}.xml`, data: s },
+      { name: `ppt/slides/_rels/slide${i + 1}.xml.rels`, data: RELS(rel('rId1', 'slideLayout', '../slideLayouts/slideLayout1.xml') + rel('rId2', 'image', `../media/page${i + 1}.jpeg`)) },
+      { name: `ppt/media/page${i + 1}.jpeg`, data: imgs[i].bytes, stored: true },
+    ]),
+  ];
+  return zipPack(files);
+}
+
+/* ---------- the Convert menu ---------- */
+const CONV = {
+  docx: { label: 'Word', fn: toWord, mime: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' },
+  xlsx: { label: 'Excel', fn: toExcel, mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' },
+  pptx: { label: 'PowerPoint', fn: toSlides, mime: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' },
+};
+async function convertTo(kind) {
+  const c = CONV[kind]; if (!c || exporting || OCR.running) return;
+  if (S.editing) endEdit();
+  if (kind !== 'pptx' && !(await scanCheck())) return;
+  return job(`Converting to ${c.label}…`, async () => {
+    const bytes = await c.fn(); busy(false);
+    const name = `${baseName()}.${kind}`, kb = bytes.length / 1024;
+    saveNote(await saveFile(name, bytes, c.mime), `${name} · ${kb > 1024 ? fmtNum(kb / 1024, 1) + ' MB' : fmtNum(kb) + ' KB'}`);
+    return bytes;
+  });
+}
+popButton($('#btnConvert'), $('#cvMenu'));
+$('#cvMenu').addEventListener('click', ev => { const k = ev.target.closest('[data-cv]')?.dataset.cv; if (k) convertTo(k); });
+
 /* ---------- export ---------- */
 const colL = h => L.rgb(...hexRgb(h));
 async function fillForm(doc, src, flatten, warn) {
@@ -4481,7 +5097,7 @@ async function textShows(pg) {
   const src = S.sources.get(pg.src); if (src.shows.has(pg.idx)) return src.shows.get(pg.idx);
   const pj = await getPdfPage(pg);
   const ol = await pj.getOperatorList({ annotationMode: PJ.AnnotationMode.DISABLE }), O = PJ.OPS, ID = [1, 0, 0, 1, 0, 0];
-  let st = { ctm: ID, tm: ID, x: 0, y: 0, lx: 0, ly: 0, fs: 0, dir: 1, fm: 0.001, cs: 0, ws: 0, hs: 1, lead: 0, rise: 0, vert: false, fn: null, fe: null, fill: '#000000', lw: 1, mode: 0 };
+  let st = { ctm: ID, tm: ID, x: 0, y: 0, lx: 0, ly: 0, fs: 0, dir: 1, fm: 0.001, cs: 0, ws: 0, hs: 1, lead: 0, rise: 0, vert: false, fn: null, fe: null, fill: '#000000', stroke: '#000000', lw: 1, mode: 0 };
   const stack = [], shows = [], starts = [], fills = [], glyphs = [], rules = [], topFonts = new Set(), ghost = new Set(); let depth = 0, deep = 0;
   const arr6 = a => { const m = a.length === 1 ? a[0] : a; return [m[0], m[1], m[2], m[3], m[4], m[5]]; };
   const setFont = (name, size) => { const fe = fontEntry(src, pj, name); st.dir = size < 0 ? -1 : 1; st.fs = Math.abs(size); st.fm = fe.fm; st.vert = fe.vert; st.fn = name; st.fe = fe; };
@@ -4506,12 +5122,28 @@ async function textShows(pg) {
       case O.setLineWidth: st.lw = a[0]; break;
       case O.setTextRenderingMode: st.mode = a[0]; break;
       case O.setFillRGBColor: if (typeof a[0] === 'string' && /^#[0-9a-f]{6}$/i.test(a[0])) st.fill = a[0].toLowerCase(); break;
+      case O.setStrokeRGBColor: if (typeof a[0] === 'string' && /^#[0-9a-f]{6}$/i.test(a[0])) st.stroke = a[0].toLowerCase(); break;
       case O.constructPath: {         // thin drawn lines (table borders, separators) tell paragraphs and cells apart
         const mm = a && a[2]; if (!mm || a[0] === O.endPath || mm.length < 4) break;
-        const c = [apply(st.ctm, mm[0], mm[1]), apply(st.ctm, mm[2], mm[3]), apply(st.ctm, mm[0], mm[3]), apply(st.ctm, mm[2], mm[1])], xs = c.map(q => q[0]), ys = c.map(q => q[1]);
         const stroked = a[0] !== O.fill && a[0] !== O.eoFill, pad = stroked ? Math.min(2, Math.max(0, st.lw) * Math.sqrt(Math.abs(st.ctm[0] * st.ctm[3] - st.ctm[1] * st.ctm[2])) / 2) : 0;      // a stroked line is as thick as its pen
-        const x0 = Math.min(...xs) - pad, x1 = Math.max(...xs) + pad, y0 = Math.min(...ys) - pad, y1 = Math.max(...ys) + pad;
-        if (Math.min(x1 - x0, y1 - y0) <= 3.5 && Math.max(x1 - x0, y1 - y0) >= 6 && rules.length < 4000) rules.push([x0, y0, x1, y1]);
+        const col = stroked ? st.stroke : st.fill;
+        const box = pts => { const xs = pts.map(q => q[0]), ys = pts.map(q => q[1]); return [Math.min(...xs) - pad, Math.min(...ys) - pad, Math.max(...xs) + pad, Math.max(...ys) + pad]; };
+        const add = b => { if (Math.min(b[2] - b[0], b[3] - b[1]) <= 3.5 && Math.max(b[2] - b[0], b[3] - b[1]) >= 6 && rules.length < 4000) rules.push([b[0], b[1], b[2], b[3], col]); };
+        /* each piece of the path: one path can hold many lines (a whole table grid), and a stroked box is four lines */
+        const d = a[1] && a[1][0], subs = []; let curve = !d || typeof d.length !== 'number';
+        if (!curve) for (let i = 0, sp = null; i < d.length && !curve;) {
+          const k = d[i];
+          if (k === 0) { sp = { pts: [apply(st.ctm, d[i + 1], d[i + 2])], closed: false }; subs.push(sp); i += 3; }
+          else if (k === 1) { if (sp) sp.pts.push(apply(st.ctm, d[i + 1], d[i + 2])); i += 3; }
+          else if (k === 4) { if (sp) sp.closed = true; i += 1; }
+          else curve = true;
+        }
+        if (curve || subs.length > 600) { const c = [apply(st.ctm, mm[0], mm[1]), apply(st.ctm, mm[2], mm[3]), apply(st.ctm, mm[0], mm[3]), apply(st.ctm, mm[2], mm[1])]; add(box(c)); break; }
+        for (const sp of subs) {
+          if (!stroked) { add(box(sp.pts)); continue; }
+          const P = sp.closed && sp.pts.length > 2 ? [...sp.pts, sp.pts[0]] : sp.pts;
+          for (let j = 1; j < P.length; j++) { const p0 = P[j - 1], p1 = P[j]; if (Math.abs(p0[0] - p1[0]) < 0.5 || Math.abs(p0[1] - p1[1]) < 0.5) add(box([p0, p1])); }
+        }
         break; }
       case O.setFont: setFont(a[0], a[1]); break;
       case O.setGState: for (const kv of a[0] || []) if (kv[0] === 'Font') setFont(kv[1][0], kv[1][1]); break;

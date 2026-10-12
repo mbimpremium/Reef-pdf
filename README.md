@@ -67,6 +67,20 @@ Halaman hasil scan dan foto adalah gambar. Tombol **OCR** di toolbar membacanya,
 - Teks yang diedit di atas hasil scan ditulis dengan font yang paling mirip dan menutup gambar di bawahnya, jadi tampilannya bisa sedikit berbeda dari cetakan di sekitarnya.
 - PDF yang diunduh menyimpan hasil OCR-nya. Bila dibuka lagi di Reef PDF, teksnya langsung bisa diedit tanpa OCR ulang.
 
+## Convert (PDF ke Word, Excel, PowerPoint)
+
+Tombol **Convert** di toolbar mengubah dokumen yang sedang tampil, lengkap dengan suntingannya, menjadi file Office. Semua dikerjakan di browser; dokumen tidak diunggah.
+
+- **Word (.docx)**: paragraf tetap bisa diedit dan mengalir seperti dokumen Word biasa, dengan font, ukuran, tebal/miring, warna, rata kiri/kanan/tengah/justify, indentasi, dan jarak baris aslinya. Tabel bergaris menjadi tabel Word (termasuk sel gabungan), tabel tanpa garis menjadi tabel tanpa border, halaman dua kolom menjadi kolom Word, dan gambar tetap di posisinya.
+- **Excel (.xlsx)**: satu sheet per halaman. Angka seperti `1.250.000.000`, `(25.000.000)`, `12,5%` menjadi angka sungguhan yang bisa dijumlahkan; nomor seperti NPWP atau nomor rekening tetap teks.
+- **PowerPoint (.pptx)**: satu slide per halaman. Teks menjadi text box yang bisa diedit; garis, warna, dan gambar halaman menjadi latar slide.
+- Halaman hasil scan ditawari OCR dulu, supaya teksnya ikut bisa diedit. Kalau tidak, halaman itu masuk sebagai gambar.
+- Bagan dan gambar vektor tetap menjadi gambar. Bila font aslinya tidak ada di komputer yang membuka file, baris bisa terpotong di kata yang berbeda.
+
+## Print
+
+Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman dokumen saja (lengkap dengan suntingan dan isian formulir), bukan tampilan editornya. Ukuran dan arah tiap halaman (portrait/landscape) ikut. Kalau print dibuka dari menu browser, yang tercetak hanya petunjuk untuk memakai tombol Print.
+
 ## Memperbarui
 
 Unggah ulang file dengan nama yang sama ke repository. Aplikasi yang sudah ter-install mengambil versi baru saat dibuka dalam keadaan online, dan memakainya pada pembukaan berikutnya.
