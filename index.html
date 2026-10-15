@@ -1348,7 +1348,7 @@ function syncPages() {
     const geo = `${pg.src}|${pg.idx}|${pg.rot}|${pg.w}|${pg.h}`;
     if (v.geo !== geo) {
       v.geo = geo; v.el.style.setProperty('--w', pg.w); v.el.style.setProperty('--h', pg.h);
-      v.rendered = 0; v.formsKey = null; v.tlKey = null; v.tls.textContent = '';
+      v.rendered = 0; v.formsKey = null; v.links = null; v.tlKey = null; v.tls.textContent = '';
       if (v.visible) queueRender(pg.id);
     }
     if (pagesEl.children[i] !== v.el) pagesEl.insertBefore(v.el, pagesEl.children[i] || null);
@@ -1596,6 +1596,7 @@ async function drawForms(pg, v) {
   if (v.geo !== geo) return;
   v.formsKey = geo; v.forms.textContent = '';
   const vp = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) }), vals = src.form;
+  pageLinks(pg, v, annots, vp).then(ls => { if (v.formsKey === geo) v.links = ls; }).catch(e => console.warn('links', e));
   for (const a of annots) {
     if (a.subtype !== 'Widget' || a.hidden || !a.fieldName || !a.rect) continue;
     const q1 = apply(vp.transform, a.rect[0], a.rect[1]), q2 = apply(vp.transform, a.rect[2], a.rect[3]), x = Math.min(q1[0], q2[0]), y = Math.min(q1[1], q2[1]), w = Math.abs(q2[0] - q1[0]), h = Math.abs(q2[1] - q1[1]);
@@ -2821,6 +2822,79 @@ function ocrNudge(pg) {             // Edit text was clicked on a page that has 
   scanKind(pg, false).then(sp => { if (!sp || ocrNudged.has(pg.id)) return; ocrNudged.add(pg.id); toast('This page is a picture of text, so there are no words to click on yet.', 'info', 10000, { label: 'Recognize text (OCR)', run: openOcr }); }).catch(() => { });
 }
 
+/* ---------- links in the PDF ----------
+   Link annotations of the original pages: web and e-mail addresses open, links to a place in the document go there.
+   With Select, a click on a link follows it (dragging still selects text); with the other tools, and over text that was edited, Ctrl+click follows it.
+   Hovering shows where the link goes (tooltip and status bar). */
+async function pageLinks(pg, v, annots, vp) {     // the links of a page, in page view coordinates
+  const out = [];
+  for (const a of annots) {
+    if (a.subtype !== 'Link' || a.hidden || !a.rect || !(a.url || a.dest != null || a.action)) continue;
+    const q = a.quadPoints && a.quadPoints.length >= 8 ? a.quadPoints : null, quads = [];
+    if (q) for (let i = 0; i + 7 < q.length; i += 8) quads.push([q[i], q[i + 1], q[i + 2], q[i + 3], q[i + 4], q[i + 5], q[i + 6], q[i + 7]]);
+    else quads.push([a.rect[0], a.rect[1], a.rect[2], a.rect[1], a.rect[0], a.rect[3], a.rect[2], a.rect[3]]);
+    const boxes = quads.map(c => {
+      const pts = [0, 2, 4, 6].map(j => apply(vp.transform, c[j], c[j + 1])), xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+      const x = Math.min(...xs), y = Math.min(...ys), w = Math.max(...xs) - x, h = Math.max(...ys) - y;
+      return { x, y: y + flowSh(pg, y + h / 2), w, h };
+    }).filter(b => b.w > 0.5 && b.h > 0.5);
+    if (!boxes.length) continue;
+    const k = { boxes, url: a.url || null, dest: a.dest ?? null, action: a.action || null, idx: null };
+    if (!k.url && k.dest != null) k.idx = await linkPage(pg, k.dest).catch(() => null);
+    out.push(k);
+  }
+  return out;
+}
+async function linkTarget(pg, dest) {        // the explicit destination: [page, {name}, ...]
+  const pdf = S.sources.get(pg.src).pdf;
+  const d = typeof dest === 'string' ? await pdf.getDestination(dest) : dest;
+  if (!Array.isArray(d) || !d.length) return null;
+  const ref = d[0], idx = ref && typeof ref === 'object' ? await pdf.getPageIndex(ref) : Number.isInteger(ref) ? ref : -1;
+  return idx >= 0 ? { idx, d } : null;
+}
+const linkPage = async (pg, dest) => (await linkTarget(pg, dest))?.idx ?? null;
+function linkAt(v, p) {
+  if (!v || !v.links) return null;
+  for (const k of v.links) for (const b of k.boxes) if (p.x >= b.x - 0.5 && p.x <= b.x + b.w + 0.5 && p.y >= b.y - 0.5 && p.y <= b.y + b.h + 0.5) return k;
+  return null;
+}
+const NAMED = { NextPage: 'Next page', PrevPage: 'Previous page', FirstPage: 'First page', LastPage: 'Last page' };
+function linkLabel(pg, k) {
+  if (k.url) return k.url.replace(/^mailto:/i, 'E-mail ');
+  if (k.action) return NAMED[k.action] || '';
+  const i = k.idx == null ? -1 : S.pages.findIndex(q => q.src === pg.src && q.idx === k.idx);
+  return i >= 0 ? `Go to page ${i + 1}` : 'Link to a page that is not in this document';
+}
+function linkHover(pg, v, p, ev) {
+  const onObj = !!ev.target.closest('.obj'), k = !ev.target.closest('.h,.ff') ? linkAt(v, p) : null, direct = S.tool === 'select' && !onObj, label = k ? linkLabel(pg, k) : '';
+  if (k && label && (direct || ev.ctrlKey || ev.metaKey)) v.sheet.style.cursor = 'pointer';
+  const tip = k && label ? label + (direct ? '' : '\nCtrl+click to open') : '';
+  if (v.sheet.title !== tip) v.sheet.title = tip;
+  if (tip) $('#stPos').textContent = label;
+}
+async function followLink(pg, k) {
+  if (k.url) {
+    let u; try { u = new URL(k.url); } catch { return; }
+    if (/^(mailto|tel):$/.test(u.protocol)) { const a = mk('a'); a.href = u.href; a.rel = 'noopener'; document.body.append(a); a.click(); a.remove(); return; }
+    if (!/^(https?|ftp):$/.test(u.protocol)) return;
+    let w = null; try { w = window.open(u.href, '_blank'); } catch { }
+    if (w) { try { w.opener = null; } catch { } return; }
+    toast(`This link cannot be opened from here:\n${u.href}`, 'info', 12000, { label: 'Copy link', run: () => copyText(u.href) });
+    return;
+  }
+  const n = S.pages.length;
+  if (k.action) { const to = { NextPage: S.cur + 1, PrevPage: S.cur - 1, FirstPage: 0, LastPage: n - 1 }[k.action]; if (to != null) scrollToPage(clamp(to, 0, n - 1)); return; }
+  if (k.dest == null) return;
+  const t = await linkTarget(pg, k.dest).catch(() => null), i = t ? S.pages.findIndex(q => q.src === pg.src && q.idx === t.idx) : -1;
+  if (i < 0) { toast('The page this link points to is not in this document.'); return; }
+  scrollToPage(i);
+  const kind = t.d[1] && t.d[1].name, top = kind === 'XYZ' ? t.d[3] : kind === 'FitH' || kind === 'FitBH' ? t.d[2] : null;
+  if (typeof top === 'number') {      // the place on the page, not only the page
+    const tp = S.pages[i], pj = await getPdfPage(tp), vp = pj.getViewport({ scale: 1, rotation: pageRot(pj, tp) }), y = apply(vp.transform, kind === 'XYZ' && typeof t.d[2] === 'number' ? t.d[2] : 0, top)[1];
+    stage.scrollTop += clamp(y, 0, tp.h) * S.zoom;
+  }
+}
+
 /* ---------- tools ---------- */
 function setTool(t) {
   if (S.editing) endEdit();
@@ -2950,8 +3024,9 @@ function onDown(ev) {
   const hEl = t.closest('.h'), oe = t.closest('.obj'), tool = S.tool;
   if (hEl) { const s = getSel(); if (!s) return; ev.preventDefault(); drag = { kind: 'resize', h: hEl.dataset.h, pg, v, o: s.o, orig: clone(s.o), ob: bbox(s.o, v), start: p }; return; }
   const hitObj = oe && pg.objs.find(o => o.id === oe.dataset.id);
+  if ((ev.ctrlKey || ev.metaKey) && (tool !== 'select' || hitObj)) { const k = linkAt(v, p); if (k) { ev.preventDefault(); followLink(pg, k); return; } }      // Ctrl+click follows a link with any tool, also under text that was edited
   if (tool === 'select') {
-    if (!hitObj) { if (S.sel) select(null); clearTsel(); if (pg.src) { ev.preventDefault(); tselStart(pg, v, p); } return; }
+    if (!hitObj) { if (S.sel) select(null); clearTsel(); if (pg.src) { ev.preventDefault(); tselStart(pg, v, p); drag.link = linkAt(v, p); } return; }
     ev.preventDefault(); clearTsel(); select(pg.id, hitObj.id);
     drag = { kind: 'move', pg, v, o: hitObj, orig: clone(hitObj), start: p, sx: ev.clientX, sy: ev.clientY, moved: false };
     return;
@@ -2981,7 +3056,7 @@ function onDown(ev) {
 }
 function onMove(ev) {
   const pe = ev.target.closest && ev.target.closest('.page');
-  if (pe && !drag) { const v = V.get(pe.dataset.id); if (v) { const p = ptOf(ev, v); $('#stPos').textContent = `X ${fmtNum(p.x / PT_MM, 1)}  Y ${fmtNum(p.y / PT_MM, 1)} mm`; if (S.tool === 'select') hoverText(pageById(pe.dataset.id), v, p); else if (v.sheet.style.cursor) v.sheet.style.cursor = ''; } }
+  if (pe && !drag) { const v = V.get(pe.dataset.id); if (v) { const p = ptOf(ev, v); $('#stPos').textContent = `X ${fmtNum(p.x / PT_MM, 1)}  Y ${fmtNum(p.y / PT_MM, 1)} mm`; const pg = pageById(pe.dataset.id); if (S.tool === 'select') hoverText(pg, v, p); else if (v.sheet.style.cursor) v.sheet.style.cursor = ''; if (pg) linkHover(pg, v, p, ev); } }
   if (!drag) return;
   const d = drag, p = ptOf(ev, d.v), dx = p.x - d.start.x, dy = p.y - d.start.y, o = d.o, g = d.orig;
   if (d.kind === 'tsel') { tselMove(d, p); return; }
@@ -3028,7 +3103,7 @@ async function onUp() {
   const d = drag; if (!d) return; drag = null;
   if (d.kind === 'move') { if (d.moved) commit(); return; }
   if (d.kind === 'resize') { if (d.o.pk) flowCommit(d.pg); else commit(); return; }
-  if (d.kind === 'tsel') { if (!d.moved) clearTsel(); return; }
+  if (d.kind === 'tsel') { if (!d.moved) { clearTsel(); if (d.link) followLink(d.pg, d.link); } return; }      // a click on a link (no drag) follows it
   if (d.kind === 'crop') { const c = d.pg.crop; if (!c || c.w < 12 || c.h < 12) { if (d.prev) d.pg.crop = d.prev; else delete d.pg.crop; } commit(); return; }
   const o = d.o, pg = d.pg, drop = () => { pg.objs = pg.objs.filter(x => x !== o); };
   const b = bbox(o, d.v);
@@ -3133,7 +3208,8 @@ stage.addEventListener('scroll', () => {
   if (scrollRaf) return;
   scrollRaf = requestAnimationFrame(() => {
     scrollRaf = 0; const s = stage.getBoundingClientRect(), mid = s.top + s.height * 0.4; let best = S.cur, bd = 1e9;
-    S.pages.forEach((pg, i) => { const v = V.get(pg.id); if (!v || !v.visible) return; const r = v.el.getBoundingClientRect(); const d = mid < r.top ? r.top - mid : mid > r.bottom ? mid - r.bottom : 0; if (d < bd) { bd = d; best = i; } });
+    S.pages.forEach((pg, i) => { const v = V.get(pg.id); if (!v) return; const r = v.el.getBoundingClientRect();      // all pages: after a jump the visible marks are not up to date yet
+      const d = mid < r.top ? r.top - mid : mid > r.bottom ? mid - r.bottom : 0; if (d < bd) { bd = d; best = i; } });
     if (best !== S.cur) { S.cur = best; updateStatus(); markThumbs(); const t = TH.get(S.pages[best].id); t && t.el.scrollIntoView({ block: 'nearest' }); }
   });
 });
@@ -3445,7 +3521,7 @@ function renderProps(force) {
     if (S.tool === 'edittext') h += `<label class="check"><input type="checkbox" id="p_flow"${S.flow ? ' checked' : ''}><span>Move the rest of the page when a paragraph grows or shrinks</span></label>`;
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
-    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Save</span><b>Ctrl Shift S</b><span>Save as</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span></div>`;
+    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Save</span><b>Ctrl Shift S</b><span>Save as</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span><b>Ctrl + click</b><span>Open a link while editing</span></div>`;
     h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it. Convert rebuilds the document in Word, Excel or PowerPoint from what it can read on the pages: text, tables, lines and pictures. Charts and drawings stay pictures (in PowerPoint they form the background of each slide), and a line can wrap at a different word when a font is not installed on the computer that opens the file.</p>`;
   }
   body.innerHTML = h;
@@ -5472,7 +5548,7 @@ async function boot() {
     openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

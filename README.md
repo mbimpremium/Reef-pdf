@@ -77,6 +77,15 @@ Tombol **Convert** di toolbar mengubah dokumen yang sedang tampil, lengkap denga
 - Halaman hasil scan ditawari OCR dulu, supaya teksnya ikut bisa diedit. Kalau tidak, halaman itu masuk sebagai gambar.
 - Bagan dan gambar vektor tetap menjadi gambar. Bila font aslinya tidak ada di komputer yang membuka file, baris bisa terpotong di kata yang berbeda.
 
+## Link di PDF
+
+Link di dalam PDF (alamat web, e-mail, atau link ke halaman lain di dokumen yang sama) bisa diklik dengan alat **Select**. Saat kursor di atas link, alamat tujuannya tampil di tooltip dan di status bar bawah. Seret dari atas link tetap memilih teks, tidak membuka link.
+
+- Dengan alat lain (misalnya **Edit text**), atau di atas teks yang sudah diedit, pakai **Ctrl+klik** untuk membuka link.
+- Link web terbuka di tab browser baru. Link ke halaman lain di dokumen langsung melompat ke halaman dan posisinya.
+- Link tetap tersimpan di PDF yang diunduh.
+- Bila browser memblokir pop-up (misalnya saat Reef PDF dibuka di dalam halaman situs lain), muncul pesan dengan tombol **Copy link**.
+
 ## Simpan (Ctrl+S)
 
 **Save PDF** atau **Ctrl+S** menanyakan dua pilihan: **Overwrite** (menimpa file asli di tempatnya) atau **Save as…** (simpan sebagai file baru, pilih nama dan folder). **Ctrl+Shift+S** langsung ke Save as.
