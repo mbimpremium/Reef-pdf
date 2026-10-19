@@ -310,6 +310,76 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 
+/* ---------- Home ---------- */
+.app.is-home{grid-template-rows:auto auto minmax(0,1fr) auto}
+.app.is-home .tools,.app.is-home .work,.app.is-home .doc-only{display:none!important}
+.app.is-home #stPage,.app.is-home #stSize,.app.is-home #stPos{visibility:hidden}
+.home[hidden]{display:none}
+.home{overflow:auto;min-height:0;background:var(--panel);scrollbar-width:thin}
+.home-in{max-width:1180px;margin:0 auto;padding:22px 28px 36px;display:grid;gap:20px}
+.home-title{margin:0;font:700 22px/1.2 var(--f-display);letter-spacing:-.01em}
+.home h2{margin:0;font:650 15px/1.2 var(--f-display)}
+.home-top{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:stretch}
+.hcard{background:var(--raise);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.htools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px;margin-top:10px}
+.htool{display:grid;grid-template-columns:34px minmax(0,1fr);grid-template-rows:auto 1fr auto;column-gap:10px;row-gap:2px;align-content:start;padding:10px;border:0;border-radius:8px;background:transparent;text-align:left;cursor:pointer}
+.htool:hover{background:var(--accent-soft)}
+.htool .hic{grid-row:1 / span 3;display:grid;place-items:center;width:34px;height:34px;border-radius:8px;background:color-mix(in srgb,var(--tc) 14%,transparent);color:var(--tc)}
+.htool b{font-weight:650}
+.htool span:not(.hic){color:var(--muted);font-size:12px;line-height:1.35}
+.htool em{font-style:normal;font-size:12px;font-weight:600;color:var(--accent);margin-top:4px}
+.htool:hover em{text-decoration:underline}
+.hopen{display:grid;align-content:center;justify-items:center;gap:8px;text-align:center;border:1.5px dashed var(--line-2);background:var(--chrome)}
+.hopen.drag{border-color:var(--accent);background:var(--accent-soft)}
+.hopen-ic{display:grid;place-items:center;width:48px;height:48px;border-radius:12px;background:var(--accent-soft);color:var(--accent)}
+.hopen-ic .ic{width:26px;height:26px}
+.hopen .btn.primary{height:34px;padding:0 18px;border-radius:99px}
+.hopen p{margin:0;color:var(--muted);font-size:12px}
+.hlink{border:0;background:none;padding:2px 0;color:var(--accent);font-size:12px;font-weight:600;cursor:pointer}
+.hlink:hover{text-decoration:underline}
+.hrecent-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.hrecent-head h2{font-size:18px}
+.hrecent-head .seg .btn{width:30px;flex:none;padding:0}
+.hrecent-head .seg .btn[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--chrome)}
+.rlist.list{display:grid;border-top:1px solid var(--line)}
+.rrow{position:relative;display:grid;grid-template-columns:44px minmax(0,1fr) 170px 90px 32px;align-items:center;gap:14px;padding:6px 8px;border-bottom:1px solid var(--line);cursor:pointer}
+.rrow:not(.rhead):hover{background:var(--accent-soft)}
+.rhead{cursor:default;padding:8px;font:600 10.5px/1 var(--f-ui);letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.rthumb{display:grid;place-items:center;width:40px;height:52px;overflow:hidden;background:var(--paper);box-shadow:0 0 0 1px var(--line-2);border-radius:2px;color:var(--muted)}
+.rthumb img{display:block;max-width:100%;max-height:100%}
+.ropen{display:grid;gap:2px;min-width:0;padding:0;border:0;background:none;text-align:left;cursor:pointer}
+.ropen::after{content:"";position:absolute;inset:0}
+.ropen b{font-weight:500;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ropen small{color:var(--muted);font-size:11px}
+.rwhen{color:var(--muted)}
+.rsize{color:var(--muted);font-size:12px}
+.rx{position:relative;z-index:1;display:grid;place-items:center;width:26px;height:26px;padding:0;border:0;border-radius:5px;background:transparent;color:var(--muted);opacity:0;cursor:pointer}
+.rrow:hover .rx,.rx:focus-visible{opacity:1}
+.rx:hover{background:color-mix(in srgb,currentColor 14%,transparent);color:var(--ink)}
+.rx .ic{width:14px;height:14px}
+.rlist.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.rlist.grid .rrow{grid-template-columns:1fr;gap:6px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--raise)}
+.rlist.grid .rthumb{width:100%;height:150px;box-shadow:none;background:var(--chrome)}
+.rlist.grid .rthumb img{box-shadow:0 0 0 1px var(--line-2)}
+.rlist.grid .rsize{display:none}
+.rlist.grid .rwhen{font-size:11.5px}
+.rlist.grid .rx{position:absolute;top:6px;right:6px;background:var(--raise)}
+.rnote{margin:14px 0 0;color:var(--muted)}
+.rnote[hidden],.rfoot[hidden],#recentViews[hidden]{display:none}
+.rfoot{display:flex;justify-content:flex-end;padding-top:10px}
+.dtab-home{flex:none;display:grid;place-items:center;width:38px;height:30px;padding:0;border:1px solid transparent;border-bottom:0;border-radius:7px 7px 0 0;background:transparent;color:var(--muted);cursor:pointer}
+.dtab-home:hover{background:var(--accent-soft);color:var(--ink)}
+.dtab-home.on{background:var(--panel);border-color:var(--line);color:var(--ink)}
+@media (max-width:980px){.htools{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){
+  .home-in{padding:16px 16px 28px}
+  .home-top{grid-template-columns:minmax(0,1fr)}
+  .hopen{order:-1;grid-template-columns:auto auto;justify-content:center;padding:14px} .hopen-ic,.hopen p{display:none}
+  .rrow{grid-template-columns:40px minmax(0,1fr) 30px} .rrow .rwhen,.rrow .rsize,.rhead{display:none}
+  .rx{opacity:1}
+}
+@media (max-width:480px){.htools{grid-template-columns:minmax(0,1fr)}}
+
 /* print: only the pages of the document (see 048-print.js) */
 #printArea{display:none}
 @media print{
@@ -330,34 +400,67 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
       <svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="reefMark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#17456f"/><stop offset="1" stop-color="#0a2038"/></linearGradient></defs><rect x="1" y="1" width="22" height="22" rx="5.4" fill="url(#reefMark)"/><g transform="translate(12 12.6) scale(0.98) translate(-12 -12.6)"><g fill="none" stroke="#ff7b63" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12.2 20.4C12.2 17.4 11.8 14.8 12 11.6C12.1 9.2 12.4 6.9 13.1 4.9"/><path d="M12.05 16.2C9.7 15.3 8.1 13.3 7.7 10.7C7.5 9.5 7.6 8.4 8 7.4"/><path d="M12 13C14.2 12.3 15.8 10.7 16.4 8.5"/><path d="M8.3 12.7C6.9 12.7 5.7 11.9 4.9 10.5"/><path d="M15.6 10.6C17 10.8 18.3 10.2 19.3 8.9"/><path d="M12.15 9.3C11 8.7 10.3 7.6 10.1 6.300"/></g></g></svg>
       <span class="brand-name">Reef PDF</span>
     </div>
-    <input id="docName" class="docname" value="sample-document.pdf" aria-label="File name" spellcheck="false" autocomplete="off">
-    <span id="sampleChip" class="chip" title="Open your own PDF to start working">Sample document</span>
+    <input id="docName" class="docname doc-only" value="sample-document.pdf" aria-label="File name" spellcheck="false" autocomplete="off">
     <div class="spacer"></div>
     <div class="grp">
       <button id="btnOpen" class="btn" title="Open a PDF, an image or a saved project in a new tab (Ctrl+O)"><i data-ic="open"></i><span>Open</span></button>
-      <button id="btnMerge" class="btn" title="Insert pages from another PDF or image"><i data-ic="merge"></i><span>Merge</span></button>
+      <button id="btnMerge" class="btn doc-only" title="Insert pages from another PDF or image"><i data-ic="merge"></i><span>Merge</span></button>
     </div>
-    <div class="grp">
+    <div class="grp doc-only">
       <button id="btnUndo" class="btn ico" title="Undo (Ctrl+Z)" aria-label="Undo"><i data-ic="undo"></i></button>
       <button id="btnRedo" class="btn ico" title="Redo (Ctrl+Y)" aria-label="Redo"><i data-ic="redo"></i></button>
     </div>
-    <div class="grp zoom">
+    <div class="grp zoom doc-only">
       <button id="zoomOut" class="btn ico" title="Zoom out" aria-label="Zoom out"><i data-ic="minus"></i></button>
       <select id="zoomSel" aria-label="Zoom" class="mono"></select>
       <button id="zoomIn" class="btn ico" title="Zoom in" aria-label="Zoom in"><i data-ic="plus"></i></button>
     </div>
-    <div class="find">
+    <div class="find doc-only">
       <i data-ic="search"></i>
       <input id="findInput" type="search" placeholder="Find text" aria-label="Find text" autocomplete="off">
       <span id="findCount" class="cnt mono"></span>
       <button id="findPrev" class="btn ico ghost" title="Previous" aria-label="Previous match"><i data-ic="chevu"></i></button>
       <button id="findNext" class="btn ico ghost" title="Next" aria-label="Next match"><i data-ic="chevd"></i></button>
     </div>
-    <button id="btnPrint" class="btn ico" title="Print the document (Ctrl+P)" aria-label="Print"><i data-ic="print"></i></button>
-    <button id="btnSave" class="btn primary" title="Save the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Save PDF</span></button>
+    <button id="btnPrint" class="btn ico doc-only" title="Print the document (Ctrl+P)" aria-label="Print"><i data-ic="print"></i></button>
+    <button id="btnSave" class="btn primary doc-only" title="Save the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Save PDF</span></button>
   </header>
 
   <div id="tabs" class="doctabs" role="tablist" aria-label="Open documents"></div>
+
+  <section id="home" class="home" aria-label="Home" hidden>
+    <div class="home-in">
+      <h1 class="home-title">Welcome to Reef PDF</h1>
+      <div class="home-top">
+        <div class="hcard">
+          <h2>Recommended tools</h2>
+          <div class="htools">
+            <button type="button" class="htool" data-home="edit" style="--tc:#1b5fcf"><span class="hic"><i data-ic="edittext"></i></span><b>Edit a PDF</b><span>Change text, add pictures, shapes and notes.</span><em>Use now</em></button>
+            <button type="button" class="htool" data-home="sign" style="--tc:#7a3fc4"><span class="hic"><i data-ic="sign"></i></span><b>Fill &amp; Sign</b><span>Fill in forms and add your signature.</span><em>Use now</em></button>
+            <button type="button" class="htool" data-home="combine" style="--tc:#1d7a4f"><span class="hic"><i data-ic="merge"></i></span><b>Combine files</b><span>Join several PDFs and pictures into one PDF.</span><em>Use now</em></button>
+            <button type="button" class="htool" data-home="pictures" style="--tc:#e8910c"><span class="hic"><i data-ic="image"></i></span><b>Pictures to PDF</b><span>Turn photos and scans into a PDF.</span><em>Use now</em></button>
+            <button type="button" class="htool" data-home="ocr" style="--tc:#c0261c"><span class="hic"><i data-ic="ocr"></i></span><b>Recognize text (OCR)</b><span>Make scanned pages searchable and editable.</span><em>Use now</em></button>
+            <button type="button" class="htool" data-home="convert" style="--tc:#0f7c8c"><span class="hic"><i data-ic="convert"></i></span><b>Convert a PDF</b><span>Save it as Word, Excel or PowerPoint.</span><em>Use now</em></button>
+          </div>
+        </div>
+        <div class="hcard hopen" id="hOpen">
+          <span class="hopen-ic"><i data-ic="open"></i></span>
+          <button type="button" class="btn primary" data-home="open">Open File</button>
+          <p>or drop a PDF here</p>
+          <button type="button" class="hlink" data-home="blank">Start with a blank page</button>
+        </div>
+      </div>
+      <div class="hrecent">
+        <div class="hrecent-head">
+          <h2>Recent</h2>
+          <div class="seg" id="recentViews" role="group" aria-label="View"><button type="button" class="btn ico" data-rview="list" title="List" aria-label="List view"><i data-ic="list"></i></button><button type="button" class="btn ico" data-rview="grid" title="Thumbnails" aria-label="Thumbnail view"><i data-ic="grid"></i></button></div>
+        </div>
+        <div id="recentList" class="rlist list" role="list" aria-label="Recent files"></div>
+        <p id="recentNote" class="rnote"></p>
+        <div id="recentFoot" class="rfoot" hidden><button type="button" class="hlink" id="recentClear">Clear recent</button></div>
+      </div>
+    </div>
+  </section>
 
   <nav class="tools" id="tools" aria-label="Editing tools">
     <button class="tool" data-tool="select" title="Select and move (V)"><i data-ic="select"></i><span>Select</span></button>
@@ -408,7 +511,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
       <div class="side-foot">Drag to reorder. Arrow keys move between pages, Delete removes, Ctrl/Shift+click selects several.</div>
     </aside>
     <section id="stage" class="stage" data-tool="select" tabindex="0" aria-label="Workspace"><div id="pages" class="pages"></div></section>
-    <aside id="props" class="side right" aria-label="Properties">
+    <aside id="props" class="side right" aria-label="Properties" hidden>
       <div class="side-head"><span id="propsTitle">Properties</span></div>
       <div id="propsBody" class="props"></div>
     </aside>
@@ -838,6 +941,9 @@ const ICONS = {
   alignr: '<path d="M4 6h16M10 10h10M4 14h16M10 18h10"/>',
   alignj: '<path d="M4 6h16M4 10h16M4 14h16M4 18h16"/>',
   print: '<path d="M7 9V4h10v5M7 17H5a1.500 1.500 0 01-1.500-1.500v-5A1.500 1.500 0 015 9h14a1.500 1.500 0 011.500 1.500v5A1.500 1.500 0 0119 17h-2"/><rect x="7" y="14" width="10" height="6" rx=".5"/>',
+  home: '<path d="M3.500 11L12 4l8.500 7"/><path d="M6 9.500V20h4.500v-5.500h3V20H18V9.500"/>',
+  list: '<path d="M9 6.500h11M9 12h11M9 17.500h11"/><circle cx="4.800" cy="6.500" r="1" fill="currentColor"/><circle cx="4.800" cy="12" r="1" fill="currentColor"/><circle cx="4.800" cy="17.500" r="1" fill="currentColor"/>',
+  grid: '<rect x="4" y="4" width="6.500" height="6.500" rx="1"/><rect x="13.500" y="4" width="6.500" height="6.500" rx="1"/><rect x="4" y="13.500" width="6.500" height="6.500" rx="1"/><rect x="13.500" y="13.500" width="6.500" height="6.500" rx="1"/>',
   convert: '<path d="M6 3.500h6l3.500 3.500V11M12 3.500V7h3.500M6 3.500V20h4"/><path d="M14 14.500h6.500M18 12l2.500 2.500L18 17M20.500 19.500H14M16.500 17L14 19.500l2.500 2.500"/>',
   ocr: '<path d="M4 8.500V5h3.500M16.500 5H20v3.500M20 15.500V19h-3.500M7.500 19H4v-3.500"/><path d="M8.500 15.500L12 8l3.500 7.500M9.900 12.700h4.200"/>',
 };
@@ -1019,7 +1125,6 @@ function travel(d) {
 function refresh() { if (S.tsel && !pageById(S.tsel.pageId)) S.tsel = null; syncPages(); syncThumbs(); drawSel(); drawTsel(); renderProps(); updateStatus(); updateButtons(); }
 function updateButtons() {
   $('#btnUndo').disabled = H.i <= 0; $('#btnRedo').disabled = H.i >= H.stack.length - 1;
-  $('#sampleChip').hidden = !S.sample;
   $('#pageCount').textContent = S.pages.length;
   renderTabs();
 }
@@ -3224,6 +3329,7 @@ const TOOL_KEYS = { v: 'select', e: 'edittext', t: 'text', h: 'mark', p: 'ink', 
 window.addEventListener('keydown', ev => {
   const mod = ev.ctrlKey || ev.metaKey, k = ev.key.toLowerCase(), ae = document.activeElement;
   const typing = ae && (ae.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));
+  if (!docNow) { if (mod && (k === 's' || k === 'p')) ev.preventDefault(); else if (mod && k === 'o' && !document.querySelector('dialog[open]')) { ev.preventDefault(); pickOpen('replace'); } return; }      // Home: only Open
   if (mod && k === 'p' && !ev.altKey) { ev.preventDefault(); if (!document.querySelector('dialog[open]')) printDoc(); return; }      // the document, not the editor
   if (document.querySelector('dialog[open]')) return;
   if (mod && k === 's') { ev.preventDefault(); saveDoc(ev.shiftKey ? 'as' : undefined); return; }
@@ -3257,7 +3363,7 @@ window.addEventListener('keydown', ev => {
 });
 window.addEventListener('paste', ev => {
   const ae = document.activeElement; if (ae && (ae.isContentEditable || /^(INPUT|TEXTAREA)$/.test(ae.tagName))) return;
-  if (document.querySelector('dialog[open]') || performance.now() - tabMidAt < 600) return;      // on some systems a middle click pastes: not when it was on a tab, where it closes one
+  if (!docNow || document.querySelector('dialog[open]') || performance.now() - tabMidAt < 600) return;      // on some systems a middle click pastes: not when it was on a tab, where it closes one
   const f = [...(ev.clipboardData?.files || [])].find(f => f.type.startsWith('image/'));
   if (f) { ev.preventDefault(); insertImage(f).catch(e => toast('The image could not be pasted: ' + errMsg(e), 'err')); return; }
   if (S.clip && curPage()) { ev.preventDefault(); pasteObj(S.clipFrom === curPage().id ? S.clip : noPf(S.clip), curPage()); }
@@ -3449,7 +3555,7 @@ function renderProps(force) {
   const body = $('#propsBody'), t = propTarget();
   const key = t ? (t.def ? 'def:' + t.kind : 'obj:' + t.o.id) : 'none:' + S.tool;
   if (!force && key === propsKey && body.contains(document.activeElement) && document.activeElement !== document.body) return;
-  propsKey = key;
+  propsKey = key; if (t) propsWanted();
   $('#propsTitle').textContent = t ? (t.def ? 'New ' + (TITLES[t.kind] || '').toLowerCase() + ' style' : (t.o.wipe ? 'Cover' : TITLES[t.kind])) : 'Guide';
   let h = '';
   if (t) {
@@ -3729,25 +3835,29 @@ $('#pgExtract').addEventListener('click', () => { const t = targetPages(); doExp
 let openMode = 'replace';
 const fileHandles = new WeakMap();  // File → the handle it was read from
 const fsAccess = () => typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function' && window.self === window.top;      // not inside another site's frame
-async function pickOpen(mode) {
-  openMode = mode;
+const PICS = { 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'], 'image/webp': ['.webp'] };
+let openAfter = null;
+async function pickOpen(mode, opt = {}) {      // opt: { kind: 'images', after: what to do once the file is open }
+  openMode = mode; openAfter = opt.after || null;
+  const pics = opt.kind === 'images', accept = pics ? PICS : mode === 'combine' ? { 'application/pdf': ['.pdf'], ...PICS } : { 'application/pdf': ['.pdf'], ...PICS, 'application/json': ['.json'] };
   if (fsAccess()) {
     let hs;
-    try { hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: 'PDF, pictures or Reef PDF projects', accept: { 'application/pdf': ['.pdf'], 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'], 'image/webp': ['.webp'], 'application/json': ['.json'] } }] }); }
+    try { hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: pics ? 'Pictures' : mode === 'combine' ? 'PDFs and pictures' : 'PDF, pictures or Reef PDF projects', accept }] }); }
     catch (e) { if (e && e.name === 'AbortError') return; console.warn('file picker', e); hs = null; }
-    if (hs) { const files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })); if (files.length) openFiles(files, mode, S.cur + 1); return; }
+    if (hs) { const files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })); if (files.length) openFiles(files, mode, S.cur + 1, openAfter); return; }
   }
-  const f = $('#fOpen'); f.value = ''; f.click();
+  const f = $('#fOpen'); f.accept = Object.entries(accept).flatMap(([k, v]) => [k, ...v]).join(','); f.value = ''; f.click();
 }
 const dropHandles = dt => [...(dt?.items || [])].filter(i => i.kind === 'file').map(i => (typeof i.getAsFileSystemHandle === 'function' ? i.getAsFileSystemHandle().catch(() => null) : Promise.resolve(null)));
-$('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1); });
+$('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1, openAfter); openAfter = null; });
+$('#fOpen').addEventListener('cancel', () => { openAfter = null; });
 $('#btnOpen').addEventListener('click', () => pickOpen('replace'));
 $('#btnMerge').addEventListener('click', () => pickOpen('insert'));
 let openChain = Promise.resolve();
-function openFiles(files, mode, at) {      // one after the other: files can arrive from the file manager while others are still being opened
-  const p = openChain.then(() => openNow([...files], mode, at)); openChain = p.catch(e => { console.error(e); busy(false); }); return p;
+function openFiles(files, mode, at, after) {      // one after the other: files can arrive from the file manager while others are still being opened
+  const p = openChain.then(() => openNow([...files], mode, at, after)); openChain = p.catch(e => { console.error(e); busy(false); }); return p;
 }
-async function openNow(list, mode, at) {
+async function openNow(list, mode, at, after) {      // mode: 'replace' (a tab each), 'combine' (all in one new tab), 'insert' (into the shown document)
   if (docBusy()) { toast('The file opens as soon as the current job has finished.'); while (docBusy()) await new Promise(r => setTimeout(r, 300)); }
   busy('Opening…'); await nextFrame();
   /* Open: every PDF and every project becomes a document with a tab of its own; pictures opened together become the pages of one document.
@@ -3760,7 +3870,9 @@ async function openNow(list, mode, at) {
         continue;
       }
       const head = new Uint8Array(await f.slice(0, 1024).arrayBuffer()), isPdf = f.type === 'application/pdf' || /\.pdf$/i.test(f.name) || String.fromCharCode(...head.slice(0, 1024)).includes('%PDF-');
-      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); groups.push({ pages: src.pages, name: f.name, handle: fileHandles.get(f) || null }); }
+      const fh = fileHandles.get(f) || null;
+      if (isPdf && fh && mode === 'replace') { let open = null; for (const d of DOCS) { const st = docState(d); if (st.handle && await sameFile(st.handle, fh)) { open = d; break; } } if (open) { groups.push({ existing: open, pages: [] }); continue; } }      // already open: its tab
+      if (isPdf) { const src = await addSource(f.name, new Uint8Array(await f.arrayBuffer())); groups.push({ pages: src.pages, name: f.name, handle: fh, size: f.size }); }
       else if (f.type.startsWith('image/')) {
         const a = await addAsset(f), land = a.w > a.h, pw = land ? A4[1] : A4[0], ph = land ? A4[0] : A4[1], k = Math.min(pw / a.w, ph / a.h), w = a.w * k, h = a.h * k;
         if (!pics) groups.push(pics = { pages: [], name: f.name.replace(/\.(png|jpe?g|webp|gif|bmp)$/i, '') + '.pdf' });
@@ -3770,9 +3882,18 @@ async function openNow(list, mode, at) {
   }
   busy(false);
   if (!groups.length) return;
-  if (mode === 'replace') {
-    for (const g of groups) await docOpen(g);
-    ocrHint(groups[groups.length - 1].pages).catch(() => { });
+  if (mode === 'combine') {        // Combine files: everything in one new document
+    const list = groups.filter(g => !g.project && !g.existing); if (list.length < groups.length) toast('Saved projects cannot be combined. They were left out.');
+    if (!list.length) return;
+    await docOpen(list.length === 1 ? list[0] : { pages: list.flatMap(g => g.pages), name: 'Combined.pdf' });
+    if (list.length > 1) { S.dirty = true; updateButtons(); toast(`${list.length} files combined into one document.`); }
+    if (after) after();
+    return;
+  }
+  if (mode === 'replace' || !docNow) {
+    for (const g of groups) { if (g.existing) docSwitch(g.existing); else await docOpen(g); }
+    if (after) after();
+    if (!groups[groups.length - 1].existing) ocrHint(groups[groups.length - 1].pages).catch(() => { });
   } else {
     const added = groups.flatMap(g => g.pages);
     S.pages.splice(clamp(at, 0, S.pages.length), 0, ...added); S.sample = false; S.selPages = new Set(added.map(p => p.id));
@@ -3879,7 +4000,12 @@ $('#btnSave').addEventListener('click', () => saveDoc());
 $('#docName').addEventListener('change', e => { let n = e.target.value.trim() || 'document.pdf'; if (!/\.pdf$/i.test(n)) n += '.pdf'; S.name = e.target.value = n; renderTabs(); });
 const narrow = () => window.matchMedia('(max-width:860px)').matches;
 $('#togThumbs').addEventListener('click', () => { $('#thumbs').hidden = !$('#thumbs').hidden; if (narrow() && !$('#thumbs').hidden) $('#props').hidden = true; });
-$('#togProps').addEventListener('click', () => { $('#props').hidden = !$('#props').hidden; if (narrow() && !$('#props').hidden) $('#thumbs').hidden = true; });
+$('#togProps').addEventListener('click', () => { const p = $('#props'); p.hidden = !p.hidden; if (p.hidden) propsAuto = false; if (narrow() && !p.hidden) $('#thumbs').hidden = true; });
+/* The Properties panel starts hidden. It shows itself the first time there is something to set (a selected object, text being edited,
+   a drawing tool's style), and then stays. Closed with its button, it no longer shows itself. */
+let propsAuto = true, propsTimer = 0;
+function propsWanted() { if (!propsAuto || propsTimer || !docNow || narrow() || !$('#props').hidden) return; propsTimer = setTimeout(propsTry, 300); }
+function propsTry() { propsTimer = 0; if (!propsAuto || !docNow || !$('#props').hidden || !propTarget()) return; if (drag) { propsTimer = setTimeout(propsTry, 200); return; } $('#props').hidden = false; }
 let findTimer = 0;
 $('#findInput').addEventListener('input', e => { clearTimeout(findTimer); findTimer = setTimeout(() => runFind(e.target.value.trim()), 220); });
 $('#findInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); gotoHit(S.find.i + (e.shiftKey ? -1 : 1)); } else if (e.key === 'Escape') { e.target.value = ''; runFind(''); e.target.blur(); } });
@@ -4175,7 +4301,7 @@ async function saveDoc(how) {       // how: 'over', 'as', or nothing to ask
     catch (e) { try { await w.abort(); } catch { } throw e; }
     if (docNow === docAt) { S.dirty = false; if (how === 'as') { S.handle = h; S.name = h.name; S.sample = false; $('#docName').value = h.name; } }
     else if (docAt && docAt.st) { docAt.st.dirty = false; if (how === 'as') Object.assign(docAt.st, { handle: h, name: h.name, sample: false }); }
-    updateButtons();
+    updateButtons(); recentNote(h, pages, bytes.length);
     const extra = (rasterCount ? `\n${rasterCount} page${rasterCount === 1 ? ' was' : 's were'} saved as an image.` : '') + (warn.length ? '\n' + warn.join('\n') : '');
     toast(`${how === 'as' ? 'Saved as' : 'Saved to'} ${h.name} · ${pages.length} page${pages.length === 1 ? '' : 's'} · ${saveSize(bytes.length)}${extra}`, 'info', extra ? 9000 : 4600);
   } catch (e) {
@@ -4199,20 +4325,20 @@ function docShow(st) {
   Object.assign(S, { pages: st.pages, sel: st.sel, selPages: st.selPages, cur: st.cur, name: st.name, handle: st.handle || null, dirty: st.dirty, sample: st.sample, flatten: st.flatten, meta: st.meta, find: st.find });
   H.stack = st.stack; H.i = st.hi;
   $('#docName').value = S.name; $('#findInput').value = S.find.q || ''; $('#findCount').textContent = S.find.hits.length ? `${S.find.i + 1}/${S.find.hits.length}` : '';
-  refresh();
+  homeOff(); refresh();
   setZoom(st.zoomMode === 'custom' ? st.zoom : fitZoom(st.zoomMode), st.zoomMode); stage.scrollTop = st.top; stage.scrollLeft = st.left; drawFinds();
 }
 function docLeave() { if (S.editing) endEdit(); clearTsel(); if (docNow) docNow.st = docKeep(); }
 function docSwitch(d) {
-  if (!d || d === docNow) return;
+  if (!d || d === docNow) { homeOff(); return; }
   if (docBusy()) { toast('Wait until the current job has finished, then switch.'); return; }
   docLeave(); docNow = d; const st = d.st; d.st = null; docShow(st);
 }
 function docStart(name, pages, sample) {      // a new, untouched document becomes the one that is shown
   Object.assign(S, { pages, sel: null, selPages: new Set(), cur: 0, name, handle: null, dirty: false, sample: !!sample, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
-  $('#docName').value = name; $('#findInput').value = ''; $('#findCount').textContent = '';
+  $('#docName').value = name; $('#findInput').value = ''; $('#findCount').textContent = ''; homeOff();
 }
-async function docOpen(g) {         // g: { pages, name, project } — in a new tab, or in place of the sample document
+async function docOpen(g) {         // g: { pages, name, project, handle, size } — in a new tab (the sample document, used by the tests, is replaced)
   let old = null;
   if (S.sample || !docNow) { if (S.editing) endEdit(); clearTsel(); old = docNow ? docKeep() : null; if (!docNow) DOCS.push(docNow = { id: uid('d'), st: null }); }
   else { docLeave(); DOCS.push(docNow = { id: uid('d'), st: null }); }
@@ -4222,8 +4348,9 @@ async function docOpen(g) {         // g: { pages, name, project } — in a new 
   resetHistory(); S.dirty = false; refresh();
   setZoom(fitZoom('width'), 'width'); stage.scrollTop = 0; stage.scrollLeft = 0;
   if (old) docRelease(old);
+  if (g.handle) recentNote(g.handle, g.pages, g.size);
 }
-async function docSample() {        // nothing is open: the sample document
+async function docSample() {        // the sample document (for the tests; people start on Home)
   const src = await addSource('sample-document.pdf', await makeSample());
   DOCS.push(docNow = { id: uid('d'), st: null });
   docStart('sample-document.pdf', src.pages, true);
@@ -4241,7 +4368,7 @@ async function docClose(d) {
   if (shown) {
     clearTsel(); docNow = null;
     if (DOCS.length) { docNow = DOCS[Math.min(k, DOCS.length - 1)]; const st = docNow.st; docNow.st = null; docShow(st); }
-    else await docSample();
+    else homeShow();
   }
   docRelease(gone); renderTabs();
 }
@@ -4258,9 +4385,11 @@ function docRelease(gone) {         // PDFs and pictures that only the closed do
 /* ---------- the tab strip ---------- */
 const TAB_X = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg>';
 function renderTabs() {
-  if (!docNow) return;
-  const list = DOCS.map(d => { const s = docState(d); return { id: d.id, name: s.name, dirty: !!(s.dirty && !s.sample), on: d === docNow }; }), key = JSON.stringify(list);
+  const list = DOCS.map(d => { const s = docState(d); return { id: d.id, name: s.name, dirty: !!(s.dirty && !s.sample), on: d === docNow }; }), key = JSON.stringify([!docNow, list]);
+  document.title = !docNow || S.sample ? 'Reef PDF' : S.name;
   if (tabsEl.dataset.k === key) return; tabsEl.dataset.k = key; tabsEl.textContent = '';
+  const home = mk('button', 'dtab-home' + (docNow ? '' : ' on'), ic('home')); home.type = 'button'; home.title = 'Home'; home.setAttribute('aria-label', 'Home'); home.setAttribute('role', 'tab'); home.setAttribute('aria-selected', docNow ? 'false' : 'true');
+  tabsEl.append(home);
   for (const t of list) {
     const e = mk('div', 'dtab' + (t.on ? ' on' : '')); e.dataset.id = t.id; e.setAttribute('role', 'tab'); e.setAttribute('aria-selected', t.on ? 'true' : 'false'); e.tabIndex = t.on ? 0 : -1;
     e.title = t.name + (t.dirty ? '\nChanges not downloaded yet' : '');
@@ -4271,11 +4400,11 @@ function renderTabs() {
   }
   const add = mk('button', 'dtab-add', ic('plus')); add.type = 'button'; add.title = 'Open a PDF in a new tab (Ctrl+O)'; add.setAttribute('aria-label', 'Open a PDF in a new tab'); tabsEl.append(add);
   tabsEl.querySelector('.dtab.on')?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
-  document.title = S.sample ? 'Reef PDF' : S.name;
 }
 const tabDoc = el => { const t = el && el.closest('.dtab'); return t ? DOCS.find(d => d.id === t.dataset.id) : null; };
 tabsEl.addEventListener('click', ev => {
   if (ev.target.closest('.dtab-add')) { pickOpen('replace'); return; }
+  if (ev.target.closest('.dtab-home')) { homeShow(); return; }
   const d = tabDoc(ev.target); if (!d) return;
   if (ev.target.closest('.dtab-x')) docClose(d); else docSwitch(d);
 });
@@ -4291,6 +4420,135 @@ tabsEl.addEventListener('keydown', ev => {
 window.addEventListener('keydown', ev => {       // Ctrl+Tab steps through the documents where the browser leaves that key to the page (the installed app)
   if (ev.key !== 'Tab' || !ev.ctrlKey || DOCS.length < 2) return;
   ev.preventDefault(); docSwitch(DOCS[(DOCS.indexOf(docNow) + (ev.shiftKey ? DOCS.length - 1 : 1)) % DOCS.length]);
+});
+
+/* ---------- Home: the start page ----------
+   Shown when Reef PDF starts, when the last tab is closed, and from the Home tab. Recommended tools, Open File, and the files opened
+   recently. Recent files are kept in this browser only (IndexedDB) as a name, a small picture of the first page and the browser's handle
+   to the file, so they can be opened again with one click. The files themselves are not copied. */
+const homeEl = $('#home'), appEl = $('#app');
+const isHome = () => !docNow;
+function homeShow() {
+  if (docNow) { if (docBusy()) { toast('Wait until the current job has finished.'); return; } docLeave(); docNow = null; }
+  Object.assign(S, { pages: [], sel: null, selPages: new Set(), cur: 0, name: '', handle: null, dirty: false, sample: false, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
+  H.stack = []; H.i = -1; $('#findInput').value = ''; $('#findCount').textContent = '';
+  for (const m of $$('.menu.pop')) m.hidden = true;
+  appEl.classList.add('is-home'); homeEl.hidden = false;
+  refresh(); renderRecent();
+}
+function homeOff() { if (!homeEl.hidden) { homeEl.hidden = true; appEl.classList.remove('is-home'); } }
+const blankDoc = () => docOpen({ pages: [{ id: uid('p'), src: null, idx: 0, rot: 0, w: A4[0], h: A4[1], objs: [] }], name: 'Untitled.pdf' });
+const HOME_TOOLS = {
+  edit: () => pickOpen('replace', { after: () => setTool('edittext') }),
+  sign: () => pickOpen('replace', { after: () => setTool('sign') }),
+  combine: () => pickOpen('combine'),
+  pictures: () => pickOpen('replace', { kind: 'images' }),
+  ocr: () => pickOpen('replace', { after: () => openOcr() }),
+  convert: () => pickOpen('replace', { after: () => $('#btnConvert').click() }),
+  open: () => pickOpen('replace'),
+  blank: () => blankDoc(),
+};
+homeEl.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-home]'); if (t) { ev.stopPropagation(); HOME_TOOLS[t.dataset.home]?.(); return; }
+});
+/* drop files anywhere on Home */
+const hOpen = $('#hOpen');
+homeEl.addEventListener('dragover', ev => { if ([...(ev.dataTransfer?.types || [])].includes('Files')) { ev.preventDefault(); hOpen.classList.add('drag'); } });
+homeEl.addEventListener('dragleave', ev => { if (!homeEl.contains(ev.relatedTarget)) hOpen.classList.remove('drag'); });
+homeEl.addEventListener('drop', ev => {
+  hOpen.classList.remove('drag'); const fs = ev.dataTransfer?.files; if (!fs || !fs.length) return; ev.preventDefault();
+  const list = [...fs], hp = dropHandles(ev.dataTransfer);
+  Promise.all(hp).then(hs => { hs.forEach((h, i) => { if (h && h.kind === 'file' && list[i]) fileHandles.set(list[i], h); }); openFiles(list, 'replace'); });
+});
+
+/* ---------- recent files ---------- */
+const RECENT_MAX = 30;
+let recentDB = null, recentView = (() => { try { return localStorage.getItem('reef.recent.view') === 'grid' ? 'grid' : 'list'; } catch { return 'list'; } })();
+function rdb() {
+  if (!recentDB) recentDB = new Promise((res, rej) => {
+    const r = indexedDB.open('reef-pdf', 1);
+    r.onupgradeneeded = () => { if (!r.result.objectStoreNames.contains('recent')) r.result.createObjectStore('recent', { keyPath: 'id' }); };
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); r.onblocked = () => rej(new Error('storage blocked'));
+  }).catch(e => { recentDB = null; throw e; });
+  return recentDB;
+}
+async function rtx(mode, fn) {
+  const db = await rdb();
+  return new Promise((res, rej) => {
+    const t = db.transaction('recent', mode), q = fn(t.objectStore('recent')); let out;
+    if (q) q.onsuccess = () => { out = q.result; };
+    t.oncomplete = () => res(out); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error);
+  });
+}
+const recentAll = async () => ((await rtx('readonly', st => st.getAll())) || []).sort((a, b) => b.opened - a.opened);
+const sameFile = (a, b) => (a && b && typeof a.isSameEntry === 'function' ? a.isSameEntry(b).catch(() => false) : Promise.resolve(false));
+async function recentThumb(pages) {          // a small picture of the first page
+  const pg = pages.find(p => p.src); if (!pg) return '';
+  const pj = await getPdfPage(pg), v1 = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) }), k = 150 / Math.max(v1.width, v1.height);
+  const vp = pj.getViewport({ scale: k, rotation: pageRot(pj, pg) }), c = document.createElement('canvas'); c.width = Math.max(1, Math.round(vp.width)); c.height = Math.max(1, Math.round(vp.height));
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height);
+  await pj.render({ canvas: c, viewport: vp, annotationMode: PJ.AnnotationMode.ENABLE }).promise;
+  const url = c.toDataURL('image/jpeg', 0.72); c.width = c.height = 1; return url;
+}
+async function recentNote(handle, pages, size) {      // a document was opened from or saved to a file: it goes to the top of Recent
+  if (!handle || typeof indexedDB === 'undefined' || (typeof FileSystemFileHandle === 'function' && !(handle instanceof FileSystemFileHandle))) return;
+  try {
+    const all = await recentAll(); let same = null;
+    for (const e of all) if (await sameFile(e.handle, handle)) { same = e; break; }
+    const e = { id: same ? same.id : uid('r'), name: handle.name, handle, size: size || (same && same.size) || 0, pages: pages.length, opened: Date.now(), thumb: same ? same.thumb : '' };
+    await rtx('readwrite', st => st.put(e));
+    const over = all.filter(x => x !== same).slice(RECENT_MAX - 1);
+    if (over.length) await rtx('readwrite', st => { for (const x of over) st.delete(x.id); });
+    const t = await recentThumb(pages).catch(() => '');
+    if (t) { e.thumb = t; await rtx('readwrite', st => st.put(e)); }
+    if (isHome()) renderRecent();
+  } catch (err) { console.warn('recent files', errMsg(err)); }
+}
+function whenText(t) {
+  const d = new Date(t), now = new Date(), day = x => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime(), diff = Math.round((day(now) - day(d)) / 864e5);
+  const hm = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+  if (diff === 0) return 'Today, ' + hm; if (diff === 1) return 'Yesterday, ' + hm;
+  return d.toLocaleDateString('en-GB', d.getFullYear() === now.getFullYear() ? { day: 'numeric', month: 'short' } : { day: 'numeric', month: 'short', year: 'numeric' });
+}
+let recentList = [];
+async function renderRecent() {
+  const box = $('#recentList'), note = $('#recentNote'), foot = $('#recentFoot');
+  let list = [], ok = true;
+  try { list = await recentAll(); } catch { ok = false; }
+  recentList = list; box.textContent = ''; box.className = 'rlist ' + recentView;
+  for (const b of $$('[data-rview]')) b.setAttribute('aria-pressed', b.dataset.rview === recentView ? 'true' : 'false');
+  note.hidden = !!list.length; foot.hidden = !list.length; $('#recentViews').hidden = !list.length;
+  if (!list.length) { note.textContent = ok && fsAccess() ? 'PDFs you open appear here, so you can open them again with one click.' : 'The list of recent files is kept when Reef PDF runs in Chrome or Edge, on its own page or as an installed app.'; return; }
+  if (recentView === 'list') { const h = mk('div', 'rrow rhead'); h.innerHTML = '<span></span><span>Name</span><span>Opened</span><span>Size</span><span></span>'; box.append(h); }
+  for (const e of list) {
+    const row = mk('div', 'rrow'); row.dataset.id = e.id; row.setAttribute('role', 'listitem');
+    const pic = e.thumb ? `<img src="${e.thumb}" alt="">` : ic('open');
+    row.innerHTML = `<span class="rthumb">${pic}</span><button type="button" class="ropen" title="Open ${esc(e.name)}"><b>${esc(e.name.replace(/\.pdf$/i, ''))}</b><small>PDF${e.pages ? ` · ${e.pages} page${e.pages === 1 ? '' : 's'}` : ''}</small></button><span class="rwhen">${esc(whenText(e.opened))}</span><span class="rsize mono">${e.size ? saveSize(e.size) : ''}</span><button type="button" class="rx" title="Remove from Recent" aria-label="Remove ${esc(e.name)} from Recent">${TAB_X}</button>`;
+    box.append(row);
+  }
+}
+$('#recentList').addEventListener('click', ev => {
+  const row = ev.target.closest('.rrow'); if (!row || row.classList.contains('rhead')) return;
+  const e = recentList.find(x => x.id === row.dataset.id); if (!e) return;
+  if (ev.target.closest('.rx')) { rtx('readwrite', st => st.delete(e.id)).then(renderRecent).catch(() => { }); return; }
+  recentOpen(e);
+});
+async function recentOpen(e) {
+  const h = e.handle;
+  try {
+    for (const d of DOCS) { const st = docState(d); if (st.handle && await sameFile(st.handle, h)) { docSwitch(d); return; } }      // already open: its tab
+    let p = await h.queryPermission({ mode: 'read' }); if (p !== 'granted') p = await h.requestPermission({ mode: 'read' });
+    if (p !== 'granted') { toast(`Reef PDF was not allowed to open "${e.name}".`); return; }
+    const f = await h.getFile(); fileHandles.set(f, h); await openFiles([f], 'replace');
+  } catch (err) {
+    if (err && err.name === 'NotFoundError') { toast(`"${e.name}" was not found. It may have been moved, renamed or deleted, so it was taken off the list.`, 'info', 9000); await rtx('readwrite', st => st.delete(e.id)).catch(() => { }); renderRecent(); }
+    else { console.warn(err); toast(`"${e.name}" could not be opened: ${errMsg(err)}`, 'err'); }
+  }
+}
+for (const b of $$('[data-rview]')) b.addEventListener('click', () => { recentView = b.dataset.rview; try { localStorage.setItem('reef.recent.view', recentView); } catch { } renderRecent(); });
+$('#recentClear').addEventListener('click', async () => {
+  if (!(await confirmBox('Clear the Recent list?', 'The list is emptied. The files themselves stay where they are.', 'Clear list'))) return;
+  await rtx('readwrite', st => st.clear()).catch(() => { }); renderRecent();
 });
 
 /* ---------- Print: only the document, not the editor around it ----------
@@ -5542,13 +5800,13 @@ async function boot() {
   cfBundledInit();
   stage.style.setProperty('--z', S.zoom); syncZoomSel(); setTool('select'); busy('Getting ready…');
   await setupWorker();
-  await docSample(); busy(false);
+  homeShow(); busy(false);
   if ('launchQueue' in window) window.launchQueue.setConsumer(async lp => {     // when installed as a web app, PDFs opened from the file manager arrive here
     if (!lp.files || !lp.files.length) return;
     openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

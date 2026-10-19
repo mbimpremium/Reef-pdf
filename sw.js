@@ -1,5 +1,5 @@
-/* Reef PDF service worker: keeps the app available offline. Build 202610150203. */
-const CACHE = 'reef-pdf-202610150203', KEEP = 'reef-pdf-ocr-7cfccb815b';      // KEEP: the text recognition engine, which does not change with every build
+/* Reef PDF service worker: keeps the app available offline. Build 202610190917. */
+const CACHE = 'reef-pdf-202610190917', KEEP = 'reef-pdf-ocr-7cfccb815b';      // KEEP: the text recognition engine, which does not change with every build
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-32.png', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => { e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE && k !== KEEP).map(k => caches.delete(k)))).then(() => self.clients.claim())); });

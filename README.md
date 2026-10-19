@@ -48,6 +48,17 @@ Aplikasi membawa font yang ukurannya sama dengan font Office: Carlito (setara Ca
 
 Untuk memakai font Office yang asli (Calibri, Cambria, Aptos, Tahoma, dan lainnya) yang sudah ter-install di komputer: pilih sebuah teks, buka daftar **Font**, lalu pilih **Use the fonts installed on this computer…** dan izinkan saat browser bertanya. Ini hanya tersedia di Edge dan Chrome di komputer, dan hanya bila aplikasi dibuka dari alamat ini atau dari aplikasi yang sudah di-install. Font tetap berada di komputer; hanya huruf yang dipakai yang ditanam ke PDF yang diunduh.
 
+## Halaman Home
+
+Reef PDF dibuka di halaman **Home** (tanpa dokumen contoh), mirip Adobe Acrobat:
+
+- **Recommended tools**: Edit a PDF, Fill & Sign, Combine files (beberapa PDF/gambar jadi satu PDF), Pictures to PDF, Recognize text (OCR), dan Convert a PDF. Tiap alat membuka file lalu langsung masuk ke alat itu.
+- **Open File**, seret PDF ke halaman ini, atau **Start with a blank page**.
+- **Recent**: PDF yang pernah dibuka atau disimpan, lengkap dengan gambar halaman pertama, waktu dibuka, dan ukuran. Klik untuk membuka lagi (browser bisa menanyakan izin sekali). Ada tampilan daftar dan thumbnail, tombol × untuk menghapus satu file dari daftar, dan **Clear recent**. Daftar ini hanya disimpan di browser komputer ini; filenya sendiri tidak disalin. Fitur ini bekerja di Chrome dan Edge.
+- Tab **Home** (ikon rumah) selalu ada di kiri deretan tab. Menutup tab terakhir juga kembali ke Home.
+
+Panel kanan (Guide/Properties) tersembunyi saat mulai. Panel muncul sendiri saat pertama kali ada yang bisa diatur (misalnya saat mengedit teks atau memilih objek), dan bisa dibuka atau ditutup dengan tombol panel di ujung kanan toolbar. Setelah ditutup dengan tombol itu, panel tidak muncul sendiri lagi sampai aplikasi dibuka ulang.
+
 ## Beberapa PDF dalam satu jendela (tab)
 
 Setiap PDF yang dibuka mendapat tab sendiri, seperti di Adobe Acrobat. Tiap tab menyimpan suntingan, undo, zoom, dan posisi halamannya masing-masing. Titik biru di tab berarti ada perubahan yang belum diunduh.
