@@ -112,7 +112,7 @@ Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman do
 
 ## Memperbarui
 
-Unggah ulang file dengan nama yang sama ke repository. Aplikasi yang sudah ter-install mengambil versi baru saat dibuka dalam keadaan online, dan memakainya pada pembukaan berikutnya.
+Unggah ulang file dengan nama yang sama ke repository. Setelah GitHub Pages selesai menerbitkan (sekitar 1 menit), versi baru langsung tampil saat Reef PDF dibuka dalam keadaan online, di browser maupun aplikasi yang ter-install. Tanpa internet, versi terakhir yang tersimpan tetap bisa dipakai.
 
 ## Catatan
 
