@@ -380,6 +380,31 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 }
 @media (max-width:480px){.htools{grid-template-columns:minmax(0,1fr)}}
 
+/* ---------- news: Reef PDF on phones (see 0485-mobile.js) ---------- */
+dialog.news{width:min(640px,calc(100vw - 32px))}
+.news .dlg{gap:16px;padding:22px 22px 18px}
+.news-head{display:grid;gap:8px;justify-items:start}
+.news-badge{padding:2px 9px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font:700 11px/1.5 var(--f-ui);letter-spacing:.06em;text-transform:uppercase}
+.news-head h2{font-size:21px}
+.news-body{display:grid;grid-template-columns:176px minmax(0,1fr);gap:20px;align-items:start}
+.news-qr{margin:0;display:grid;gap:8px;justify-items:center;padding:10px 10px 8px;border:1px solid var(--line);border-radius:10px;background:var(--raise)}
+.news-qr .qr{display:block;width:154px;height:154px;border-radius:4px}
+.news-qr figcaption{font-size:11.5px;color:var(--muted);text-align:center}
+.news-text{display:grid;gap:10px}
+.news-text p{margin:0}
+#nwLead{color:var(--ink)}
+.news-list{margin:0;padding:0;list-style:none;display:grid;gap:7px}
+.news-list li{position:relative;padding-left:22px;line-height:1.45}
+.news-list li::before{content:"";position:absolute;left:2px;top:.42em;width:11px;height:6px;border:solid var(--ok);border-width:0 0 2px 2px;transform:rotate(-45deg)}
+.news-tip{font-size:12px}
+.news-tip b{color:var(--ink);font-weight:600;white-space:nowrap}
+.news-link a{color:var(--accent);font-weight:600;text-decoration:none;word-break:break-all}
+.news-link a:hover{text-decoration:underline}
+.hphone{display:inline-flex;align-items:center;gap:5px}
+.hphone .ic{width:15px;height:15px}
+@media (max-width:560px){.news-body{grid-template-columns:minmax(0,1fr)}.news-qr{justify-self:center}}
+@media (pointer:coarse), (max-width:640px){.desk-only{display:none!important}}
+
 /* ---------- touch screens and phones (see 0485-mobile.js) ---------- */
 .mob-only{display:none!important}
 .side-x{display:none;margin:-6px -6px -6px 6px}
@@ -584,6 +609,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
           <button type="button" class="btn primary" data-home="open">Open File</button>
           <p>or drop a PDF here</p>
           <button type="button" class="hlink" data-home="blank">Start with a blank page</button>
+          <button type="button" class="hlink hphone desk-only" data-home="phone"><i data-ic="phone"></i>Use Reef PDF on your phone</button>
         </div>
       </div>
       <div class="hrecent">
@@ -680,6 +706,24 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 <input type="file" id="fSig" accept="image/png,image/jpeg,image/webp" hidden>
 <input type="file" id="fFont" accept=".ttf,.ttc,font/ttf,font/collection" multiple hidden>
 
+<dialog id="dlgNews" class="news" aria-labelledby="nwTitle"><form method="dialog" class="dlg">
+  <div class="news-head"><span class="news-badge">New</span><h2 id="nwTitle">Reef PDF now works on your phone</h2></div>
+  <div class="news-body">
+    <figure class="news-qr desk-only"><svg class="qr" viewBox="-4 -4 37 37" shape-rendering="crispEdges" role="img" aria-label="QR code: https://mbimpremium.github.io/Reef-pdf/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM10 0h1v1h-1zM12 0h1v1h-1zM16 0h1v1h-1zM19 0h2v1h-2zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h2v1h-2zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h5v1h-5zM19 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h2v1h-2zM16 4h5v1h-5zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h4v1h-4zM13 5h4v1h-4zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h4v1h-4zM15 7h2v1h-2zM18 7h3v1h-3zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM17 8h1v1h-1zM22 8h5v1h-5zM2 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM11 9h3v1h-3zM19 9h2v1h-2zM22 9h3v1h-3zM28 9h1v1h-1zM1 10h3v1h-3zM6 10h1v1h-1zM8 10h4v1h-4zM13 10h3v1h-3zM21 10h1v1h-1zM23 10h2v1h-2zM0 11h2v1h-2zM4 11h1v1h-1zM7 11h1v1h-1zM11 11h1v1h-1zM14 11h1v1h-1zM16 11h1v1h-1zM19 11h3v1h-3zM23 11h1v1h-1zM25 11h1v1h-1zM27 11h1v1h-1zM0 12h7v1h-7zM8 12h2v1h-2zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM25 12h2v1h-2zM0 13h4v1h-4zM10 13h4v1h-4zM16 13h1v1h-1zM18 13h2v1h-2zM22 13h3v1h-3zM28 13h1v1h-1zM0 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM10 14h1v1h-1zM12 14h7v1h-7zM20 14h2v1h-2zM23 14h4v1h-4zM0 15h1v1h-1zM7 15h1v1h-1zM12 15h2v1h-2zM15 15h2v1h-2zM18 15h1v1h-1zM20 15h3v1h-3zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM14 16h2v1h-2zM17 16h3v1h-3zM25 16h2v1h-2zM0 17h5v1h-5zM7 17h1v1h-1zM9 17h3v1h-3zM16 17h9v1h-9zM26 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM6 18h1v1h-1zM9 18h2v1h-2zM12 18h1v1h-1zM15 18h3v1h-3zM20 18h1v1h-1zM26 18h1v1h-1zM0 19h1v1h-1zM2 19h4v1h-4zM7 19h2v1h-2zM12 19h1v1h-1zM14 19h3v1h-3zM18 19h1v1h-1zM20 19h1v1h-1zM24 19h1v1h-1zM27 19h1v1h-1zM0 20h1v1h-1zM4 20h4v1h-4zM9 20h4v1h-4zM15 20h1v1h-1zM17 20h1v1h-1zM20 20h5v1h-5zM26 20h3v1h-3zM8 21h1v1h-1zM11 21h1v1h-1zM13 21h2v1h-2zM16 21h5v1h-5zM24 21h5v1h-5zM0 22h7v1h-7zM10 22h1v1h-1zM12 22h4v1h-4zM18 22h3v1h-3zM22 22h1v1h-1zM24 22h3v1h-3zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM19 23h2v1h-2zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h2v1h-2zM14 24h4v1h-4zM20 24h5v1h-5zM26 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h2v1h-2zM11 25h1v1h-1zM15 25h5v1h-5zM25 25h4v1h-4zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM14 26h4v1h-4zM20 26h8v1h-8zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h4v1h-4zM16 27h1v1h-1zM20 27h1v1h-1zM22 27h4v1h-4zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM11 28h3v1h-3zM17 28h3v1h-3zM23 28h1v1h-1zM26 28h1v1h-1z"/></svg><figcaption>Scan with your phone's camera</figcaption></figure>
+    <div class="news-text">
+      <p id="nwLead">Open Reef PDF in the browser of a phone or tablet and edit your PDFs there too.</p>
+      <ul class="news-list">
+        <li>The tools sit at the bottom of the screen, like a phone app</li>
+        <li>Pinch with two fingers to zoom</li>
+        <li>Press and hold on text to select it, then copy or highlight it</li>
+        <li>While you type, a format bar sits above the keyboard</li>
+      </ul>
+      <p class="news-tip">Add it to the home screen to open it like an app: in Chrome <b>⋮ → Add to Home screen</b>, in Safari <b>Share → Add to Home Screen</b>.</p>
+      <p class="news-link desk-only"><a id="nwLink" href="https://mbimpremium.github.io/Reef-pdf/" target="_blank" rel="noopener">mbimpremium.github.io/Reef-pdf</a></p>
+    </div>
+  </div>
+  <div class="acts"><button class="btn desk-only" type="button" id="nwCopy">Copy link</button><button class="btn primary" value="ok" autofocus>Got it</button></div>
+</form></dialog>
 <dialog id="dlgConfirm"><form method="dialog" class="dlg">
   <h2 id="cfTitle"></h2><p id="cfText"></p>
   <div class="acts"><button class="btn" value="no" id="cfNo">Cancel</button><button class="btn primary" value="yes" id="cfYes">Continue</button></div>
@@ -1114,6 +1158,7 @@ const ICONS = {
   convert: '<path d="M6 3.500h6l3.500 3.500V11M12 3.500V7h3.500M6 3.500V20h4"/><path d="M14 14.500h6.500M18 12l2.500 2.500L18 17M20.500 19.500H14M16.500 17L14 19.500l2.500 2.500"/>',
   ocr: '<path d="M4 8.500V5h3.500M16.500 5H20v3.500M20 15.500V19h-3.500M7.500 19H4v-3.500"/><path d="M8.500 15.500L12 8l3.500 7.500M9.900 12.700h4.200"/>',
   x: '<path d="M7 7l10 10M17 7L7 17"/>',
+  phone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -4634,6 +4679,7 @@ const HOME_TOOLS = {
   convert: () => pickOpen('replace', { after: () => $('#btnConvert').click() }),
   open: () => pickOpen('replace'),
   blank: () => blankDoc(),
+  phone: () => newsShow(),
 };
 homeEl.addEventListener('click', ev => {
   const t = ev.target.closest('[data-home]'); if (t) { ev.stopPropagation(); HOME_TOOLS[t.dataset.home]?.(); return; }
@@ -4978,6 +5024,31 @@ function keepCaretVisible() {
 }
 new ResizeObserver(() => { if (S.editing) setTimeout(keepCaretVisible, 30); }).observe(stage);
 document.addEventListener('selectionchange', () => { if (S.editing && (touchUI() || phone())) { clearTimeout(keepCaretVisible.t); keepCaretVisible.t = setTimeout(keepCaretVisible, 60); } });
+
+/* ---------- news: Reef PDF on phones ----------
+   Shown once, on Home, a moment after Reef PDF starts (not when it was opened with a file: then the next time). On a computer it
+   shows a QR code of the public address, so the phone can open it straight away. "Use Reef PDF on your phone" on Home shows it again. */
+const NEWS_KEY = 'reef.news.mobile';
+let newsSeen = false;
+function newsShow() {
+  const d = $('#dlgNews'); if (d.open) return;
+  const onTouch = touchUI() || phone();
+  $('#nwLead').textContent = onTouch ? 'Reef PDF is made for touch screens too:' : 'Open Reef PDF in the browser of a phone or tablet and edit your PDFs there too.';
+  $('#nwCopy').textContent = 'Copy link';
+  newsSeen = true; try { localStorage.setItem(NEWS_KEY, '1'); } catch { }
+  d.showModal();
+}
+function newsMaybe() {
+  if (navigator.webdriver) return;      // automated browsers (the tests) start without it
+  let seen = newsSeen; try { seen = seen || localStorage.getItem(NEWS_KEY) === '1'; } catch { }
+  if (seen || !isHome() || document.querySelector('dialog[open]')) return;
+  newsShow();
+}
+$('#nwCopy').addEventListener('click', async () => {
+  const b = $('#nwCopy'), url = $('#nwLink').href;
+  try { await navigator.clipboard.writeText(url); b.textContent = 'Copied'; }
+  catch { const r = document.createRange(); r.selectNodeContents($('#nwLink')); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); b.textContent = 'Press Ctrl+C to copy'; }
+});
 
 /* ---------- Convert: the document as a Word, Excel or PowerPoint file ----------
    The finished PDF (with every edit) is read again the way Edit text reads a page: paragraphs with their fonts, sizes, weights, colours,
@@ -6183,8 +6254,9 @@ async function boot() {
     if (!lp.files || !lp.files.length) return;
     openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
   });
+  setTimeout(newsMaybe, 900);      // once: Reef PDF on phones
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

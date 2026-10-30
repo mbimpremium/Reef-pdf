@@ -114,6 +114,8 @@ Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman do
 
 ## HP dan tablet
 
+Saat Reef PDF pertama kali dibuka setelah pembaruan ini, muncul pesan **"Reef PDF now works on your phone"**. Di komputer pesan ini menampilkan QR code alamat Reef PDF: pindai dengan kamera HP untuk langsung membukanya, atau pakai **Copy link**. Pesan hanya muncul sekali per browser; untuk melihatnya lagi, klik **Use Reef PDF on your phone** di Home.
+
 Tampilan menyesuaikan sendiri dengan layar:
 
 - **HP**: bar atas satu baris (nama file, Undo, Redo, Save, dan tombol **⋮**). Alat-alat ada di bawah layar dengan ikon dan nama, bisa digeser ke samping. Rectangle, Ellipse, Line, dan Arrow digabung di tombol **Shapes**. Tombol **⋮** berisi Open, Insert pages, Find text, Fit width/Fit page, Pages, Properties, dan Print. Nomor halaman tampil di pojok kanan atas.
