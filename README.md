@@ -34,6 +34,8 @@ Mesin OCR (Tesseract 5 dari proyek tesseract.js-core, beserta data bahasa Inggri
 1. Buka alamat di atas dengan Microsoft Edge atau Google Chrome di komputer.
 2. Klik ikon install di ujung kanan kolom alamat, atau menu **⋯ → Apps → Install Reef PDF**.
 
+Di HP Android (Chrome): menu **⋮ → Add to Home screen** atau **Install app**. Di iPhone/iPad (Safari): tombol **Share → Add to Home Screen**. Reef PDF lalu terbuka layar penuh seperti aplikasi biasa.
+
 ## 3. Jadikan pembuka PDF
 
 1. Di File Explorer klik kanan sebuah file PDF → **Open with → Choose another app**.
@@ -109,6 +111,23 @@ Link di dalam PDF (alamat web, e-mail, atau link ke halaman lain di dokumen yang
 ## Print
 
 Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman dokumen saja (lengkap dengan suntingan dan isian formulir), bukan tampilan editornya. Ukuran dan arah tiap halaman (portrait/landscape) ikut. Kalau print dibuka dari menu browser, yang tercetak hanya petunjuk untuk memakai tombol Print.
+
+## HP dan tablet
+
+Tampilan menyesuaikan sendiri dengan layar:
+
+- **HP**: bar atas satu baris (nama file, Undo, Redo, Save, dan tombol **⋮**). Alat-alat ada di bawah layar dengan ikon dan nama, bisa digeser ke samping. Rectangle, Ellipse, Line, dan Arrow digabung di tombol **Shapes**. Tombol **⋮** berisi Open, Insert pages, Find text, Fit width/Fit page, Pages, Properties, dan Print. Nomor halaman tampil di pojok kanan atas.
+- **Tablet** (posisi tegak): toolbar tetap di atas, tombol lebih besar, Find dan Shapes masuk ke **⋮** dan **Shapes**.
+- Panel **Pages** terbuka sebagai laci dari kiri, panel **Properties** sebagai lembar dari bawah, dan menu sebagai lembar dari bawah. Ketuk di luar panel atau tombol × untuk menutup.
+
+Sentuhan:
+
+- **Dua jari**: cubit untuk zoom, geser untuk berpindah. Satu jari menggulir halaman dengan alat Select, Edit text, Text, Note, dan Stamp; dengan Pen, Highlight, Shapes, Eraser, dan Redact satu jari menggambar.
+- **Ketuk** objek untuk memilihnya. Muncul bar dengan **Edit**, **Style**, **Duplicate**, **Delete**, dan **More**.
+- **Tekan lama** pada teks memilih satu kata. Tarik pegangan biru untuk memilih lebih banyak, lalu pakai bar **Copy**, **Highlight**, atau **More** (underline, strikethrough, catatan, hapus, redact). Tekan lama di tempat kosong membuka menu halaman (Add text here, sticky note, Paste, Select all text).
+- **Mengetik**: saat mengedit teks, toolbar diganti bar format di atas keyboard: **B**, **I**, perkecil/perbesar huruf, pengaturan lainnya, dan **Done**. Baris yang diketik digulir supaya tidak tertutup keyboard.
+
+Catatan HP: menyimpan berarti mengunduh PDF ke folder Download (Overwrite file asli dan daftar Recent hanya ada di Chrome/Edge komputer). Membuka PDF lewat **Open File**. Font Office asli dari komputer tidak tersedia di HP; font pengganti yang ukurannya sama tetap dipakai.
 
 ## Memperbarui
 

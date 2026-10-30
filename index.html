@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
 <title>Reef PDF</title>
 <meta name="description" content="Reef PDF: a PDF editor that runs entirely in your browser. Files are never uploaded.">
 <meta name="robots" content="noindex">
@@ -86,7 +86,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .ic{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 :focus-visible{outline:2px solid var(--accent);outline-offset:1px}
 
-.app{height:100%;display:grid;grid-template-rows:auto auto auto minmax(0,1fr) auto}
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto auto minmax(0,1fr) auto}
 
 /* ---------- top bar ---------- */
 .top{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;padding:8px 16px 6px;background:var(--chrome)}
@@ -380,6 +380,140 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 }
 @media (max-width:480px){.htools{grid-template-columns:minmax(0,1fr)}}
 
+/* ---------- touch screens and phones (see 0485-mobile.js) ---------- */
+.mob-only{display:none!important}
+.side-x{display:none;margin:-6px -6px -6px 6px}
+.page-pill{display:none}
+.scrim{position:absolute;inset:0;z-index:19;background:rgba(10,20,17,.34)}
+.scrim[hidden],.selbar[hidden],.fmtbar[hidden]{display:none!important}
+.selbar{position:absolute;z-index:25;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:14px;background:var(--ink);color:var(--chrome);box-shadow:var(--shadow);max-width:calc(100% - 16px)}
+.selbar button{display:grid;justify-items:center;align-content:center;gap:3px;min-width:58px;height:50px;padding:0 6px;border:0;border-radius:10px;background:transparent;color:inherit;font-size:11px;font-weight:500;cursor:pointer}
+.selbar button:active{background:color-mix(in srgb,currentColor 18%,transparent)}
+.fmtbar{position:absolute;z-index:26;left:0;right:0;bottom:0;display:flex;align-items:center;gap:4px;padding:6px 8px;background:var(--chrome);border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(20,40,34,.12)}
+.fmtbar button{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:40px;padding:0 8px;border:1px solid var(--line);border-radius:8px;background:var(--raise);font-size:16px;cursor:pointer;touch-action:manipulation}
+.fmtbar button small{font-size:11px;margin-left:1px}
+.fmtbar button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent)}
+.fmtbar .done{margin-left:auto;padding:0 16px;background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-size:14px;font-weight:600}
+.tsh{position:absolute;z-index:3;width:calc(34px / var(--z));height:calc(34px / var(--z));pointer-events:auto;touch-action:none}
+.tsh::after{content:"";position:absolute;top:0;width:calc(18px / var(--z));height:calc(18px / var(--z));background:var(--accent)}
+.tsh-a{margin-left:calc(-34px / var(--z))} .tsh-a::after{right:0;border-radius:50% 0 50% 50%}
+.tsh-b::after{left:0;border-radius:0 50% 50% 50%}
+@media (pointer:coarse){
+  .stage{touch-action:pan-x pan-y;-webkit-touch-callout:none}
+  .stage .sheet{-webkit-user-select:none;user-select:none}
+  .stage[data-tool="text"] .sheet,.stage[data-tool="edittext"] .sheet,.stage[data-tool="note"] .sheet,.stage[data-tool="stamp"] .sheet{touch-action:pan-x pan-y}
+  .top,.tools,.doctabs{touch-action:pan-x pan-y}
+}
+@media (max-width:860px){
+  .side-x{display:inline-flex}
+  .side-head{align-items:center}
+  #pageCount{margin-left:auto}
+}
+@media (max-width:860px) and (pointer:coarse){      /* a tablet held upright: one row on top, Find in the ⋮ menu */
+  .app:not(.is-home) #btnMob,#findClose,#btnShapes{display:inline-flex!important}
+  .app:not(.is-home) .brand-name,.find,.tools .shape-tool{display:none}
+  .app.m-find .top{flex-wrap:wrap}
+  .app.m-find .find{display:flex;order:10;flex:1 1 100%;min-width:0;height:40px}
+  .find input{flex:1 1 0;width:0;font-size:16px}
+  .top{gap:6px 8px}
+  .top .btn{height:36px;width:36px}
+  .top .btn.primary{width:auto}
+  .zoom select{height:36px;max-width:128px;font-size:13px}
+  .docname{height:36px;font-size:16px;flex-basis:80px}
+  .tools{padding:5px 12px}
+  .tool{height:42px;min-width:40px;justify-content:center}
+  .tool .ic{width:20px;height:20px}
+  .menu.pop button{padding:11px 12px}
+}
+@media (max-width:640px), (max-height:500px) and (pointer:coarse){
+  .mob-only{display:inline-flex!important}
+  .app{grid-template-rows:auto auto minmax(0,1fr) auto}
+  .app .work{grid-row:3} .app .tools{grid-row:4}
+  .app:not(.is-home) .status{display:none}
+  /* top bar: one row */
+  .top{flex-wrap:nowrap;gap:4px;padding:6px calc(8px + env(safe-area-inset-right,0px)) 6px calc(10px + env(safe-area-inset-left,0px))}
+  .brand{margin-right:2px}
+  .brand-name,.spacer,.zoom,.find,#btnPrint,#btnMerge{display:none}
+  .app:not(.is-home) #btnOpen{display:none}
+  .app.is-home .brand-name{display:inline} .app.is-home .spacer{display:block}
+  .app.is-home #btnOpen{width:auto;padding:0 14px}
+  .app.is-home #btnOpen span{display:inline}
+  .top .btn{height:36px;width:36px;padding:0}
+  .top .btn .ic{width:20px;height:20px}
+  .top .btn.primary{width:36px;padding:0} .top .btn.primary span{display:none}
+  #btnSave{order:0} .top .grp{order:0;gap:0}
+  .docname{flex:1 1 0;max-width:none;height:36px;font-size:16px;padding:0 6px}
+  .app.m-find .top{flex-wrap:wrap}
+  .app.m-find .find{display:flex;order:10;flex:1 1 100%;min-width:0;height:40px;margin-top:2px}
+  .find input{flex:1 1 0;width:0;font-size:16px}
+  .find .btn{height:32px;width:32px}
+  .doctabs{padding:0 8px}
+  .dtab{height:34px;min-width:110px}
+  .dtab-x{width:26px;height:26px;opacity:1}
+  .dtab-home{height:34px;width:42px}
+  /* tools: a bar at the bottom, icon over label */
+  .tools{gap:0;padding:4px calc(4px + env(safe-area-inset-right,0px)) 4px calc(4px + env(safe-area-inset-left,0px));border-bottom:0;border-top:1px solid var(--line);background:var(--chrome);scrollbar-width:none;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch;
+    -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 22px),transparent)}
+  .tools::-webkit-scrollbar{display:none}
+  .tools .sep,.tools .shape-tool,#togThumbs,#togProps{display:none}
+  .tools .tool{flex-direction:column;justify-content:center;gap:3px;height:54px;min-width:62px;padding:0 4px;border-radius:10px;font-size:10.5px;scroll-snap-align:start}
+  .tools .tool span{display:block;line-height:1}
+  .tools .tool .ic{width:22px;height:22px}
+  .tools .tool[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
+  .tools .tool[aria-pressed="true"] span{font-weight:650}
+  .app.is-editing .tools{display:none}
+  .app.is-editing .work{grid-row:3 / span 2}
+  .app.is-editing .side.right{bottom:53px;max-height:min(52%,460px)}
+  /* pages */
+  .pages{padding:12px 10px 72px;gap:18px}
+  .pnum{display:none}
+  .page-pill{display:block;position:absolute;z-index:15;top:10px;right:12px;padding:3px 10px;border-radius:99px;background:rgba(20,30,27,.72);color:#fff;font-size:11.5px;pointer-events:none}
+  .page-pill:empty{display:none}
+  .busy{top:44px;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+  /* side panels: pages as a drawer, properties as a sheet from the bottom */
+  .side.left{width:min(250px,80vw);max-width:none}
+  .side.right{top:auto;left:0;right:0;bottom:0;width:auto;max-width:none;max-height:min(64%,560px);border:0;border-radius:16px 16px 0 0;box-shadow:0 -8px 30px rgba(10,20,17,.28)}
+  .side.right .side-head{position:relative;padding:20px 16px 8px}
+  .side.right .side-head::before{content:"";position:absolute;left:50%;top:7px;width:38px;height:4px;margin-left:-19px;border-radius:2px;background:var(--line-2)}
+  .side-tools{gap:4px;padding:0 10px 10px}
+  .side-tools .btn{height:36px;width:36px}
+  .side-foot{display:none}
+  .props{padding:4px 16px 18px;gap:16px}
+  .row{grid-template-columns:82px minmax(0,1fr)}
+  .ctl{height:38px;font-size:16px}
+  .seg .btn{height:38px}
+  .sw{width:30px;height:30px}
+  input[type="color"].swc{width:34px;height:30px}
+  .check input{width:18px;height:18px}
+  /* menus: sheets from the bottom */
+  .menu.pop{left:8px!important;right:8px;top:auto!important;bottom:calc(8px + env(safe-area-inset-bottom,0px));min-width:0;max-width:none;max-height:72vh;padding:6px;border-radius:16px;box-shadow:0 0 0 100vmax rgba(10,20,17,.32),var(--shadow)}
+  .menu.pop button{padding:13px 14px;border-radius:10px;font-size:15px}
+  .menu kbd{display:none}
+  dialog{width:calc(100vw - 16px);max-height:calc(100% - 16px)}
+  .dlg{padding:16px 14px}
+  .dlg .acts .btn{height:40px;padding:0 16px}
+  .dlg input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),.dlg select,.dlg textarea{font-size:16px}
+  #toasts{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+  .app.is-home ~ #toasts,.app.is-editing ~ #toasts{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+  /* Home */
+  .home-in{padding:14px 12px 24px;gap:14px}
+  .home-title{font-size:19px}
+  .hcard{padding:12px}
+  .htools{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin-top:8px}
+  .htool{grid-template-columns:1fr;grid-template-rows:auto auto;justify-items:center;row-gap:6px;padding:10px 4px;text-align:center}
+  .htool .hic{grid-row:auto;width:44px;height:44px;border-radius:12px}
+  .htool .hic .ic{width:22px;height:22px}
+  .htool b{font-size:12.5px;line-height:1.25}
+  .htool span:not(.hic),.htool em{display:none}
+  .rrow{gap:10px;padding:8px 4px}
+}
+@media (max-height:500px) and (pointer:coarse){
+  .tools .tool{height:44px;flex-direction:row;gap:5px;font-size:11.5px}
+  .tools .tool .ic{width:20px;height:20px}
+  .doctabs{display:none}
+  .side.right{max-height:86%}
+}
+
 /* print: only the pages of the document (see 048-print.js) */
 #printArea{display:none}
 @media print{
@@ -421,9 +555,11 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
       <span id="findCount" class="cnt mono"></span>
       <button id="findPrev" class="btn ico ghost" title="Previous" aria-label="Previous match"><i data-ic="chevu"></i></button>
       <button id="findNext" class="btn ico ghost" title="Next" aria-label="Next match"><i data-ic="chevd"></i></button>
+      <button id="findClose" class="btn ico ghost mob-only" title="Close" aria-label="Close find"><i data-ic="x"></i></button>
     </div>
     <button id="btnPrint" class="btn ico doc-only" title="Print the document (Ctrl+P)" aria-label="Print"><i data-ic="print"></i></button>
     <button id="btnSave" class="btn primary doc-only" title="Save the edited PDF (Ctrl+S)"><i data-ic="download"></i><span>Save PDF</span></button>
+    <button id="btnMob" class="btn ico mob-only doc-only" title="More options" aria-label="More options" aria-haspopup="true"><i data-ic="more"></i></button>
   </header>
 
   <div id="tabs" class="doctabs" role="tablist" aria-label="Open documents"></div>
@@ -469,10 +605,11 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     <span class="sep"></span>
     <button class="tool" data-tool="mark" title="Highlight, underline or strike through (H)"><i data-ic="mark"></i><span>Highlight</span></button>
     <button class="tool" data-tool="ink" title="Freehand pen (P)"><i data-ic="ink"></i><span>Pen</span></button>
-    <button class="tool" data-tool="rect" title="Rectangle (R)"><i data-ic="rect"></i></button>
-    <button class="tool" data-tool="ellipse" title="Ellipse (O)"><i data-ic="ellipse"></i></button>
-    <button class="tool" data-tool="line" title="Line (L)"><i data-ic="line"></i></button>
-    <button class="tool" data-tool="arrow" title="Arrow (A)"><i data-ic="arrow"></i></button>
+    <button class="tool mob-only" id="btnShapes" title="Shapes" aria-haspopup="true"><i data-ic="rect"></i><span>Shapes</span></button>
+    <button class="tool shape-tool" data-tool="rect" title="Rectangle (R)"><i data-ic="rect"></i></button>
+    <button class="tool shape-tool" data-tool="ellipse" title="Ellipse (O)"><i data-ic="ellipse"></i></button>
+    <button class="tool shape-tool" data-tool="line" title="Line (L)"><i data-ic="line"></i></button>
+    <button class="tool shape-tool" data-tool="arrow" title="Arrow (A)"><i data-ic="arrow"></i></button>
     <span class="sep"></span>
     <button class="tool" data-tool="image" title="Insert an image (I)"><i data-ic="image"></i><span>Image</span></button>
     <button class="tool" data-tool="sign" title="Signature (S)"><i data-ic="sign"></i><span>Signature</span></button>
@@ -492,7 +629,7 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 
   <div class="work">
     <aside id="thumbs" class="side left" aria-label="Pages">
-      <div class="side-head"><span>Pages</span><span id="pageCount" class="mono"></span></div>
+      <div class="side-head"><span>Pages</span><span id="pageCount" class="mono"></span><button type="button" class="btn ico ghost side-x" data-close="thumbs" title="Close" aria-label="Close the Pages panel"><i data-ic="x"></i></button></div>
       <div class="side-tools">
         <button class="btn ghost" id="pgAdd" title="Add a page" aria-label="Add a page"><i data-ic="plus"></i></button>
         <button class="btn ghost" id="pgRotL" title="Rotate left" aria-label="Rotate left"><i data-ic="rotl"></i></button>
@@ -512,10 +649,21 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
     </aside>
     <section id="stage" class="stage" data-tool="select" tabindex="0" aria-label="Workspace"><div id="pages" class="pages"></div></section>
     <aside id="props" class="side right" aria-label="Properties" hidden>
-      <div class="side-head"><span id="propsTitle">Properties</span></div>
+      <div class="side-head"><span id="propsTitle">Properties</span><button type="button" class="btn ico ghost side-x" data-close="props" title="Close" aria-label="Close the Properties panel"><i data-ic="x"></i></button></div>
       <div id="propsBody" class="props"></div>
     </aside>
     <div id="busy" class="busy" hidden></div>
+    <div id="sideScrim" class="scrim" hidden></div>
+    <div id="pagePill" class="page-pill mono" aria-hidden="true"></div>
+    <div id="selBar" class="selbar" role="toolbar" aria-label="Selection" hidden></div>
+    <div id="fmtBar" class="fmtbar" role="toolbar" aria-label="Text format" hidden>
+      <button type="button" data-fmt="bold" title="Bold" aria-label="Bold"><b>B</b></button>
+      <button type="button" data-fmt="italic" title="Italic" aria-label="Italic"><i style="font-family:serif">I</i></button>
+      <button type="button" data-fmt="smaller" title="Smaller" aria-label="Smaller text">A<small>−</small></button>
+      <button type="button" data-fmt="bigger" title="Bigger" aria-label="Bigger text">A<small>+</small></button>
+      <button type="button" data-fmt="more" title="Font, colour and more" aria-label="Font, colour and more"><i data-ic="sliders"></i></button>
+      <button type="button" data-fmt="done" class="done">Done</button>
+    </div>
   </div>
 
   <footer class="status mono">
@@ -657,6 +805,25 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
   <button data-cv="pptx" role="menuitem">PowerPoint slides (.pptx)</button>
 </div>
 <div class="menu pop" id="ctxMenu" role="menu" hidden></div>
+<div class="menu pop" id="mobMenu" role="menu" hidden>
+  <button data-mob="open" role="menuitem">Open a PDF in a new tab</button>
+  <button data-mob="merge" role="menuitem">Insert pages from a file</button>
+  <hr>
+  <button data-mob="find" role="menuitem">Find text</button>
+  <button data-mob="fitw" role="menuitem">Fit width</button>
+  <button data-mob="fitp" role="menuitem">Fit page</button>
+  <hr>
+  <button data-mob="pages" role="menuitem">Pages: reorder, rotate, delete</button>
+  <button data-mob="props" role="menuitem">Properties and guide</button>
+  <hr>
+  <button data-mob="print" role="menuitem">Print</button>
+</div>
+<div class="menu pop" id="shapeMenu" role="menu" hidden>
+  <button data-shape="rect" role="menuitem">Rectangle</button>
+  <button data-shape="ellipse" role="menuitem">Ellipse</button>
+  <button data-shape="line" role="menuitem">Line</button>
+  <button data-shape="arrow" role="menuitem">Arrow</button>
+</div>
 <div class="menu pop" id="moreMenu" role="menu" hidden>
   <button data-more="hf" role="menuitem">Header, footer and page numbers…</button>
   <button data-more="crop" role="menuitem">Crop pages</button>
@@ -946,6 +1113,7 @@ const ICONS = {
   grid: '<rect x="4" y="4" width="6.500" height="6.500" rx="1"/><rect x="13.500" y="4" width="6.500" height="6.500" rx="1"/><rect x="4" y="13.500" width="6.500" height="6.500" rx="1"/><rect x="13.500" y="13.500" width="6.500" height="6.500" rx="1"/>',
   convert: '<path d="M6 3.500h6l3.500 3.500V11M12 3.500V7h3.500M6 3.500V20h4"/><path d="M14 14.500h6.500M18 12l2.500 2.500L18 17M20.500 19.500H14M16.500 17L14 19.500l2.500 2.500"/>',
   ocr: '<path d="M4 8.500V5h3.500M16.500 5H20v3.500M20 15.500V19h-3.500M7.500 19H4v-3.500"/><path d="M8.500 15.500L12 8l3.500 7.500M9.900 12.700h4.200"/>',
+  x: '<path d="M7 7l10 10M17 7L7 17"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
 
@@ -1130,7 +1298,7 @@ function updateButtons() {
 }
 function updateStatus() {
   const pg = curPage(); if (!pg) return;
-  $('#stPage').textContent = `Page ${S.cur + 1} / ${S.pages.length}`;
+  $('#stPage').textContent = `Page ${S.cur + 1} / ${S.pages.length}`; $('#pagePill').textContent = `${S.cur + 1} / ${S.pages.length}`;
   $('#stSize').textContent = paperName(pg.w, pg.h);
 }
 
@@ -1665,6 +1833,7 @@ function redrawPage(pg) { const v = V.get(pg.id); if (!v) return; syncFlow(pg, v
 /* ---------- selection box ---------- */
 function drawSel() {
   for (const v of V.values()) if (v.sel.firstChild) v.sel.textContent = '';
+  selBarSync();
   const s = getSel(); if (!s) return;
   const { pg, o } = s, v = V.get(pg.id); if (!v) return;
   const hs = [];
@@ -3007,6 +3176,7 @@ function setTool(t) {
   if (t === 'sign') { openSign(); return; }
   S.tool = t; stage.dataset.tool = t; clearTsel();
   for (const b of $$('.tool[data-tool]')) b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false');
+  { const sb = $('#btnShapes'), sh = ['rect', 'ellipse', 'line', 'arrow'].includes(t); sb.setAttribute('aria-pressed', sh ? 'true' : 'false'); if (sh) { const i = sb.querySelector('.ic'); if (i) i.outerHTML = ic(t); } }
   $('#btnMore').classList.toggle('on', t === 'crop' || t === 'ftext' || t === 'fcheck');
   if (t !== 'select' && S.sel) S.sel = null;
   refreshTextLines(); drawSel(); renderProps(true);
@@ -3116,8 +3286,9 @@ async function scanFonts(pg) {       // learn which characters the document's fo
 
 /* ---------- pointer ---------- */
 let drag = null;
+const TAP_TOOLS = new Set(['text', 'edittext', 'note', 'stamp']);
 function onDown(ev) {
-  if (ev.button > 0) return;
+  if (ev.button > 0 || (ev.pointerType === 'touch' && touchPts.size > 1)) return;
   const t = ev.target;
   if (S.editing && S.editing.el.contains(t)) return;
   if (t.closest('.ff')) { if (S.editing) endEdit(); return; }
@@ -3127,6 +3298,10 @@ function onDown(ev) {
   if (!pageEl) { if (S.sel) select(null); return; }
   const pg = pageById(pageEl.dataset.id), v = V.get(pg.id), p = ptOf(ev, v);
   const hEl = t.closest('.h'), oe = t.closest('.obj'), tool = S.tool;
+  if (ev.pointerType === 'touch' && TAP_TOOLS.has(tool) && !hEl) {      // touch: these tools act when the finger lifts, so a swipe over the page scrolls it
+    drag = { kind: 'tap', ev: { target: t, clientX: ev.clientX, clientY: ev.clientY, button: 0, pointerType: 'tap', ctrlKey: false, metaKey: false, preventDefault() { } }, sx: ev.clientX, sy: ev.clientY, pg, v, tool };
+    return;
+  }
   if (hEl) { const s = getSel(); if (!s) return; ev.preventDefault(); drag = { kind: 'resize', h: hEl.dataset.h, pg, v, o: s.o, orig: clone(s.o), ob: bbox(s.o, v), start: p }; return; }
   const hitObj = oe && pg.objs.find(o => o.id === oe.dataset.id);
   if ((ev.ctrlKey || ev.metaKey) && (tool !== 'select' || hitObj)) { const k = linkAt(v, p); if (k) { ev.preventDefault(); followLink(pg, k); return; } }      // Ctrl+click follows a link with any tool, also under text that was edited
@@ -3163,6 +3338,7 @@ function onMove(ev) {
   const pe = ev.target.closest && ev.target.closest('.page');
   if (pe && !drag) { const v = V.get(pe.dataset.id); if (v) { const p = ptOf(ev, v); $('#stPos').textContent = `X ${fmtNum(p.x / PT_MM, 1)}  Y ${fmtNum(p.y / PT_MM, 1)} mm`; const pg = pageById(pe.dataset.id); if (S.tool === 'select') hoverText(pg, v, p); else if (v.sheet.style.cursor) v.sheet.style.cursor = ''; if (pg) linkHover(pg, v, p, ev); } }
   if (!drag) return;
+  if (drag.kind === 'tap') { if (Math.hypot(ev.clientX - drag.sx, ev.clientY - drag.sy) > 10) drag = null; return; }
   const d = drag, p = ptOf(ev, d.v), dx = p.x - d.start.x, dy = p.y - d.start.y, o = d.o, g = d.orig;
   if (d.kind === 'tsel') { tselMove(d, p); return; }
   if (d.kind === 'crop') {
@@ -3206,6 +3382,7 @@ function onMove(ev) {
 function snap45(x1, y1, x, y) { const a = Math.round(Math.atan2(y - y1, x - x1) / (Math.PI / 4)) * (Math.PI / 4), l = Math.hypot(x - x1, y - y1); return [x1 + Math.cos(a) * l, y1 + Math.sin(a) * l]; }
 async function onUp() {
   const d = drag; if (!d) return; drag = null;
+  if (d.kind === 'tap') { if (S.tool === d.tool && d.ev.target.isConnected) onDown(d.ev); return; }
   if (d.kind === 'move') { if (d.moved) commit(); return; }
   if (d.kind === 'resize') { if (d.o.pk) flowCommit(d.pg); else commit(); return; }
   if (d.kind === 'tsel') { if (!d.moved) { clearTsel(); if (d.link) followLink(d.pg, d.link); } return; }      // a click on a link (no drag) follows it
@@ -3233,7 +3410,7 @@ async function onUp() {
 stage.addEventListener('pointerdown', onDown);
 window.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', onUp);
+window.addEventListener('pointercancel', ev => { if (!drag) return; if (drag.kind === 'tsel' || ev.pointerType === 'touch') cancelDrag(); else onUp(); });      // the browser took the touch (to scroll): nothing is drawn or followed
 stage.addEventListener('dblclick', ev => {
   const oe = ev.target.closest('.obj'), pe = ev.target.closest('.page'); if (!pe) return;
   if (S.editing && S.editing.el.contains(ev.target)) {            // while typing, a double-click selects a word
@@ -3283,8 +3460,9 @@ async function insertImage(blob, opts = {}) {
 /* ---------- zoom & scroll ---------- */
 function fitZoom(mode) {
   const pg = curPage(); if (!pg) return PX_PT;
-  const w = (stage.clientWidth - 50) / pg.w; if (mode === 'width') return w;
-  return Math.min(w, (stage.clientHeight - 70) / pg.h);
+  const pad = parseFloat(getComputedStyle(pagesEl).paddingLeft) || 24;      // the margin around the pages: smaller on a phone
+  const w = (stage.clientWidth - pad * 2 - 2) / pg.w; if (mode === 'width') return w;
+  return Math.min(w, (stage.clientHeight - pad * 2 - 22) / pg.h);
 }
 function setZoom(z, mode = 'custom') {
   z = clamp(z, 0.15 * PX_PT, 6 * PX_PT);
@@ -3423,10 +3601,11 @@ function tselBuild(pg, lines, gl, A, B) {
     if (prev) text += Math.abs(prev.y + prev.h / 2 - ln.y - ln.h / 2) > Math.min(prev.h, ln.h) * 0.5 ? '\n' : ' ';
     text += lineSlice(ln, c0, c1); prev = ln;
   }
-  return rects.length ? { pageId: pg.id, rects, text } : null;
+  return rects.length ? { pageId: pg.id, rects, text, a, b } : null;
 }
 function drawTsel() {
   for (const v of V.values()) if (v.tsel.firstChild) v.tsel.textContent = '';
+  selBarSync(); tshDraw();
   const t = S.tsel, v = t && V.get(t.pageId); if (!v) return;
   for (const r of t.rects) { const d = mk('div', 'tselr'); d.style.cssText = `left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px`; v.tsel.append(d); }
 }
@@ -3497,7 +3676,13 @@ ctxMenu.addEventListener('click', ev => { const b = ev.target.closest('button');
 stage.addEventListener('contextmenu', ev => {
   const pe = ev.target.closest('.page'); if (!pe || S.editing || ev.target.closest('.ff')) return;       // keep the browser's own menu while typing
   ev.preventDefault();
-  const pg = pageById(pe.dataset.id), v = V.get(pg.id), p = ptOf(ev, v), oe = ev.target.closest('.obj'), o = oe && pg.objs.find(x => x.id === oe.dataset.id), t = S.tsel && S.tsel.pageId === pg.id ? S.tsel : null;
+  if (lpNow()) return;      // a long press on a touch screen does its own thing
+  ctxAt(ev.target, ev.clientX, ev.clientY);
+});
+function ctxAt(target, cx, cy) {      // the menu for a point on a page: selected text, an object, or the page itself
+  const pe = target.closest('.page'); if (!pe) return;
+  const ev = { clientX: cx, clientY: cy };
+  const pg = pageById(pe.dataset.id), v = V.get(pg.id), p = ptOf(ev, v), oe = target.closest('.obj'), o = oe && pg.objs.find(x => x.id === oe.dataset.id), t = S.tsel && S.tsel.pageId === pg.id ? S.tsel : null;
   let items;
   if (t && !o) items = [
     ['Copy', () => copyText(t.text), 'Ctrl+C'], '-',
@@ -3517,8 +3702,8 @@ stage.addEventListener('contextmenu', ev => {
     if (pg.src) items.push('-', ['Select all text on this page', () => selectAllText(pg)]);
   }
   openCtx(items, ev.clientX, ev.clientY);
-});
-stage.addEventListener('scroll', () => { ctxMenu.hidden = true; }, { passive: true });
+}
+stage.addEventListener('scroll', () => { if (!phone()) ctxMenu.hidden = true; }, { passive: true });
 
 /* ---------- properties panel ---------- */
 const TITLES = { text: 'Text', rect: 'Rectangle', ellipse: 'Ellipse', line: 'Line', arrow: 'Arrow', ink: 'Pen stroke', mark: 'Markup', image: 'Image', stamp: 'Stamp', note: 'Note', redact: 'Redaction', field: 'Form field' };
@@ -3623,11 +3808,13 @@ function renderProps(force) {
       fcheck: 'Click where the check box should go.',
       redact: 'Drag over the part that must go. On download that page is turned into an image, so whatever is under the black box is gone for good.',
     };
-    h += `<p>${tips[S.tool] || tips.select}</p>`;
+    const tip = tips[S.tool] || tips.select;
+    h += `<p>${touchUI() ? tip.replace(/Double-click/g, 'Double-tap').replace(/\b([Cc])lick/g, (m, c) => (c === 'C' ? 'Tap' : 'tap')) : tip}</p>`;
     if (S.tool === 'edittext') h += `<label class="check"><input type="checkbox" id="p_flow"${S.flow ? ' checked' : ''}><span>Move the rest of the page when a paragraph grows or shrinks</span></label>`;
     if (S.tool === 'crop') h += `<div class="seg"><button type="button" class="btn" data-crop="all">Copy this crop to all pages</button></div><div class="seg"><button type="button" class="btn" data-crop="clear">Remove from this page</button><button type="button" class="btn" data-crop="none">Remove all</button></div>`;
     h += `<h3>Forms</h3><label class="check"><input type="checkbox" id="p_flatten"${S.flatten ? ' checked' : ''}><span>Flatten form fields on download so they can no longer be changed</span></label>`;
-    h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Save</span><b>Ctrl Shift S</b><span>Save as</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span><b>Ctrl + click</b><span>Open a link while editing</span></div>`;
+    if (touchUI()) h += `<h3>Touch</h3><p>Pinch with two fingers to zoom, and drag with two fingers to move around while a drawing tool is on. Tap an object to select it, then drag it or its handles. Press and hold on text to select a word, pull the blue handles to select more, and use the bar that appears to copy or highlight it. Press and hold anywhere else for more actions.</p>`;
+    else h += `<h3>Shortcuts</h3><div class="kbd"><b>V</b><span>Select</span><b>E</b><span>Edit text</span><b>T</b><span>New text</span><b>H</b><span>Highlight</span><b>P</b><span>Pen</span><b>Ctrl Z</b><span>Undo</span><b>Ctrl D</b><span>Duplicate object</span><b>Ctrl B / I</b><span>Bold / italic while typing</span><b>Ctrl S</b><span>Save</span><b>Ctrl Shift S</b><span>Save as</span><b>Ctrl P</b><span>Print the document</span><b>Ctrl O</b><span>Open in a new tab</span><b>Ctrl + wheel</b><span>Zoom</span><b>Ctrl + click</b><span>Open a link while editing</span></div>`;
     h += `<h3>Limits</h3><p>Edited paragraphs are set again by this editor, so a line end can shift by a fraction of a point. When a paragraph grows, everything below it on the page moves down; on pages with columns only the text of the same column moves, and text cannot continue on the next page. Scanned pages are pictures: run OCR first, then their text can be found, selected and edited too. Edited text on a scan is set in the closest font available and covers the picture underneath, so it can look slightly different from the print around it. Convert rebuilds the document in Word, Excel or PowerPoint from what it can read on the pages: text, tables, lines and pictures. Charts and drawings stay pictures (in PowerPoint they form the background of each slide), and a line can wrap at a different word when a font is not installed on the computer that opens the file.</p>`;
   }
   body.innerHTML = h;
@@ -4600,6 +4787,197 @@ async function printDoc() {
   }
 }
 $('#btnPrint').addEventListener('click', () => printDoc());
+
+/* ---------- phones and touch screens ----------
+   On a phone the header is one row (name, undo, redo, save, ⋮), the tools sit at the bottom like a phone app, the side panels open as
+   a drawer (pages) and a sheet from the bottom (properties), and menus open as sheets. On any touch screen: two fingers pinch to zoom and
+   move around, a long press selects a word (with handles to pull) or opens the menu, a bar offers what can be done with the selection,
+   and while text is being edited a format bar sits above the keyboard. */
+const PHONE_Q = '(max-width:640px), (max-height:500px) and (pointer:coarse)';
+const phone = () => matchMedia(PHONE_Q).matches;
+const touchUI = () => matchMedia('(pointer:coarse)').matches;
+const touchPts = new Set();       // touch pointers on the screen now
+for (const k of ['pointerdown', 'pointerup', 'pointercancel']) window.addEventListener(k, ev => { if (ev.pointerType !== 'touch') return; if (k === 'pointerdown') touchPts.add(ev.pointerId); else touchPts.delete(ev.pointerId); }, true);
+function cancelDrag() {            // a drag that a second finger or the browser interrupted is undone, not committed
+  const d = drag; if (!d) return; drag = null;
+  if (d.kind === 'create') { d.pg.objs = d.pg.objs.filter(o => o !== d.o); refresh(); }
+  else if ((d.kind === 'move' || d.kind === 'resize') && d.orig) { Object.assign(d.o, d.orig); refresh(); }
+  else if (d.kind === 'crop') { if (d.prev) d.pg.crop = d.prev; else delete d.pg.crop; refresh(); }
+}
+
+/* ---------- the ⋮ menu and the Shapes button ---------- */
+popButton($('#btnMob'), $('#mobMenu'));
+$('#mobMenu').addEventListener('click', ev => {
+  const k = ev.target.closest('[data-mob]')?.dataset.mob; if (!k) return;
+  ({
+    open: () => pickOpen('replace'),
+    merge: () => pickOpen('insert'),
+    find: () => { const on = appEl.classList.toggle('m-find'); if (on) setTimeout(() => $('#findInput').focus(), 60); },
+    fitw: () => setZoom(fitZoom('width'), 'width'),
+    fitp: () => setZoom(fitZoom('page'), 'page'),
+    pages: () => { $('#props').hidden = true; $('#thumbs').hidden = false; },
+    props: () => { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; },
+    print: () => printDoc(),
+  })[k]?.();
+});
+popButton($('#btnShapes'), $('#shapeMenu'));
+$('#shapeMenu').addEventListener('click', ev => { const t = ev.target.closest('[data-shape]')?.dataset.shape; if (t) setTool(t); });
+$('#findInput').addEventListener('keydown', ev => { if (ev.key === 'Escape' && phone()) appEl.classList.remove('m-find'); });
+$('#findClose').addEventListener('click', () => { const i = $('#findInput'); i.value = ''; runFind(''); i.blur(); appEl.classList.remove('m-find'); });
+for (const b of $$('.side-x')) b.addEventListener('click', () => { $('#' + b.dataset.close).hidden = true; if (b.dataset.close === 'props') propsAuto = false; });
+document.addEventListener('gesturestart', ev => ev.preventDefault());      // Safari: no zooming of the whole app; pinching the pages zooms them
+
+/* ---------- side panels over the page: a tap outside closes them ---------- */
+const scrim = $('#sideScrim');
+function sideSync() { scrim.hidden = !(narrow() && docNow && (!$('#thumbs').hidden || !$('#props').hidden)); }
+for (const id of ['#thumbs', '#props']) new MutationObserver(sideSync).observe($(id), { attributes: true, attributeFilter: ['hidden'] });
+scrim.addEventListener('click', () => { $('#thumbs').hidden = true; $('#props').hidden = true; });
+matchMedia(PHONE_Q).addEventListener('change', () => { sideSync(); selBarSync(); });
+
+/* ---------- two fingers: zoom and move ---------- */
+let pinch = null;
+const tdist = (a, b) => Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+stage.addEventListener('touchstart', ev => {
+  if (ev.touches.length !== 2 || !S.pages.length) return;
+  ev.preventDefault(); cancelDrag(); lpCancel();
+  const [a, b] = ev.touches, mx = (a.clientX + b.clientX) / 2, my = (a.clientY + b.clientY) / 2;
+  const pe = document.elementFromPoint(mx, my)?.closest('.page'), v = (pe && V.get(pe.dataset.id)) || V.get(curPage().id); if (!v) return;
+  const r = v.el.getBoundingClientRect();
+  pinch = { d: Math.max(1, tdist(a, b)), z: S.zoom, v, fx: (mx - r.left) / r.width, fy: (my - r.top) / r.height };
+}, { passive: false });
+stage.addEventListener('touchmove', ev => {
+  if (!pinch || ev.touches.length < 2) return;
+  ev.preventDefault();
+  const [a, b] = ev.touches, mx = (a.clientX + b.clientX) / 2, my = (a.clientY + b.clientY) / 2;
+  const z = clamp(pinch.z * tdist(a, b) / pinch.d, 0.15 * PX_PT, 6 * PX_PT);
+  S.zoom = z; S.zoomMode = 'custom'; stage.style.setProperty('--z', z);
+  const r = pinch.v.el.getBoundingClientRect();      // the point that was between the fingers stays between them
+  stage.scrollLeft += r.left + pinch.fx * r.width - mx; stage.scrollTop += r.top + pinch.fy * r.height - my;
+}, { passive: false });
+const pinchEnd = ev => { if (pinch && ev.touches.length < 2) { pinch = null; setZoom(S.zoom, 'custom'); } };      // sharp again
+stage.addEventListener('touchend', pinchEnd); stage.addEventListener('touchcancel', pinchEnd);
+
+/* ---------- press and hold ---------- */
+let lp = null, longPressAt = -1e9;
+function lpCancel() { if (lp) { clearTimeout(lp.t); lp = null; } }
+stage.addEventListener('pointerdown', ev => {
+  lpCancel();
+  if (ev.pointerType !== 'touch' || touchPts.size > 1 || S.editing || !docNow) return;
+  if (!ev.target.closest('.page') || ev.target.closest('.ff,.h,.tsh')) return;
+  const at = { x: ev.clientX, y: ev.clientY, target: ev.target };
+  lp = { ...at, t: setTimeout(() => { lp = null; longPress(at); }, 480) };
+});
+window.addEventListener('pointermove', ev => { if (lp && Math.hypot(ev.clientX - lp.x, ev.clientY - lp.y) > 10) lpCancel(); });
+window.addEventListener('pointerup', lpCancel); window.addEventListener('pointercancel', lpCancel);
+function lpNow() {                 // the browser's own long-press menu event: on a touch screen the long press is ours
+  if (lp) { const at = lp; lpCancel(); longPress(at); return true; }
+  return performance.now() - longPressAt < 1200;
+}
+let lpEatClick = false;      // the click some browsers send when the finger lifts after a long press would close the menu it opened
+window.addEventListener('pointerdown', () => { lpEatClick = false; }, true);
+window.addEventListener('click', ev => { if (lpEatClick) { lpEatClick = false; ev.stopPropagation(); ev.preventDefault(); } }, true);
+async function longPress(at) {
+  longPressAt = performance.now(); lpEatClick = true;
+  if (drag && !(drag.kind === 'tsel' || drag.kind === 'tap' || (drag.kind === 'move' && !drag.moved))) return;      // a drawing has started: it goes on
+  drag = null;
+  const pe = at.target.closest('.page'), pg = pe && pageById(pe.dataset.id), v = pg && V.get(pg.id); if (!v) return;
+  try { navigator.vibrate?.(8); } catch { }
+  const oe = at.target.closest('.obj'), o = oe && pg.objs.find(x => x.id === oe.dataset.id);
+  if (o && S.tool === 'select') { clearTsel(); select(pg.id, o.id); selBarSync(); return; }      // the bar shows what can be done with it
+  const p = ptOf({ clientX: at.x, clientY: at.y }, v);
+  if (pg.src && (S.tool === 'select' || S.tool === 'edittext')) { clearTsel(); await selectWord(pg, p); if (S.tsel) return; }
+  ctxAt(at.target, at.x, at.y);
+}
+
+/* ---------- handles to pull a text selection wider (touch) ---------- */
+const tshEls = [mk('div', 'tsh tsh-a'), mk('div', 'tsh tsh-b')];
+let tshDrag = null;
+function tshDraw() {
+  const t = S.tsel, v = t && V.get(t.pageId);
+  if (!t || !v || !t.a || !touchUI() || drag) { for (const e of tshEls) e.remove(); return; }
+  const r0 = t.rects[0], r1 = t.rects[t.rects.length - 1];
+  for (const [e, x, y] of [[tshEls[0], r0.x, r0.y + r0.h], [tshEls[1], r1.x + r1.w, r1.y + r1.h]]) {
+    if (e.parentNode !== v.sheet) v.sheet.append(e);
+    e.style.left = x + 'px'; e.style.top = y + 'px';
+  }
+}
+for (const [i, e] of tshEls.entries()) e.addEventListener('pointerdown', async ev => {
+  ev.preventDefault(); ev.stopPropagation(); lpCancel();
+  const t = S.tsel, pg = t && pageById(t.pageId); if (!pg) return;
+  const lines = await dLines(pg, true), gl = await dGlyphs(pg).catch(() => []);
+  tshDrag = { pg, v: V.get(pg.id), lines, gl, fixed: i === 0 ? t.b : t.a, id: ev.pointerId };
+  try { e.setPointerCapture(ev.pointerId); } catch { }
+});
+for (const e of tshEls) {
+  e.addEventListener('pointermove', ev => {
+    const d = tshDrag; if (!d || ev.pointerId !== d.id) return;
+    const p = ptOf({ clientX: ev.clientX, clientY: ev.clientY - 18 }, d.v), at = tselPos(d.lines, d.gl, p); if (!at) return;      // a little above the finger, so the words stay visible
+    const t = tselBuild(d.pg, d.lines, d.gl, d.fixed, at); if (!t) return;
+    S.tsel = t; for (const r of [...d.v.tsel.children]) r.remove();
+    for (const r of t.rects) { const x = mk('div', 'tselr'); x.style.cssText = `left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px`; d.v.tsel.append(x); }
+    tshDraw();
+  });
+  const end = () => { if (tshDrag) { tshDrag = null; drawTsel(); } };
+  e.addEventListener('pointerup', end); e.addEventListener('pointercancel', end);
+}
+
+/* ---------- the bar for the selection ---------- */
+const selBar = $('#selBar');
+const SB = { edit: ['edittext', 'Edit'], style: ['sliders', 'Style'], dup: ['copy', 'Duplicate'], del: ['trash', 'Delete'], more: ['more', 'More'], copy: ['copy', 'Copy'], hl: ['mark', 'Highlight'] };
+function selBarSync() {
+  const fmt = $('#fmtBar'), editing = !!(S.editing && docNow && (touchUI() || phone()));
+  appEl.classList.toggle('is-editing', editing); fmt.hidden = !editing;
+  if (editing) { const o = propTarget()?.o; for (const k of ['bold', 'italic']) fmt.querySelector(`[data-fmt="${k}"]`).classList.toggle('on', !!(o && o[k])); }
+  let keys = [];
+  if ((touchUI() || phone()) && docNow && !S.editing && !drag) {
+    const s = getSel();
+    if (s && S.tool === 'select') keys = [...(s.o.type === 'text' ? ['edit'] : []), 'style', 'dup', 'del', 'more'];
+    else if (S.tsel) keys = ['copy', 'hl', 'more'];
+  }
+  const key = keys.join();
+  if (selBar.dataset.k !== key) { selBar.dataset.k = key; selBar.innerHTML = keys.map(k => `<button type="button" data-sb="${k}">${ic(SB[k][0])}<span>${SB[k][1]}</span></button>`).join(''); }
+  selBar.hidden = !keys.length;
+}
+selBar.addEventListener('click', ev => {
+  const k = ev.target.closest('[data-sb]')?.dataset.sb; if (!k) return;
+  const s = getSel(), t = S.tsel;
+  if (k === 'edit' && s) startEdit(s.pg, s.o, false);
+  else if (k === 'style') { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; }
+  else if (k === 'dup' && s) pasteObj(s.o, s.pg);
+  else if (k === 'del') deleteSel();
+  else if (k === 'copy' && t) copyText(t.text);
+  else if (k === 'hl' && t) markFromSel('highlight');
+  else if (k === 'more') {
+    const v = s ? V.get(s.pg.id) : t ? V.get(t.pageId) : null; if (!v) return;
+    const target = s ? (v.objEls.get(s.o.id) || v.sheet) : v.sheet, r = target.getBoundingClientRect();
+    ctxAt(target, r.left + r.width / 2, r.top + r.height / 2);
+  }
+});
+
+/* ---------- the format bar while editing text ---------- */
+const fmtBar = $('#fmtBar');
+for (const k of ['mousedown', 'touchstart']) fmtBar.addEventListener(k, ev => { if (ev.target.closest('button')) ev.preventDefault(); }, { passive: false });      // the text keeps the keyboard and its selection
+fmtBar.addEventListener('pointerup', ev => {
+  const b = ev.target.closest('[data-fmt]'); if (!b || !S.editing) return;
+  const k = b.dataset.fmt, t = propTarget(); if (!t) return;
+  if (k === 'done') { endEdit(); return; }
+  if (k === 'more') { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; return; }
+  if (k === 'bold' || k === 'italic') { if (editRange()) { if (styleSelection({ [k]: 'toggle' })) renderProps(true); } else setProp(k, !t.o[k], false); }
+  else if (k === 'smaller' || k === 'bigger') setProp('size', Math.round(((t.o.size || 11) + (k === 'bigger' ? 1 : -1)) * 2) / 2, false);
+  selBarSync();
+});
+
+/* ---------- typing on a phone: the line being typed stays above the keyboard and the format bar ---------- */
+function keepCaretVisible() {
+  const ed = S.editing; if (!ed || !(touchUI() || phone())) return;
+  const sl = getSelection(); let r = null;
+  if (sl.rangeCount && ed.el.contains(sl.focusNode)) { const rr = sl.getRangeAt(0).getClientRects(); r = rr[rr.length - 1] || null; }
+  if (!r || (!r.width && !r.height)) r = ed.el.getBoundingClientRect();
+  const s = stage.getBoundingClientRect(), bottom = s.bottom - (fmtBar.hidden ? 0 : fmtBar.offsetHeight) - 12, top = s.top + 12;
+  if (r.bottom > bottom) stage.scrollTop += r.bottom - bottom; else if (r.top < top) stage.scrollTop -= top - r.top;
+}
+new ResizeObserver(() => { if (S.editing) setTimeout(keepCaretVisible, 30); }).observe(stage);
+document.addEventListener('selectionchange', () => { if (S.editing && (touchUI() || phone())) { clearTimeout(keepCaretVisible.t); keepCaretVisible.t = setTimeout(keepCaretVisible, 60); } });
 
 /* ---------- Convert: the document as a Word, Excel or PowerPoint file ----------
    The finished PDF (with every edit) is read again the way Edit text reads a page: paragraphs with their fonts, sizes, weights, colours,
@@ -5806,7 +6184,7 @@ async function boot() {
     openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
   });
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });
