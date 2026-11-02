@@ -61,6 +61,16 @@ Reef PDF dibuka di halaman **Home** (tanpa dokumen contoh), mirip Adobe Acrobat:
 
 Panel kanan (Guide/Properties) tersembunyi saat mulai. Panel muncul sendiri saat pertama kali ada yang bisa diatur (misalnya saat mengedit teks atau memilih objek), dan bisa dibuka atau ditutup dengan tombol panel di ujung kanan toolbar. Setelah ditutup dengan tombol itu, panel tidak muncul sendiri lagi sampai aplikasi dibuka ulang.
 
+## Memindahkan beberapa paragraf sekaligus (blok)
+
+Dengan alat **Edit text**, tarik kotak mulai dari tempat kosong di halaman (margin atau sela antarparagraf). Semua paragraf dan objek yang tersentuh kotak menjadi satu **blok**, dengan bingkai putus-putus dan label jumlah item.
+
+- Geser blok dengan mouse, atau dengan tombol panah (1 pt per tekan; **Shift + panah** 10 pt).
+- **Delete** menghapus seluruh blok, **Esc** atau klik di luar blok melepasnya, **Ctrl+A** memilih semua isi halaman.
+- Klik di dalam blok tanpa menggeser langsung mengedit paragraf yang diklik.
+- Paragraf baru diubah menjadi teks yang bisa digeser saat blok pertama kali dipindah; blok yang hanya dipilih tidak mengubah apa pun. **Ctrl+Z** membatalkan perpindahan.
+- Gambar dan garis yang tercetak di PDF aslinya tetap di tempatnya.
+
 ## Beberapa PDF dalam satu jendela (tab)
 
 Setiap PDF yang dibuka mendapat tab sendiri, seperti di Adobe Acrobat. Tiap tab menyimpan suntingan, undo, zoom, dan posisi halamannya masing-masing. Titik biru di tab berarti ada perubahan yang belum diunduh.
@@ -114,7 +124,6 @@ Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman do
 
 ## HP dan tablet
 
-Saat Reef PDF pertama kali dibuka setelah pembaruan ini, muncul pesan **"Reef PDF now works on your phone"**. Di komputer pesan ini menampilkan QR code alamat Reef PDF: pindai dengan kamera HP untuk langsung membukanya, atau pakai **Copy link**. Pesan hanya muncul sekali per browser; untuk melihatnya lagi, klik **Use Reef PDF on your phone** di Home.
 
 Tampilan menyesuaikan sendiri dengan layar:
 
@@ -130,6 +139,15 @@ Sentuhan:
 - **Mengetik**: saat mengedit teks, toolbar diganti bar format di atas keyboard: **B**, **I**, perkecil/perbesar huruf, pengaturan lainnya, dan **Done**. Baris yang diketik digulir supaya tidak tertutup keyboard.
 
 Catatan HP: menyimpan berarti mengunduh PDF ke folder Download (Overwrite file asli dan daftar Recent hanya ada di Chrome/Edge komputer). Membuka PDF lewat **Open File**. Font Office asli dari komputer tidak tersedia di HP; font pengganti yang ukurannya sama tetap dipakai.
+
+## Pemberitahuan "What's new"
+
+Setiap kali Reef PDF pertama kali dibuka pada hari itu (biasanya saat komputer baru dinyalakan), muncul pop-up **What's new** berisi pembaruan terbaru. Di komputer pop-up ini juga menampilkan QR code alamat Reef PDF, supaya bisa langsung dibuka dari HP.
+
+- Pop-up tidak muncul lagi pada hari yang sama, dan tidak menutupi PDF bila Reef PDF dibuka langsung dengan file.
+- Centang **Don't show again until the next update** agar tidak muncul lagi sampai ada pembaruan berikutnya.
+- Tombol **What's new** di Home membukanya kapan saja.
+- Pada pembaruan berikutnya, isi pop-up dan tanggal pembaruannya diganti, lalu pop-up muncul lagi untuk semua orang, termasuk yang sudah mencentang "Don't show again".
 
 ## Memperbarui
 
