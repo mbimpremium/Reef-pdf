@@ -186,7 +186,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 /* objects (coordinates are PDF points; the sheet scales them) */
 .obj{position:absolute;touch-action:none}
 .stage[data-tool="select"] .obj{pointer-events:auto;cursor:move}
-.stage[data-tool="text"] .obj-text,.stage[data-tool="edittext"] .obj-text{pointer-events:auto;cursor:text}
+.stage[data-tool="text"] .obj-text,.stage[data-tool="edittext"] .obj-text,.stage[data-tool="select"] .obj-text.doc-text{pointer-events:auto;cursor:text}
 .obj-text{line-height:1.2;white-space:pre;min-width:3px;min-height:1em;user-select:none;-webkit-user-select:none;transform-origin:50% 50%;overflow-wrap:break-word;font-kerning:none;font-variant-ligatures:none;tab-size:4}
 .obj-text[contenteditable]{user-select:text;-webkit-user-select:text;cursor:text;outline:calc(1px / var(--z)) dashed var(--accent);outline-offset:calc(2px / var(--z));pointer-events:auto}
 .cover{position:absolute;pointer-events:none}
@@ -221,10 +221,20 @@ button,input,select,textarea{font:inherit;color:inherit}
 .stage:not([data-tool="select"]) .sheet{touch-action:none}
 .stage[data-tool="text"] .sheet{cursor:text}
 .stage[data-tool="rect"] .sheet,.stage[data-tool="ellipse"] .sheet,.stage[data-tool="line"] .sheet,.stage[data-tool="arrow"] .sheet,
-.stage[data-tool="mark"] .sheet,.stage[data-tool="crop"] .sheet,.stage[data-tool="ftext"] .sheet,.stage[data-tool="fcheck"] .sheet,.stage[data-tool="ink"] .sheet,.stage[data-tool="wipe"] .sheet,.stage[data-tool="redact"] .sheet{cursor:crosshair}
+.stage[data-tool="mark"] .sheet,.stage[data-tool="crop"] .sheet,.stage[data-tool="xlarea"] .sheet,.stage[data-tool="ftext"] .sheet,.stage[data-tool="fcheck"] .sheet,.stage[data-tool="ink"] .sheet,.stage[data-tool="wipe"] .sheet,.stage[data-tool="redact"] .sheet{cursor:crosshair}
 .stage[data-tool="note"] .sheet,.stage[data-tool="stamp"] .sheet{cursor:copy}
 
+/* Compress PDF (0497-compress.js) */
+.zlv{display:grid;gap:8px}
+.zopt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--raise);cursor:pointer}
+.zopt:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.zopt input{margin-top:3px;accent-color:var(--accent)}
+.zopt span{display:grid;gap:2px}
+.zopt small{color:var(--muted);font-size:12px}
+.zopt em{font-style:normal;font-size:11px;font-weight:600;color:var(--accent);margin-left:4px}
+
 /* a block of paragraphs and objects (0365-block.js) */
+.marq.area{border-style:solid;border-color:#1d7a4f;background:rgba(29,122,79,.1)}
 .marq{position:absolute;z-index:6;border:calc(1px / var(--z)) dashed var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);pointer-events:none}
 .mitem{position:absolute;outline:calc(1px / var(--z)) solid var(--accent);background:color-mix(in srgb,var(--accent) 7%,transparent);pointer-events:none}
 .mbox{position:absolute;outline:calc(1.3px / var(--z)) dashed var(--accent);pointer-events:none}
@@ -410,13 +420,23 @@ dialog.news{width:min(700px,calc(100vw - 32px))}
 .news-qr{margin:0;display:grid;gap:6px;justify-items:center;width:132px;padding:8px 8px 6px;border:1px solid var(--line);border-radius:8px;background:var(--chrome)}
 .news-qr .qr{display:block;width:114px;height:114px;border-radius:3px}
 .news-qr figcaption{font-size:11px;line-height:1.3;color:var(--muted);text-align:center}
-.news-more{margin:0;font-size:12px;color:var(--muted);line-height:1.5}
+
 .news-more b{color:var(--ink);font-weight:600}
+dialog.news{width:min(760px,calc(100vw - 32px))}
+.news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.news-grid .news-item{grid-template-columns:34px minmax(0,1fr);padding:12px}
+.news-grid .news-ic{width:34px;height:34px}
+.news-phone{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:10px 12px;border:1px dashed var(--line-2);border-radius:10px}
+.news-phone .news-qr{width:auto;padding:4px;border:0;background:none}
+.news-phone .qr{width:72px;height:72px}
+.news-phone p{margin:0 0 4px;color:var(--muted);line-height:1.5}
+.news-phone p b{color:var(--ink);font-weight:600}
+.news-phone a{color:var(--accent);font-weight:600;text-decoration:none}
 .news-foot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 16px}
 .news-foot .check{color:var(--muted)}
 .hphone{display:inline-flex;align-items:center;gap:5px}
 .hphone .ic{width:15px;height:15px}
-@media (max-width:600px){.news-item{grid-template-columns:34px minmax(0,1fr)}.news-ic{width:34px;height:34px}.news .dlg{padding:18px 16px 14px}.news-foot .btn{margin-left:auto}}
+@media (max-width:600px){.news-grid{grid-template-columns:minmax(0,1fr)}.news-item{grid-template-columns:34px minmax(0,1fr)}.news-ic{width:34px;height:34px}.news .dlg{padding:18px 16px 14px}.news-foot .btn{margin-left:auto}}
 @media (pointer:coarse), (max-width:640px){.desk-only{display:none!important}}
 
 /* ---------- touch screens and phones (see 0485-mobile.js) ---------- */
@@ -653,7 +673,7 @@ dialog.news{width:min(700px,calc(100vw - 32px))}
     <span class="sep"></span>
     <button class="tool" data-tool="image" title="Insert an image (I)"><i data-ic="image"></i><span>Image</span></button>
     <button class="tool" data-tool="sign" title="Signature (S)"><i data-ic="sign"></i><span>Signature</span></button>
-    <button class="tool" data-tool="stamp" title="Stamp"><i data-ic="stamp"></i><span>Stamp</span></button>
+    <button class="tool" id="btnCompress" title="Compress PDF: make the file smaller" aria-haspopup="dialog"><i data-ic="compress"></i><span>Compress</span></button>
     <button class="tool" data-tool="note" title="Sticky note (N)"><i data-ic="note"></i><span>Note</span></button>
     <span class="sep"></span>
     <button class="tool" data-tool="wipe" title="Cover an area with the background colour"><i data-ic="wipe"></i><span>Eraser</span></button>
@@ -720,27 +740,49 @@ dialog.news{width:min(700px,calc(100vw - 32px))}
 <input type="file" id="fSig" accept="image/png,image/jpeg,image/webp" hidden>
 <input type="file" id="fFont" accept=".ttf,.ttc,font/ttf,font/collection" multiple hidden>
 
-<dialog id="dlgNews" class="news" aria-labelledby="nwTitle" data-update="2026-11-01"><form method="dialog" class="dlg">
-  <div class="news-head"><span class="news-badge">What's new</span><h2 id="nwTitle">Reef PDF has been updated</h2><p class="news-date">Update of 1 November 2026</p></div>
-  <div class="news-items">
-    <section class="news-item desk-only" style="--tc:#1b5fcf">      <!-- drawing a box needs a mouse -->
-      <span class="news-ic"><i data-ic="move"></i></span>
-      <div><h3>Move several paragraphs at once</h3>
-        <p>With <b>Edit text</b>, drag a box from an empty spot of the page. Every paragraph and object it touches becomes one block: drag it, or use the arrow keys, to move it all. <b>Delete</b> removes the block and <b>Ctrl+A</b> selects the whole page.</p></div>
+<dialog id="dlgNews" class="news" aria-labelledby="nwTitle" data-update="2026-11-02"><form method="dialog" class="dlg">
+  <div class="news-head"><span class="news-badge">What's new</span><h2 id="nwTitle">Reef PDF has been updated</h2><p class="news-date">Update of 2 November 2026</p></div>
+  <div class="news-items news-grid">
+    <section class="news-item" style="--tc:#1d7a4f">
+      <span class="news-ic"><i data-ic="grid"></i></span>
+      <div><h3>Table from an area to Excel</h3>
+        <p><b>Convert → Table from an area</b>: drag a box over a table and its rows and columns are saved as an Excel file. Amounts become numbers you can add up.</p></div>
     </section>
-    <section class="news-item news-phone" style="--tc:#1d7a4f">
-      <span class="news-ic"><i data-ic="phone"></i></span>
-      <div><h3>Reef PDF on your phone and tablet</h3>
-        <p id="nwLead">Open Reef PDF in the browser of a phone or tablet: the tools sit at the bottom of the screen, two fingers zoom, and pressing and holding on text selects it.</p>
-        <p class="news-tip">Add it to the home screen to open it like an app: in Chrome <b>⋮ → Add to Home screen</b>, in Safari <b>Share → Add to Home Screen</b>.</p>
-        <p class="news-link desk-only"><a id="nwLink" href="https://mbimpremium.github.io/Reef-pdf/" target="_blank" rel="noopener">mbimpremium.github.io/Reef-pdf</a><button type="button" class="hlink" id="nwCopy">Copy link</button></p></div>
-      <figure class="news-qr desk-only"><svg class="qr" viewBox="-4 -4 37 37" shape-rendering="crispEdges" role="img" aria-label="QR code: https://mbimpremium.github.io/Reef-pdf/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM10 0h1v1h-1zM12 0h1v1h-1zM16 0h1v1h-1zM19 0h2v1h-2zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h2v1h-2zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h5v1h-5zM19 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h2v1h-2zM16 4h5v1h-5zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h4v1h-4zM13 5h4v1h-4zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h4v1h-4zM15 7h2v1h-2zM18 7h3v1h-3zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM17 8h1v1h-1zM22 8h5v1h-5zM2 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM11 9h3v1h-3zM19 9h2v1h-2zM22 9h3v1h-3zM28 9h1v1h-1zM1 10h3v1h-3zM6 10h1v1h-1zM8 10h4v1h-4zM13 10h3v1h-3zM21 10h1v1h-1zM23 10h2v1h-2zM0 11h2v1h-2zM4 11h1v1h-1zM7 11h1v1h-1zM11 11h1v1h-1zM14 11h1v1h-1zM16 11h1v1h-1zM19 11h3v1h-3zM23 11h1v1h-1zM25 11h1v1h-1zM27 11h1v1h-1zM0 12h7v1h-7zM8 12h2v1h-2zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM25 12h2v1h-2zM0 13h4v1h-4zM10 13h4v1h-4zM16 13h1v1h-1zM18 13h2v1h-2zM22 13h3v1h-3zM28 13h1v1h-1zM0 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM10 14h1v1h-1zM12 14h7v1h-7zM20 14h2v1h-2zM23 14h4v1h-4zM0 15h1v1h-1zM7 15h1v1h-1zM12 15h2v1h-2zM15 15h2v1h-2zM18 15h1v1h-1zM20 15h3v1h-3zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM14 16h2v1h-2zM17 16h3v1h-3zM25 16h2v1h-2zM0 17h5v1h-5zM7 17h1v1h-1zM9 17h3v1h-3zM16 17h9v1h-9zM26 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM6 18h1v1h-1zM9 18h2v1h-2zM12 18h1v1h-1zM15 18h3v1h-3zM20 18h1v1h-1zM26 18h1v1h-1zM0 19h1v1h-1zM2 19h4v1h-4zM7 19h2v1h-2zM12 19h1v1h-1zM14 19h3v1h-3zM18 19h1v1h-1zM20 19h1v1h-1zM24 19h1v1h-1zM27 19h1v1h-1zM0 20h1v1h-1zM4 20h4v1h-4zM9 20h4v1h-4zM15 20h1v1h-1zM17 20h1v1h-1zM20 20h5v1h-5zM26 20h3v1h-3zM8 21h1v1h-1zM11 21h1v1h-1zM13 21h2v1h-2zM16 21h5v1h-5zM24 21h5v1h-5zM0 22h7v1h-7zM10 22h1v1h-1zM12 22h4v1h-4zM18 22h3v1h-3zM22 22h1v1h-1zM24 22h3v1h-3zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM19 23h2v1h-2zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h2v1h-2zM14 24h4v1h-4zM20 24h5v1h-5zM26 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h2v1h-2zM11 25h1v1h-1zM15 25h5v1h-5zM25 25h4v1h-4zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM14 26h4v1h-4zM20 26h8v1h-8zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h4v1h-4zM16 27h1v1h-1zM20 27h1v1h-1zM22 27h4v1h-4zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM11 28h3v1h-3zM17 28h3v1h-3zM23 28h1v1h-1zM26 28h1v1h-1z"/></svg><figcaption>Scan with your phone's camera</figcaption></figure>
+    <section class="news-item" style="--tc:#7a3fc4">
+      <span class="news-ic"><i data-ic="compress"></i></span>
+      <div><h3>Compress PDF</h3>
+        <p>The <b>Compress</b> button in the toolbar makes the file smaller by saving pictures and scans at a lower resolution. Text and lines stay sharp. <b>Stamp</b> is now in the <b>More</b> menu.</p></div>
+    </section>
+    <section class="news-item" style="--tc:#e8910c">
+      <span class="news-ic"><i data-ic="mark"></i></span>
+      <div><h3>Highlight follows the words</h3>
+        <p>Drag across text with <b>Highlight</b> and the mark follows the words, line by line; a click marks one word. On a scan, the mark fits the printed lines.</p></div>
+    </section>
+    <section class="news-item" style="--tc:#1b5fcf">
+      <span class="news-ic"><i data-ic="select"></i></span>
+      <div><h3>Edited text stays selectable</h3>
+        <p>Paragraphs edited or moved with <b>Edit text</b> can still be selected letter by letter with <b>Select</b>, to copy or highlight them.</p></div>
     </section>
   </div>
+  <section class="news-phone desk-only">
+    <figure class="news-qr"><svg class="qr" viewBox="-4 -4 37 37" shape-rendering="crispEdges" role="img" aria-label="QR code: https://mbimpremium.github.io/Reef-pdf/"><rect x="-4" y="-4" width="37" height="37" fill="#fff"/><path fill="#000" d="M0 0h7v1h-7zM10 0h1v1h-1zM12 0h1v1h-1zM16 0h1v1h-1zM19 0h2v1h-2zM22 0h7v1h-7zM0 1h1v1h-1zM6 1h1v1h-1zM12 1h1v1h-1zM14 1h2v1h-2zM20 1h1v1h-1zM22 1h1v1h-1zM28 1h1v1h-1zM0 2h1v1h-1zM2 2h3v1h-3zM6 2h1v1h-1zM8 2h1v1h-1zM10 2h1v1h-1zM15 2h1v1h-1zM18 2h1v1h-1zM22 2h1v1h-1zM24 2h3v1h-3zM28 2h1v1h-1zM0 3h1v1h-1zM2 3h3v1h-3zM6 3h1v1h-1zM8 3h1v1h-1zM10 3h1v1h-1zM13 3h5v1h-5zM19 3h1v1h-1zM22 3h1v1h-1zM24 3h3v1h-3zM28 3h1v1h-1zM0 4h1v1h-1zM2 4h3v1h-3zM6 4h1v1h-1zM8 4h2v1h-2zM11 4h2v1h-2zM16 4h5v1h-5zM22 4h1v1h-1zM24 4h3v1h-3zM28 4h1v1h-1zM0 5h1v1h-1zM6 5h1v1h-1zM8 5h4v1h-4zM13 5h4v1h-4zM18 5h1v1h-1zM20 5h1v1h-1zM22 5h1v1h-1zM28 5h1v1h-1zM0 6h7v1h-7zM8 6h1v1h-1zM10 6h1v1h-1zM12 6h1v1h-1zM14 6h1v1h-1zM16 6h1v1h-1zM18 6h1v1h-1zM20 6h1v1h-1zM22 6h7v1h-7zM8 7h4v1h-4zM15 7h2v1h-2zM18 7h3v1h-3zM0 8h1v1h-1zM2 8h5v1h-5zM9 8h1v1h-1zM11 8h1v1h-1zM13 8h1v1h-1zM17 8h1v1h-1zM22 8h5v1h-5zM2 9h1v1h-1zM4 9h1v1h-1zM7 9h1v1h-1zM9 9h1v1h-1zM11 9h3v1h-3zM19 9h2v1h-2zM22 9h3v1h-3zM28 9h1v1h-1zM1 10h3v1h-3zM6 10h1v1h-1zM8 10h4v1h-4zM13 10h3v1h-3zM21 10h1v1h-1zM23 10h2v1h-2zM0 11h2v1h-2zM4 11h1v1h-1zM7 11h1v1h-1zM11 11h1v1h-1zM14 11h1v1h-1zM16 11h1v1h-1zM19 11h3v1h-3zM23 11h1v1h-1zM25 11h1v1h-1zM27 11h1v1h-1zM0 12h7v1h-7zM8 12h2v1h-2zM15 12h1v1h-1zM17 12h1v1h-1zM19 12h1v1h-1zM25 12h2v1h-2zM0 13h4v1h-4zM10 13h4v1h-4zM16 13h1v1h-1zM18 13h2v1h-2zM22 13h3v1h-3zM28 13h1v1h-1zM0 14h1v1h-1zM4 14h1v1h-1zM6 14h1v1h-1zM8 14h1v1h-1zM10 14h1v1h-1zM12 14h7v1h-7zM20 14h2v1h-2zM23 14h4v1h-4zM0 15h1v1h-1zM7 15h1v1h-1zM12 15h2v1h-2zM15 15h2v1h-2zM18 15h1v1h-1zM20 15h3v1h-3zM27 15h1v1h-1zM0 16h1v1h-1zM3 16h1v1h-1zM6 16h1v1h-1zM8 16h1v1h-1zM14 16h2v1h-2zM17 16h3v1h-3zM25 16h2v1h-2zM0 17h5v1h-5zM7 17h1v1h-1zM9 17h3v1h-3zM16 17h9v1h-9zM26 17h1v1h-1zM28 17h1v1h-1zM0 18h1v1h-1zM6 18h1v1h-1zM9 18h2v1h-2zM12 18h1v1h-1zM15 18h3v1h-3zM20 18h1v1h-1zM26 18h1v1h-1zM0 19h1v1h-1zM2 19h4v1h-4zM7 19h2v1h-2zM12 19h1v1h-1zM14 19h3v1h-3zM18 19h1v1h-1zM20 19h1v1h-1zM24 19h1v1h-1zM27 19h1v1h-1zM0 20h1v1h-1zM4 20h4v1h-4zM9 20h4v1h-4zM15 20h1v1h-1zM17 20h1v1h-1zM20 20h5v1h-5zM26 20h3v1h-3zM8 21h1v1h-1zM11 21h1v1h-1zM13 21h2v1h-2zM16 21h5v1h-5zM24 21h5v1h-5zM0 22h7v1h-7zM10 22h1v1h-1zM12 22h4v1h-4zM18 22h3v1h-3zM22 22h1v1h-1zM24 22h3v1h-3zM0 23h1v1h-1zM6 23h1v1h-1zM8 23h1v1h-1zM10 23h1v1h-1zM13 23h1v1h-1zM19 23h2v1h-2zM24 23h1v1h-1zM28 23h1v1h-1zM0 24h1v1h-1zM2 24h3v1h-3zM6 24h1v1h-1zM8 24h2v1h-2zM14 24h4v1h-4zM20 24h5v1h-5zM26 24h1v1h-1zM0 25h1v1h-1zM2 25h3v1h-3zM6 25h1v1h-1zM8 25h2v1h-2zM11 25h1v1h-1zM15 25h5v1h-5zM25 25h4v1h-4zM0 26h1v1h-1zM2 26h3v1h-3zM6 26h1v1h-1zM8 26h1v1h-1zM14 26h4v1h-4zM20 26h8v1h-8zM0 27h1v1h-1zM6 27h1v1h-1zM9 27h4v1h-4zM16 27h1v1h-1zM20 27h1v1h-1zM22 27h4v1h-4zM27 27h1v1h-1zM0 28h7v1h-7zM8 28h1v1h-1zM11 28h3v1h-3zM17 28h3v1h-3zM23 28h1v1h-1zM26 28h1v1h-1z"/></svg></figure>
+    <div><p><b>Reef PDF also works on your phone and tablet.</b> Scan the code with the phone's camera, or open <a id="nwLink" href="https://mbimpremium.github.io/Reef-pdf/" target="_blank" rel="noopener">mbimpremium.github.io/Reef-pdf</a>.</p>
+      <p class="news-link"><button type="button" class="hlink" id="nwCopy">Copy link</button></p></div>
+  </section>
   <div class="news-foot">
     <label class="check"><input type="checkbox" id="nwHide"><span>Don't show again until the next update</span></label>
     <button class="btn primary" value="ok" autofocus>Got it</button>
   </div>
+</form></dialog>
+<dialog id="dlgZip" aria-labelledby="zTitle"><form method="dialog" class="dlg">
+  <h2 id="zTitle">Compress PDF</h2>
+  <p>Pictures and scans are saved again at a lower resolution, so the file gets smaller. Text, lines and fonts stay sharp. The compressed copy is saved as a new file; the open document does not change.</p>
+  <div class="zlv" role="radiogroup" aria-label="Compression">
+    <label class="zopt"><input type="radio" name="zlv" value="small"><span><b>Smallest file</b><small>Pictures at 100 dpi. For e-mail and upload limits; scans stay readable.</small></span></label>
+    <label class="zopt"><input type="radio" name="zlv" value="medium" checked><span><b>Balanced</b> <em>Recommended</em><small>Pictures at 150 dpi. Good on screen and in print.</small></span></label>
+    <label class="zopt"><input type="radio" name="zlv" value="high"><span><b>Best quality</b><small>Pictures at 220 dpi. Smaller, with hardly any visible change.</small></span></label>
+  </div>
+  <div class="acts"><button class="btn" value="no">Cancel</button><button class="btn primary" value="yes" id="zGo">Compress and save</button></div>
 </form></dialog>
 <dialog id="dlgConfirm"><form method="dialog" class="dlg">
   <h2 id="cfTitle"></h2><p id="cfText"></p>
@@ -865,6 +907,8 @@ dialog.news{width:min(700px,calc(100vw - 32px))}
   <button data-cv="docx" role="menuitem">Word document (.docx)</button>
   <button data-cv="xlsx" role="menuitem">Excel workbook (.xlsx)</button>
   <button data-cv="pptx" role="menuitem">PowerPoint slides (.pptx)</button>
+  <hr>
+  <button data-cv="area" role="menuitem">Table from an area → Excel…</button>
 </div>
 <div class="menu pop" id="ctxMenu" role="menu" hidden></div>
 <div class="menu pop" id="mobMenu" role="menu" hidden>
@@ -887,6 +931,8 @@ dialog.news{width:min(700px,calc(100vw - 32px))}
   <button data-shape="arrow" role="menuitem">Arrow</button>
 </div>
 <div class="menu pop" id="moreMenu" role="menu" hidden>
+  <button data-more="stamp" role="menuitem">Stamp</button>
+  <hr>
   <button data-more="hf" role="menuitem">Header, footer and page numbers…</button>
   <button data-more="crop" role="menuitem">Crop pages</button>
   <hr>
@@ -1178,6 +1224,7 @@ const ICONS = {
   x: '<path d="M7 7l10 10M17 7L7 17"/>',
   phone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
   move: '<path d="M12 3v18M3 12h18M12 3l-2.500 2.500M12 3l2.500 2.500M12 21l-2.500-2.500M12 21l2.500-2.500M3 12l2.500-2.500M3 12l2.500 2.500M21 12l-2.500-2.500M21 12l-2.500 2.500"/>',
+  compress: '<path d="M4 4l5 5M9 5v4H5M20 4l-5 5M15 5v4h4M4 20l5-5M5 15h4v4M20 20l-5-5M19 15h-4v4"/>',
   spark: '<path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800z"/><path d="M18.500 15.500l.700 1.800 1.800.700-1.800.700-.700 1.800-.700-1.800-1.800-.700 1.800-.700z"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -1829,7 +1876,7 @@ function fillText(e, o) {           // the characters of a text box: plain, or o
   });
 }
 function buildObj(o) {
-  const e = mk('div', 'obj obj-' + o.type + (o.auto === 'wm' ? ' locked' : '')); e.dataset.id = o.id; const st = e.style;
+  const e = mk('div', 'obj obj-' + o.type + (o.auto === 'wm' ? ' locked' : '') + (docText(o) ? ' doc-text' : '')); e.dataset.id = o.id; const st = e.style;
   if (o.gone) st.display = 'none';      // a deleted paragraph: only its cover is left
   const svg = inner => { e.classList.add('obj-svg'); e.innerHTML = `<svg width="1" height="1">${inner}</svg>`; };
   const op = o.opacity ?? 1;
@@ -3243,7 +3290,7 @@ function setTool(t) {
   S.tool = t; stage.dataset.tool = t; clearTsel(); S.msel = null; stage.classList.remove('over-block');
   for (const b of $$('.tool[data-tool]')) b.setAttribute('aria-pressed', b.dataset.tool === t ? 'true' : 'false');
   { const sb = $('#btnShapes'), sh = ['rect', 'ellipse', 'line', 'arrow'].includes(t); sb.setAttribute('aria-pressed', sh ? 'true' : 'false'); if (sh) { const i = sb.querySelector('.ic'); if (i) i.outerHTML = ic(t); } }
-  $('#btnMore').classList.toggle('on', t === 'crop' || t === 'ftext' || t === 'fcheck');
+  $('#btnMore').classList.toggle('on', t === 'crop' || t === 'ftext' || t === 'fcheck' || t === 'stamp'); $('#btnConvert').classList.toggle('on', t === 'xlarea');
   if (t !== 'select' && S.sel) S.sel = null;
   refreshTextLines(); drawSel(); renderProps(true);
 }
@@ -3372,6 +3419,7 @@ function onDown(ev) {
   const hitObj = oe && pg.objs.find(o => o.id === oe.dataset.id);
   if ((ev.ctrlKey || ev.metaKey) && (tool !== 'select' || hitObj)) { const k = linkAt(v, p); if (k) { ev.preventDefault(); followLink(pg, k); return; } }      // Ctrl+click follows a link with any tool, also under text that was edited
   if (tool === 'select') {
+    if (hitObj && docText(hitObj)) { if (S.sel) select(null); clearTsel(); ev.preventDefault(); tselStart(pg, v, p); drag.link = linkAt(v, p); return; }      // the document's own text, edited: selected letter by letter like the rest of the page
     if (!hitObj) { if (S.sel) select(null); clearTsel(); if (pg.src) { ev.preventDefault(); tselStart(pg, v, p); drag.link = linkAt(v, p); } return; }
     ev.preventDefault(); clearTsel(); select(pg.id, hitObj.id);
     drag = { kind: 'move', pg, v, o: hitObj, orig: clone(hitObj), start: p, sx: ev.clientX, sy: ev.clientY, moved: false };
@@ -3390,24 +3438,68 @@ function onDown(ev) {
   if (tool === 'note') { ev.preventDefault(); const o = { id: uid('o'), type: 'note', x: r2(p.x - 11), y: r2(p.y - 11), text: '', color: S.def.note.color }; pg.objs.push(o); S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); commit(); setTimeout(() => $('#p_note')?.focus(), 30); return; }
   if (tool === 'stamp') { ev.preventDefault(); const d = S.def.stamp, w = 150, h = 44; const o = { id: uid('o'), type: 'stamp', x: r2(p.x - w / 2), y: r2(p.y - h / 2), w, h, text: d.text, color: d.color, rot: 0 }; pg.objs.push(o); S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); commit(); return; }
   ev.preventDefault();
+  if (tool === 'xlarea') { drag = { kind: 'area', pg, v, start: p, sx: ev.clientX, sy: ev.clientY, moved: false }; return; }      // a table from an area (0495-area.js)
   if (tool === 'crop') { drag = { kind: 'crop', pg, v, start: p, prev: pg.crop ? clone(pg.crop) : null }; return; }
   let o;
   if (tool === 'rect' || tool === 'ellipse') o = { id: uid('o'), type: tool, x: p.x, y: p.y, w: 0, h: 0, ...clone(S.def.shape) };
   else if (tool === 'line' || tool === 'arrow') o = { id: uid('o'), type: tool, x1: p.x, y1: p.y, x2: p.x, y2: p.y, stroke: S.def.shape.stroke, sw: S.def.shape.sw, opacity: S.def.shape.opacity };
   else if (tool === 'ink') o = { id: uid('o'), type: 'ink', pts: [[r2(p.x), r2(p.y)]], ...clone(S.def.ink) };
-  else if (tool === 'mark') o = { id: uid('o'), type: 'mark', style: 'highlight', color: S.def.mark.color, rects: [{ x: p.x, y: p.y, w: 0, h: 0 }], temp: true };
+  else if (tool === 'mark') o = { id: uid('o'), type: 'mark', style: 'highlight', color: S.def.mark.color, rects: [], temp: true };
   else if (tool === 'wipe') o = { id: uid('o'), type: 'rect', x: p.x, y: p.y, w: 0, h: 0, stroke: null, fill: '#ffffff', sw: 0, opacity: 1, wipe: true };
   else if (tool === 'redact') o = { id: uid('o'), type: 'redact', x: p.x, y: p.y, w: 0, h: 0 };
   else if (tool === 'ftext' || tool === 'fcheck') o = { id: uid('o'), type: 'field', ftype: tool === 'ftext' ? 'text' : 'check', name: fieldName(tool === 'ftext' ? 'text' : 'check'), multi: false, x: p.x, y: p.y, w: 0, h: 0 };
   else return;
   pg.objs.push(o); drag = { kind: 'create', tool, pg, v, o, start: p };
+  if (tool === 'mark') markStart(drag, pg, p);
+}
+/* Highlight, underline, strikethrough: on text, the mark follows the words from where the drag began to where it is, like selecting
+   text (a click marks one word). Where there is no text to read (a scan without OCR, a picture), the box is fitted to the lines of
+   print inside it when the mouse is let go. */
+function markStart(d, pg, p) {
+  d.textP = selLines(pg).then(L => {
+    if (!L.lines.length) return;
+    const near = L.lines.some(l => p.x >= l.x - l.h * 2 && p.x <= l.x + l.w + l.h * 2 && p.y >= l.y - l.h * 1.2 && p.y <= l.y + l.h * 2.2);
+    if (near) d.text = { ...L, A: tselPos(L.lines, L.gl, p) };
+  }).catch(() => { });
+}
+function inkFit(pg, v, r) {         // a box on a picture of text: one mark per line of print inside it, as tall as the letters
+  const c = v.canvas; if (!c || c.width < 8) return [];
+  const k = c.width / pg.w, x0 = clamp(Math.floor(r.x * k), 0, c.width - 1), y0 = clamp(Math.floor(r.y * k), 0, c.height - 1);
+  const w = clamp(Math.ceil(r.w * k), 1, c.width - x0), h = clamp(Math.ceil(r.h * k), 1, c.height - y0);
+  let d; try { d = c.getContext('2d').getImageData(x0, y0, w, h).data; } catch { return []; }
+  const lum = new Uint8Array(w * h), hist = new Uint32Array(256);
+  for (let i = 0; i < w * h; i++) { const L = (d[i * 4] * 299 + d[i * 4 + 1] * 587 + d[i * 4 + 2] * 114) / 1000 | 0; lum[i] = L; hist[L]++; }
+  let acc = 0, bg = 255; for (let L = 255; L >= 0; L--) { acc += hist[L]; if (acc >= w * h * 0.5) { bg = L; break; } }      // the paper: most of the box
+  const th = bg - Math.max(45, bg * 0.25), minN = Math.max(1, Math.round(w * 0.003)), ink = y => { let n = 0; for (let x = 0; x < w; x++) if (lum[y * w + x] < th) n++; return n >= minN; };
+  const bands = []; let cur = null;
+  for (let y = 0; y < h; y++) {
+    if (ink(y)) { if (cur && y - cur.b <= Math.max(2, (cur.b - cur.t) * 0.3)) cur.b = y; else bands.push(cur = { t: y, b: y }); }
+  }
+  const out = [], pad = 1.2;
+  for (const bd of bands) {
+    if ((bd.b - bd.t + 1) / k < 2.5) continue;      // specks and rules, not letters
+    let a = w, z = -1; for (let y = bd.t; y <= bd.b; y++) for (let x = 0; x < w; x++) if (lum[y * w + x] < th) { if (x < a) a = x; if (x > z) z = x; }
+    if (z < a) continue;
+    /* a word the box cuts through is taken whole: the mark grows sideways until the gap between two words */
+    let A = x0 + a, Z = x0 + z;
+    try {
+      const bh = bd.b - bd.t + 1, row = g => { const dd = c.getContext('2d').getImageData(0, y0 + bd.t, c.width, bh).data, col = new Uint8Array(c.width); for (let y = 0; y < bh; y++) for (let x = 0; x < c.width; x++) { const q = (y * c.width + x) * 4; if ((dd[q] * 299 + dd[q + 1] * 587 + dd[q + 2] * 114) / 1000 < th) col[x] = 1; } return col; };
+      const col = row(), gapTol = Math.max(2, Math.round(bh * 0.2));
+      const grow = (from, dir) => { let x = from, gap = 0; while (x + dir >= 0 && x + dir < c.width && gap <= gapTol) { x += dir; if (col[x]) { from = x; gap = 0; } else gap++; } return from; };
+      Z = grow(Z, 1); A = grow(A, -1);
+    } catch { }
+    out.push({ x: r2(A / k - pad), y: r2((y0 + bd.t) / k - pad), w: r2((Z - A + 1) / k + 2 * pad), h: r2((bd.b - bd.t + 1) / k + 2 * pad) });
+    if (out.length >= 80) break;
+  }
+  return out;
 }
 function onMove(ev) {
   const pe = ev.target.closest && ev.target.closest('.page');
-  if (pe && !drag) { const v = V.get(pe.dataset.id); if (v) { const p = ptOf(ev, v); $('#stPos').textContent = `X ${fmtNum(p.x / PT_MM, 1)}  Y ${fmtNum(p.y / PT_MM, 1)} mm`; const pg = pageById(pe.dataset.id); if (S.tool === 'select') hoverText(pg, v, p); else if (v.sheet.style.cursor) v.sheet.style.cursor = ''; if (S.tool === 'edittext') blockHover(pg, v, p); if (pg) linkHover(pg, v, p, ev); } }
+  if (pe && !drag) { const v = V.get(pe.dataset.id); if (v) { const p = ptOf(ev, v); $('#stPos').textContent = `X ${fmtNum(p.x / PT_MM, 1)}  Y ${fmtNum(p.y / PT_MM, 1)} mm`; const pg = pageById(pe.dataset.id); if (S.tool === 'select' || S.tool === 'mark') hoverText(pg, v, p); else if (v.sheet.style.cursor) v.sheet.style.cursor = ''; if (S.tool === 'edittext') blockHover(pg, v, p); if (pg) linkHover(pg, v, p, ev); } }
   if (!drag) return;
   if (drag.kind === 'tap') { if (Math.hypot(ev.clientX - drag.sx, ev.clientY - drag.sy) > 10) drag = null; return; }
   if (drag.kind === 'marq' || drag.kind === 'mmove') { blockMove(drag, ev); return; }
+  if (drag.kind === 'area') { areaMove(drag, ev); return; }
   const d = drag, p = ptOf(ev, d.v), dx = p.x - d.start.x, dy = p.y - d.start.y, o = d.o, g = d.orig;
   if (d.kind === 'tsel') { tselMove(d, p); return; }
   if (d.kind === 'crop') {
@@ -3443,7 +3535,8 @@ function onMove(ev) {
     else if (o.type === 'line' || o.type === 'arrow') { let x = p.x, y = p.y; if (ev.shiftKey) [x, y] = snap45(o.x1, o.y1, x, y); o.x2 = r2(x); o.y2 = r2(y); }
     else {
       const b = { x: r2(Math.min(d.start.x, p.x)), y: r2(Math.min(d.start.y, p.y)), w: r2(Math.abs(dx)), h: r2(Math.abs(dy)) };
-      if (o.type === 'mark') o.rects = [b]; else Object.assign(o, b);
+      if (o.type === 'mark') { if (d.text && d.text.A) { const B = tselPos(d.text.lines, d.text.gl, p), t = B && tselBuild(d.pg, d.text.lines, d.text.gl, d.text.A, B); o.rects = t ? t.rects : []; } else o.rects = [b]; }
+      else Object.assign(o, b);
     }
   }
   redrawPage(d.pg);
@@ -3453,27 +3546,27 @@ async function onUp() {
   const d = drag; if (!d) return; drag = null;
   if (d.kind === 'tap') { if (S.tool === d.tool && d.ev.target.isConnected) onDown(d.ev); return; }
   if (d.kind === 'marq' || d.kind === 'mmove') { blockUp(d); return; }
+  if (d.kind === 'area') { areaUp(d); return; }
   if (d.kind === 'move') { if (d.moved) commit(); return; }
   if (d.kind === 'resize') { if (d.o.pk) flowCommit(d.pg); else commit(); return; }
   if (d.kind === 'tsel') { if (!d.moved) { clearTsel(); if (d.link) followLink(d.pg, d.link); } return; }      // a click on a link (no drag) follows it
   if (d.kind === 'crop') { const c = d.pg.crop; if (!c || c.w < 12 || c.h < 12) { if (d.prev) d.pg.crop = d.prev; else delete d.pg.crop; } commit(); return; }
   const o = d.o, pg = d.pg, drop = () => { pg.objs = pg.objs.filter(x => x !== o); };
+  if (o.type === 'mark') {
+    delete o.temp; o.style = S.def.mark.style;
+    if (d.textP) await d.textP;
+    if (d.text) { if (!o.rects.length) { const t = await wordSel(pg, d.start, d.text).catch(() => null); if (t) o.rects = t.rects; } }      // a click: the word under it
+    else { const r = o.rects[0]; if (r && r.w >= 3 && r.h >= 2) { const fit = inkFit(pg, d.v, r); if (fit.length) o.rects = fit; } else o.rects = []; }
+    if (!o.rects.length) { drop(); redrawPage(pg); return; }
+    if (pg.objs.includes(o) && !STICKY.has(d.tool)) { S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); }
+    commit(); return;
+  }
   const b = bbox(o, d.v);
   if (o.type === 'field' && (b.w < 6 || b.h < 6)) Object.assign(o, o.ftype === 'check' ? { x: r2(d.start.x - 7), y: r2(d.start.y - 7), w: 14, h: 14 } : { x: r2(d.start.x), y: r2(d.start.y - 10), w: 160, h: 20 });
   else if (o.type === 'ink') { if (o.pts.length < 2) o.pts.push([o.pts[0][0] + 0.4, o.pts[0][1] + 0.4]); }
   else if (o.type === 'line' || o.type === 'arrow') { if (Math.hypot(b.w, b.h) < 4) drop(); }
-  else if (b.w < 3 || b.h < (o.type === 'mark' ? 0.5 : 2)) drop();
-  else if (o.type === 'mark') {
-    delete o.temp; o.style = S.def.mark.style;
-    const r = o.rects[0], lines = pg.src ? await dLines(pg, true).catch(() => []) : [], rects = [];
-    for (const ln of lines) {
-      const ov = Math.min(r.y + r.h, ln.y + ln.h) - Math.max(r.y, ln.y); if (ov <= 0 || (ov < ln.h * 0.45 && ov < r.h * 0.6)) continue;
-      const cw = ln.w / Math.max(1, ln.text.length), sn = x => ln.x + clamp(Math.round((x - ln.x) / cw), 0, ln.text.length) * cw;
-      const x1 = sn(Math.max(ln.x, r.x)), x2 = sn(Math.min(ln.x + ln.w, r.x + r.w)); if (x2 - x1 < 1) continue;
-      rects.push({ x: r2(x1), y: r2(ln.y), w: r2(x2 - x1), h: r2(ln.h) });
-    }
-    if (rects.length) o.rects = rects;
-  } else if (o.wipe) o.fill = sampleColors(pg, d.v, o).bg;
+  else if (b.w < 3 || b.h < 2) drop();
+  else if (o.wipe) o.fill = sampleColors(pg, d.v, o).bg;
   if (pg.objs.includes(o) && !STICKY.has(d.tool)) { S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); }
   commit();
 }
@@ -3490,6 +3583,7 @@ stage.addEventListener('dblclick', ev => {
   const pg = pageById(pe.dataset.id);
   if (!oe) { if (S.tool === 'select' && pg.src && !ev.target.closest('.ff')) selectWord(pg, ptOf(ev, V.get(pg.id))).catch(() => { }); return; }
   const o = pg.objs.find(x => x.id === oe.dataset.id); if (!o) return;
+  if (S.tool === 'select' && docText(o)) { selectWord(pg, ptOf(ev, V.get(pg.id))).catch(() => { }); return; }      // a word, as anywhere else in the page's text
   if (o.type === 'text') startEdit(pg, o, true); else if (o.type === 'note') $('#p_note')?.focus(); else if (o.type === 'stamp') $('#p_stamptext')?.select();
 });
 
@@ -3648,7 +3742,7 @@ function lineOrder(lines) {         // reading order: top to bottom, then left t
 function tselPos(lines, gl, p) {
   const ord = lineOrder(lines); let best = -1, bd = 1e9;
   ord.forEach((li, k) => {
-    const ln = lines[li], dy = p.y < ln.y ? ln.y - p.y : p.y > ln.y + ln.h ? p.y - ln.y - ln.h : 0, dx = p.x < ln.x ? ln.x - p.x : p.x > ln.x + ln.w ? p.x - ln.x - ln.w : 0, d = dy * 4 + dx;
+    const ln = lines[li], dy = p.y < ln.y ? ln.y - p.y : p.y > ln.y + ln.h ? p.y - ln.y - ln.h : 0, dx = p.x < ln.x ? ln.x - p.x : p.x > ln.x + ln.w ? p.x - ln.x - ln.w : 0, d = dy ? 1e4 + dy * 4 + dx : dx;      // the line at that height comes first, even when the point is past its end
     if (d < bd) { bd = d; best = k; }
   });
   if (best < 0) return null;
@@ -3664,16 +3758,53 @@ function lineSlice(ln, c0, c1) {    // the characters between two boundaries
   }
   const n = ln.text.length, G = ln._b.length - 1; return ln.text.slice(Math.round(c0 / G * n), Math.round(c1 / G * n));
 }
+/* The text that can be selected: the PDF's own lines that are still shown, and the text of the document's paragraphs that were
+   edited or moved with Edit text (they are text boxes now, but read and select like the rest of the page, character by character). */
+const docText = o => o.type === 'text' && !o.gone && !o.rot && !!(o.pk || o.cover);
+function objTextLines(pg) {
+  const v = V.get(pg.id), empty = { lines: [] }; if (!v) return empty;
+  const list = pg.objs.filter(docText); if (!list.length) return empty;
+  const key = JSON.stringify(list) + '|' + S.zoom + '|' + (S.editing ? S.editing.objId : '');
+  if (v.otl && v.otl.key === key) return v.otl;
+  const out = { key, lines: [] }, sr = v.sheet.getBoundingClientRect(), z = S.zoom, rg = document.createRange();
+  for (const o of list) {
+    const e = v.objEls.get(o.id); if (!e || (S.editing && S.editing.el === e)) continue;
+    const chars = [], tw = document.createTreeWalker(e, NodeFilter.SHOW_TEXT); let n;
+    while ((n = tw.nextNode())) {
+      const st = styleAt(n, e, o), fe = usePf(st) ? pfFont(st) : null;
+      for (let i = 0; i < n.data.length; i++) {
+        const ch = n.data[i]; if (ch === '\u200B' || ch === '\n') continue;
+        rg.setStart(n, i); rg.setEnd(n, i + 1); const rs = [...rg.getClientRects()].filter(r => r.height > 0); if (!rs.length) continue;
+        const r = rs[0]; chars.push({ x0: (r.left - sr.left) / z, x1: (r.right - sr.left) / z, y0: (r.top - sr.top) / z, y1: (r.bottom - sr.top) / z, u: fe ? pfPlain(ch, fe) : ch });
+      }
+    }
+    const rows = [];      // characters on one line of the box
+    for (const c of chars) { const yc = (c.y0 + c.y1) / 2, rw = rows.find(q => Math.abs(q.yc - yc) < (c.y1 - c.y0) * 0.5); if (rw) rw.cs.push(c); else rows.push({ yc, cs: [c] }); }
+    for (const rw of rows) {
+      const cs = rw.cs.sort((a, b) => a.x0 - b.x0); while (cs.length && /\s/.test(cs[cs.length - 1].u)) cs.pop(); if (!cs.length) continue;
+      const x = Math.min(...cs.map(c => c.x0)), y = Math.min(...cs.map(c => c.y0)), w = Math.max(...cs.map(c => c.x1)) - x, h = Math.max(...cs.map(c => c.y1)) - y, base = y + h * 0.8;
+      const g = cs.map(c => ({ x0: c.x0, x1: c.x1, y: base, u: c.u, sp: /\s/.test(c.u) }));
+      out.lines.push({ x, y, w, h, base, size: h / 1.2, text: cs.map(c => c.u).join(''), obj: o.id, _g: g, _b: [...g.map(q => q.x0), g[g.length - 1].x1] });      // its own letters: never mixed with text of the page underneath
+    }
+  }
+  return (v.otl = out);
+}
+async function selLines(pg) {
+  const [lines, gl] = pg.src ? await Promise.all([dLines(pg, true), dGlyphs(pg).catch(() => [])]) : [[], []];
+  const ob = objTextLines(pg);
+  return ob.lines.length ? { lines: [...lines, ...ob.lines], gl } : { lines, gl };
+}
 function tselBuild(pg, lines, gl, A, B) {
   const ord = lineOrder(lines); let a = A, b = B; if (a.k > b.k || (a.k === b.k && a.ci > b.ci)) [a, b] = [b, a];
-  const rects = []; let text = '', prev = null;
+  const rects = []; let text = '', prev = null, obj = false;
   for (let k = a.k; k <= b.k; k++) {
     const ln = lines[ord[k]], bd = lineBounds(ln, gl), c0 = k === a.k ? a.ci : 0, c1 = k === b.k ? b.ci : bd.length - 1; if (c1 <= c0) continue;
+    if (ln.obj) obj = true;
     rects.push({ x: r2(bd[c0]), y: r2(ln.y), w: r2(bd[c1] - bd[c0]), h: r2(ln.h) });
     if (prev) text += Math.abs(prev.y + prev.h / 2 - ln.y - ln.h / 2) > Math.min(prev.h, ln.h) * 0.5 ? '\n' : ' ';
     text += lineSlice(ln, c0, c1); prev = ln;
   }
-  return rects.length ? { pageId: pg.id, rects, text, a, b } : null;
+  return rects.length ? { pageId: pg.id, rects, text, a, b, obj } : null;      // obj: some of it is text that was edited here
 }
 function drawTsel() {
   for (const v of V.values()) if (v.tsel.firstChild) v.tsel.textContent = '';
@@ -3684,7 +3815,7 @@ function drawTsel() {
 function clearTsel() { if (S.tsel) { S.tsel = null; drawTsel(); } }
 function tselStart(pg, v, p) {
   const d = { kind: 'tsel', pg, v, start: p, moved: false, lines: null, gl: null, A: null }; drag = d;
-  Promise.all([dLines(pg, true), dGlyphs(pg).catch(() => [])]).then(([lines, gl]) => { if (lines.length) { d.lines = lines; d.gl = gl; d.A = tselPos(lines, gl, p); } }).catch(() => { });
+  selLines(pg).then(({ lines, gl }) => { if (lines.length) { d.lines = lines; d.gl = gl; d.A = tselPos(lines, gl, p); } }).catch(() => { });
 }
 function tselMove(d, p) {
   if (!d.moved && Math.hypot(p.x - d.start.x, p.y - d.start.y) * S.zoom < 4) return;
@@ -3692,19 +3823,20 @@ function tselMove(d, p) {
   const B = tselPos(d.lines, d.gl, p); if (!B) return;
   S.tsel = tselBuild(d.pg, d.lines, d.gl, d.A, B); drawTsel();
 }
-async function selectWord(pg, p) {
-  const lines = await dLines(pg, true); if (!lines.length) return; const gl = await dGlyphs(pg).catch(() => []), at = tselPos(lines, gl, p); if (!at || !at.on) return;
+async function wordSel(pg, p, L) {          // the word at a point, as a selection (null if there is none)
+  const { lines, gl } = L || await selLines(pg); if (!lines.length) return null; const at = tselPos(lines, gl, p); if (!at || !at.on) return null;
   const ln = lines[lineOrder(lines)[at.k]], b = lineBounds(ln, gl), g = ln._g, n = b.length - 1; let i = 0; while (i < n - 1 && b[i + 1] <= p.x) i++;
   const isSp = j => g ? (g[j].sp || /\s/.test(g[j].u)) : /\s/.test(ln.text[Math.min(ln.text.length - 1, Math.floor(j / n * ln.text.length))] || ' ');
   const gap = j => !!g && j > 0 && g[j].x0 - g[j - 1].x1 > ln.size * 0.18;          // a visible gap before character j
-  if (isSp(i)) return; let c0 = i, c1 = i + 1;
+  if (isSp(i)) return null; let c0 = i, c1 = i + 1;
   while (c0 > 0 && !isSp(c0 - 1) && !gap(c0)) c0--;
   while (c1 < n && !isSp(c1) && !gap(c1)) c1++;
-  S.tsel = tselBuild(pg, lines, gl, { k: at.k, ci: c0 }, { k: at.k, ci: c1 }); drawTsel();
+  return tselBuild(pg, lines, gl, { k: at.k, ci: c0 }, { k: at.k, ci: c1 });
 }
+async function selectWord(pg, p) { const t = await wordSel(pg, p); if (t) { S.tsel = t; drawTsel(); } }
 async function selectAllText(pg) {
-  const lines = await dLines(pg, true); if (!lines.length) { toast('This page has no selectable text.'); return; }
-  const gl = await dGlyphs(pg).catch(() => []), ord = lineOrder(lines), last = lines[ord[ord.length - 1]];
+  const { lines, gl } = await selLines(pg); if (!lines.length) { toast('This page has no selectable text.'); return; }
+  const ord = lineOrder(lines), last = lines[ord[ord.length - 1]];
   S.tsel = tselBuild(pg, lines, gl, { k: 0, ci: 0 }, { k: ord.length - 1, ci: lineBounds(last, gl).length - 1 }); drawTsel();
 }
 async function copyText(t) {
@@ -3754,14 +3886,16 @@ stage.addEventListener('contextmenu', ev => {
 function ctxAt(target, cx, cy) {      // the menu for a point on a page: selected text, an object, or the page itself
   const pe = target.closest('.page'); if (!pe) return;
   const ev = { clientX: cx, clientY: cy };
-  const pg = pageById(pe.dataset.id), v = V.get(pg.id), p = ptOf(ev, v), oe = target.closest('.obj'), o = oe && pg.objs.find(x => x.id === oe.dataset.id), t = S.tsel && S.tsel.pageId === pg.id ? S.tsel : null;
+  const pg = pageById(pe.dataset.id), v = V.get(pg.id), p = ptOf(ev, v), oe = target.closest('.obj'), o0 = oe && pg.objs.find(x => x.id === oe.dataset.id), t = S.tsel && S.tsel.pageId === pg.id ? S.tsel : null;
+  const dt = o0 && S.tool === 'select' && docText(o0) ? o0 : null, o = dt ? null : o0;      // the document's own text, edited: like the rest of the page
   let items;
   if (t && !o) items = [
     ['Copy', () => copyText(t.text), 'Ctrl+C'], '-',
     ['Highlight text', () => markFromSel('highlight')], ['Underline text', () => markFromSel('underline')], ['Strikethrough text', () => markFromSel('strike')],
-    ['Add note to text', () => markFromSel('highlight', true)], '-',
-    ['Delete text', () => coverFromSel('wipe')], ['Redact text', () => coverFromSel('redact')],
+    ['Add note to text', () => markFromSel('highlight', true)],
+    ...(t.obj ? [] : ['-', ['Delete text', () => coverFromSel('wipe')], ['Redact text', () => coverFromSel('redact')]]),      // edited text is changed with Edit text
   ];
+  else if (dt) items = [['Edit this text', () => { setTool('edittext'); startEdit(pg, dt, false, { x: cx, y: cy }); }], '-', ['Select all text on this page', () => selectAllText(pg)]];
   else if (o && S.tool === 'select') {
     clearTsel(); select(pg.id, o.id);
     items = [];
@@ -4014,6 +4148,7 @@ function renderProps(force) {
       edittext: 'Click a paragraph to edit it like in a word processor: the text wraps inside the paragraph and keeps its fonts, line spacing and alignment. Select words and press Ctrl+B or Ctrl+I to change only those words. Clear a paragraph to remove it. To move several paragraphs and objects at once, drag a box from an empty spot (or press Ctrl+A), then drag the block or use the arrow keys.',
       wipe: 'Drag to cover an area with the surrounding background colour. Covered text is also removed from the file; images and lines are only covered. To remove everything permanently, use Redact.',
       crop: 'Drag a box on a page. Only that area shows in the downloaded PDF; the rest is hidden, not deleted.',
+      xlarea: 'Drag a box over a table. Its rows and columns go into an Excel file, and figures become numbers Excel can add up. On a scanned page, run OCR first. Esc goes back to Select.',
       ftext: 'Drag where the text field should go, or just click for a standard size.',
       fcheck: 'Click where the check box should go.',
       redact: 'Drag over the part that must go. On download that page is turned into an image, so whatever is under the black box is gone for good.',
@@ -4467,7 +4602,7 @@ moreMenu.addEventListener('click', ev => {
     hf: () => $('#dlgNum').showModal(),
     crop: () => setTool('crop'), ftext: () => setTool('ftext'), fcheck: () => setTool('fcheck'),
     split: () => { $('#spInfo').textContent = `This document has ${S.pages.length} page${S.pages.length === 1 ? '' : 's'}.`; $('#dlgSplit').showModal(); },
-    images: exportImages, text: exportText,
+    images: exportImages, text: exportText, stamp: () => setTool('stamp'),
     props: () => { for (const k2 of ['title', 'author', 'subject', 'keywords']) $('#meta_' + k2).value = S.meta[k2] || ''; $('#dlgMeta').showModal(); },
     save: saveProject,
   })[k]();
@@ -5095,7 +5230,7 @@ async function longPress(at) {
   const pe = at.target.closest('.page'), pg = pe && pageById(pe.dataset.id), v = pg && V.get(pg.id); if (!v) return;
   try { navigator.vibrate?.(8); } catch { }
   const oe = at.target.closest('.obj'), o = oe && pg.objs.find(x => x.id === oe.dataset.id);
-  if (o && S.tool === 'select') { clearTsel(); select(pg.id, o.id); selBarSync(); return; }      // the bar shows what can be done with it
+  if (o && S.tool === 'select' && !docText(o)) { clearTsel(); select(pg.id, o.id); selBarSync(); return; }      // the bar shows what can be done with it
   const p = ptOf({ clientX: at.x, clientY: at.y }, v);
   if (pg.src && (S.tool === 'select' || S.tool === 'edittext')) { clearTsel(); await selectWord(pg, p); if (S.tsel) return; }
   ctxAt(at.target, at.x, at.y);
@@ -5116,7 +5251,7 @@ function tshDraw() {
 for (const [i, e] of tshEls.entries()) e.addEventListener('pointerdown', async ev => {
   ev.preventDefault(); ev.stopPropagation(); lpCancel();
   const t = S.tsel, pg = t && pageById(t.pageId); if (!pg) return;
-  const lines = await dLines(pg, true), gl = await dGlyphs(pg).catch(() => []);
+  const { lines, gl } = await selLines(pg);
   tshDrag = { pg, v: V.get(pg.id), lines, gl, fixed: i === 0 ? t.b : t.a, id: ev.pointerId };
   try { e.setPointerCapture(ev.pointerId); } catch { }
 });
@@ -5202,9 +5337,6 @@ const newsGet = () => { try { return JSON.parse(localStorage.getItem(NEWS_KEY) |
 const newsPut = v => { newsMem = v; try { localStorage.setItem(NEWS_KEY, JSON.stringify(v)); } catch { } };
 function newsShow() {
   const d = $('#dlgNews'); if (d.open) return;
-  const onTouch = touchUI() || phone();
-  $('#nwLead').textContent = onTouch ? 'Reef PDF is made for touch screens: the tools sit at the bottom of the screen, two fingers zoom, and pressing and holding on text selects it.'
-    : 'Open Reef PDF in the browser of a phone or tablet: the tools sit at the bottom of the screen, two fingers zoom, and pressing and holding on text selects it.';
   $('#nwCopy').textContent = 'Copy link';
   $('#nwHide').checked = newsGet().hide === d.dataset.update;
   newsPut({ ...newsGet(), day: today() });
@@ -5346,7 +5478,7 @@ async function pageImages(pg, T) {  // pictures on the page, where they are show
   return res;
 }
 const paraText = P => P.runs.map(r => r.t).join('').replace(/​/g, '').replace(/[ \t]+$/, '');
-async function readPage(pg) {       // paragraphs, tables, lines and pictures of one page of the finished document
+async function readPage(pg, noImages) {      // paragraphs, tables, lines and pictures of one page of the finished document
   const pj = await getPdfPage(pg), T = pj.getViewport({ scale: 1, rotation: pageRot(pj, pg) }).transform;
   const got = await getParas(pg), paras = got.filter(P => paraText(P).trim()), rules = got.rules || [], tables = findTables(rules, pg.w, pg.h);
   const free = [];
@@ -5354,7 +5486,7 @@ async function readPage(pg) {       // paragraphs, tables, lines and pictures of
   const tlines = new Set(); for (const t of tables) for (const q of rules) if (q.x >= t.x - 3 && q.x + q.w <= t.r + 3 && q.y >= t.y - 3 && q.y + q.h <= t.b + 3) tlines.add(q);
   const seps = rules.filter(q => q.hor && !tlines.has(q) && q.w >= pg.w * 0.25);
   let images = [];
-  try { images = await pageImages(pg, T); } catch (e) { console.warn('pictures', errMsg(e)); }
+  if (!noImages) try { images = await pageImages(pg, T); } catch (e) { console.warn('pictures', errMsg(e)); }
   if (hasOcr(pg)) images = images.filter(im => im.w * im.h < pg.w * pg.h * 0.55);      // the scan itself: its text was recognised
   return { W: pg.w, H: pg.h, paras, free, tables, seps, images };
 }
@@ -5607,69 +5739,78 @@ function asNumber(text, style) {    // a figure written in the document, as a nu
   return { v: (neg ? -v : v) / (pct ? 100 : 1), fmt: pct ? (dec ? 10 : 9) : paren ? (dec ? 165 : 164) : dec === 2 ? 4 : dec ? 2 : (s.includes(th) ? 3 : 0) };       // 164, 165: negatives in brackets, as accountants write them
 }
 const colName = n => { let s = ''; n++; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
-async function toExcel() {
-  const src = await convSource(), sheets = [], styles = new Map([['0|0|0|0', 0]]), styleOf = (bold, fmt, border, wrap) => { const k = `${bold ? 1 : 0}|${fmt}|${border ? 1 : 0}|${wrap ? 1 : 0}`; if (!styles.has(k)) styles.set(k, styles.size); return styles.get(k); };
-  try {
-    const texts = []; const pages = [];
-    for (let i = 0; i < src.pages.length; i++) { busy(`Converting to Excel… page ${i + 1} of ${src.pages.length}`, null); await nextFrame(); const pd = await readPage(src.pages[i]); pages.push(pd); for (const P of pd.paras) texts.push(paraText(P)); }
-    const style = numStyle(texts);
-    pages.forEach((pd, pi) => {
-      /* every piece of text becomes a cell: a paragraph, or a cell of a drawn table */
-      const items = [];
-      for (const P of pd.free) {
-        /* a column of names or figures (narrow, or holding numbers) goes in line by line; running text stays in one cell */
-        const lineOf = l => l.runs.map(r => r.t).join('').replace(/\u200B/g, '').trim();
-        if (P.lines.length > 1 && (P.align === 'right' || P.align === 'center' || P.r - P.x < pd.W * 0.35 || P.lines.some(l => asNumber(lineOf(l), style))))
-          for (const l of P.lines) items.push({ text: lineOf(l), x: l.x, r: l.r, ky: l.base, size: l.size || P.size, align: P.align === 'justify' ? 'left' : P.align, bold: l.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
-        else items.push({ text: paraText(P), x: P.x, r: P.r, ky: P.lines[0].base, size: P.size, align: P.align, bold: P.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
-      }
-      for (const t of pd.tables) for (const c of t.cells) {
-        if (!c.paras.length) continue; const ps = [...c.paras].sort((a, b) => a.y - b.y), P = ps[0];
-        items.push({ text: ps.map(paraText).join('\n'), x: Math.min(...ps.map(q => q.x)), r: Math.max(...ps.map(q => q.r)), ky: t.ys[c.r] + 0.01 * c.c, row: `${pd.tables.indexOf(t)}:${c.r}`, size: P.size, align: P.align, bold: ps.every(q => q.runs.every(r => r.bold || !r.t.trim())), wrap: ps.length > 1, border: true, tx: t.xs[c.c], tr: t.xs[c.c + c.cs] });
-      }
-      for (const it of items) { it.num = asNumber(it.text, style); it.right = !!it.num || it.align === 'right'; }
-      /* rows: pieces on one baseline, or cells of one table row */
-      items.sort((a, b) => a.ky - b.ky || a.x - b.x); const rows = [];
-      for (const it of items) { const rw = rows[rows.length - 1]; if (rw && (it.row ? rw.key === it.row : !rw.key && it.ky - rw.ky <= it.size * 0.6)) rw.items.push(it); else rows.push({ ky: it.ky, key: it.row || null, items: [it] }); }
-      /* columns: text that starts at the same place, or figures that end at the same place */
-      /* (only rows with several pieces, and the cells of drawn tables, which go by the table's own columns; a piece alone on its row joins
-         a column it lines up with, or goes in the first) */
-      for (const rw of rows) if (rw.items.length > 1) for (const it of rw.items) it.multi = true;
-      const anchors = items.filter(it => it.tx != null || it.multi).map(it => (it.tx != null ? { it, k: 'L', p: it.tx } : { it, k: it.right ? 'R' : 'L', p: it.right ? it.r : it.x })), cols = [];
-      for (const kind of ['L', 'R']) { const list = anchors.filter(a => a.k === kind).sort((a, b) => a.p - b.p); let cur = null; for (const a of list) { if (cur && a.p - cur.last <= 8) { cur.as.push(a); cur.last = a.p; } else cols.push(cur = { k: kind, as: [a], last: a.p }); } }
-      const span = it => (it.tx != null ? [it.tx, it.tr] : [it.x, it.r]);
-      for (const c of cols) { c.cx = median(c.as.map(a => (span(a.it)[0] + span(a.it)[1]) / 2)); c.w = median(c.as.map(a => span(a.it)[1] - span(a.it)[0])); c.p = median(c.as.map(a => a.p)); }
-      /* a heading over figures: left-aligned above, right-aligned below, one column when they share the space and never a row */
-      const rowOf = new Map(); rows.forEach((rw, i) => { for (const it of rw.items) rowOf.set(it, i); });
-      const ext = c => [Math.min(...c.as.map(a => span(a.it)[0])), Math.max(...c.as.map(a => span(a.it)[1]))];
-      for (let again = true; again;) {
-        again = false;
-        for (let i = 0; i < cols.length && !again; i++) for (let j = i + 1; j < cols.length && !again; j++) {
-          const A = cols[i], B = cols[j]; if (A.k === B.k) continue;
-          const [a0, a1] = ext(A), [b0, b1] = ext(B), ov = Math.min(a1, b1) - Math.max(a0, b0);
-          if (ov < 0.5 * Math.min(a1 - a0, b1 - b0)) continue;
-          const ra = new Set(A.as.map(a => rowOf.get(a.it))); if (B.as.some(b => ra.has(rowOf.get(b.it)))) continue;
-          if (cols.some(C => C !== A && C !== B && (() => { const [c0, c1] = ext(C); return Math.min(c1, Math.max(a1, b1)) - Math.max(c0, Math.min(a0, b0)) > 2 && C.cx > Math.min(A.cx, B.cx) && C.cx < Math.max(A.cx, B.cx); })())) continue;
-          A.as.push(...B.as); A.k = A.as.filter(a => a.k === 'R').length > A.as.length / 2 ? 'R' : 'L'; A.p = median(A.as.filter(a => a.k === A.k).map(a => a.p)); A.cx = (Math.min(a0, b0) + Math.max(a1, b1)) / 2; A.w = Math.max(a1, b1) - Math.min(a0, b0);
-          cols.splice(j, 1); again = true;
-        }
-      }
-      cols.sort((a, b) => a.cx - b.cx); cols.forEach((c, i) => { for (const a of c.as) a.it.col = i; });
-      for (const it of items) if (it.col == null) { const k = it.right ? 'R' : 'L', p = it.right ? it.r : it.x, c = cols.find(c => c.k === k && Math.abs(c.p - p) <= 8); it.col = c ? cols.indexOf(c) : 0; }
-      let xml = '';
-      rows.forEach((rw, ri) => {
-        const byCol = new Map(); for (const it of rw.items.sort((a, b) => a.x - b.x)) { const e = byCol.get(it.col); if (e) { e.text += ' ' + it.text; e.num = null; } else byCol.set(it.col, { ...it }); }
-        const cells = [...byCol.entries()].sort((a, b) => a[0] - b[0]).map(([c, it]) => {
-          const ref = colName(c) + (ri + 1), s = styleOf(it.bold, it.num ? it.num.fmt : 0, it.border, it.wrap || /\n/.test(it.text));
-          return it.num ? `<c r="${ref}"${s ? ` s="${s}"` : ''}><v>${it.num.v}</v></c>` : `<c r="${ref}"${s ? ` s="${s}"` : ''} t="inlineStr"><is><t xml:space="preserve">${XE(it.text)}</t></is></c>`;
-        }).join('');
-        xml += `<row r="${ri + 1}">${cells}</row>`;
-      });
-      const widths = cols.map((c, i) => { const next = cols[i + 1], room = next ? next.cx - c.cx : c.w; return clamp(Math.round(Math.max(Math.min(c.w, 320), Math.min(room, 200)) / 5.6 + 2), 4, 70); });
-      sheets.push({ name: `Page ${pi + 1}`, xml: `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView workbookViewId="0"${pi ? '' : ' tabSelected="1"'}/></sheetViews><sheetFormatPr defaultRowHeight="15"/>${widths.length ? `<cols>${widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : ''}<sheetData>${xml}</sheetData><pageMargins left="0.5" right="0.5" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>` });
-    });
-  } finally { convDrop(src); }
-  const xfs = [...styles.keys()].map(k => { const [b, f, br, w] = k.split('|').map(Number); return `<xf numFmtId="${f}" fontId="${b}" fillId="0" borderId="${br}" xfId="0"${f ? ' applyNumberFormat="1"' : ''}${b ? ' applyFont="1"' : ''}${br ? ' applyBorder="1"' : ''}${w ? ' applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf>' : '/>'}`; });
+/* the pieces of text of a page that become cells (R: only those inside this box, for a table taken from an area) */
+function sheetItems(pd, style, R) {
+  const inR = (x, y) => !R || (x >= R.x - 0.5 && x <= R.x + R.w + 0.5 && y >= R.y - 0.5 && y <= R.y + R.h + 0.5);
+  const items = [], lineOf = l => l.runs.map(r => r.t).join('').replace(/​/g, '').trim();
+  const lineItem = (l, P) => ({ text: lineOf(l), x: l.x, r: l.r, ky: l.base, size: l.size || P.size, align: P.align === 'justify' ? 'left' : P.align, bold: l.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
+  for (const P of pd.free) {
+    const ls = R ? P.lines.filter(l => inR((l.x + l.r) / 2, (l.y + l.b) / 2)) : P.lines; if (!ls.length) continue;
+    if (ls.length < P.lines.length) { for (const l of ls) items.push(lineItem(l, P)); continue; }      // a paragraph the box cuts through: the lines inside it
+    /* a column of names or figures (narrow, or holding numbers) goes in line by line; running text stays in one cell */
+    if (P.lines.length > 1 && (P.align === 'right' || P.align === 'center' || P.r - P.x < pd.W * 0.35 || P.lines.some(l => asNumber(lineOf(l), style))))
+      for (const l of P.lines) items.push(lineItem(l, P));
+    else items.push({ text: paraText(P), x: P.x, r: P.r, ky: P.lines[0].base, size: P.size, align: P.align, bold: P.runs.every(r => r.bold || !r.t.trim()), wrap: false, border: false });
+  }
+  for (const t of pd.tables) for (const c of t.cells) {
+    if (!c.paras.length) continue;
+    if (R && !inR((t.xs[c.c] + t.xs[c.c + c.cs]) / 2, (t.ys[c.r] + t.ys[c.r + c.rs]) / 2)) continue;
+    const ps = [...c.paras].sort((a, b) => a.y - b.y), P = ps[0];
+    items.push({ text: ps.map(paraText).join('\n'), x: Math.min(...ps.map(q => q.x)), r: Math.max(...ps.map(q => q.r)), ky: t.ys[c.r] + 0.01 * c.c, row: `${pd.tables.indexOf(t)}:${c.r}`, size: P.size, align: P.align, bold: ps.every(q => q.runs.every(r => r.bold || !r.t.trim())), wrap: ps.length > 1, border: true, tx: t.xs[c.c], tr: t.xs[c.c + c.cs] });
+  }
+  for (const it of items) { it.num = asNumber(it.text, style); it.right = !!it.num || it.align === 'right'; }
+  return items;
+}
+/* rows and columns: { table: one list of [column, cell] per row, widths } */
+function sheetGrid(items) {
+  /* rows: pieces on one baseline, or cells of one table row */
+  items.sort((a, b) => a.ky - b.ky || a.x - b.x); const rows = [];
+  for (const it of items) { const rw = rows[rows.length - 1]; if (rw && (it.row ? rw.key === it.row : !rw.key && it.ky - rw.ky <= it.size * 0.6)) rw.items.push(it); else rows.push({ ky: it.ky, key: it.row || null, items: [it] }); }
+  /* columns: text that starts at the same place, or figures that end at the same place */
+  /* (only rows with several pieces, and the cells of drawn tables, which go by the table's own columns; a piece alone on its row joins
+     a column it lines up with, or goes in the first) */
+  for (const rw of rows) if (rw.items.length > 1) for (const it of rw.items) it.multi = true;
+  const anchors = items.filter(it => it.tx != null || it.multi).map(it => (it.tx != null ? { it, k: 'L', p: it.tx } : { it, k: it.right ? 'R' : 'L', p: it.right ? it.r : it.x })), cols = [];
+  for (const kind of ['L', 'R']) { const list = anchors.filter(a => a.k === kind).sort((a, b) => a.p - b.p); let cur = null; for (const a of list) { if (cur && a.p - cur.last <= 8) { cur.as.push(a); cur.last = a.p; } else cols.push(cur = { k: kind, as: [a], last: a.p }); } }
+  const span = it => (it.tx != null ? [it.tx, it.tr] : [it.x, it.r]);
+  for (const c of cols) { c.cx = median(c.as.map(a => (span(a.it)[0] + span(a.it)[1]) / 2)); c.w = median(c.as.map(a => span(a.it)[1] - span(a.it)[0])); c.p = median(c.as.map(a => a.p)); }
+  /* a heading over figures: left-aligned above, right-aligned below, one column when they share the space and never a row */
+  const rowOf = new Map(); rows.forEach((rw, i) => { for (const it of rw.items) rowOf.set(it, i); });
+  const ext = c => [Math.min(...c.as.map(a => span(a.it)[0])), Math.max(...c.as.map(a => span(a.it)[1]))];
+  for (let again = true; again;) {
+    again = false;
+    for (let i = 0; i < cols.length && !again; i++) for (let j = i + 1; j < cols.length && !again; j++) {
+      const A = cols[i], B = cols[j]; if (A.k === B.k) continue;
+      const [a0, a1] = ext(A), [b0, b1] = ext(B), ov = Math.min(a1, b1) - Math.max(a0, b0);
+      if (ov < 0.5 * Math.min(a1 - a0, b1 - b0)) continue;
+      const ra = new Set(A.as.map(a => rowOf.get(a.it))); if (B.as.some(b => ra.has(rowOf.get(b.it)))) continue;
+      if (cols.some(C => C !== A && C !== B && (() => { const [c0, c1] = ext(C); return Math.min(c1, Math.max(a1, b1)) - Math.max(c0, Math.min(a0, b0)) > 2 && C.cx > Math.min(A.cx, B.cx) && C.cx < Math.max(A.cx, B.cx); })())) continue;
+      A.as.push(...B.as); A.k = A.as.filter(a => a.k === 'R').length > A.as.length / 2 ? 'R' : 'L'; A.p = median(A.as.filter(a => a.k === A.k).map(a => a.p)); A.cx = (Math.min(a0, b0) + Math.max(a1, b1)) / 2; A.w = Math.max(a1, b1) - Math.min(a0, b0);
+      cols.splice(j, 1); again = true;
+    }
+  }
+  cols.sort((a, b) => a.cx - b.cx); cols.forEach((c, i) => { for (const a of c.as) a.it.col = i; });
+  for (const it of items) if (it.col == null) { const k = it.right ? 'R' : 'L', p = it.right ? it.r : it.x, c = cols.find(c => c.k === k && Math.abs(c.p - p) <= 8); it.col = c ? cols.indexOf(c) : 0; }
+  const table = rows.map(rw => { const byCol = new Map(); for (const it of rw.items.sort((a, b) => a.x - b.x)) { const e = byCol.get(it.col); if (e) { e.text += ' ' + it.text; e.num = null; } else byCol.set(it.col, { ...it }); } return [...byCol.entries()].sort((a, b) => a[0] - b[0]); });
+  const widths = cols.map((c, i) => { const next = cols[i + 1], room = next ? next.cx - c.cx : c.w; return clamp(Math.round(Math.max(Math.min(c.w, 320), Math.min(room, 200)) / 5.6 + 2), 4, 70); });
+  return { table, widths };
+}
+function xlsxStyles() {             // cell styles: bold, number format, border, wrapped text
+  const map = new Map([['0|0|0|0', 0]]);
+  return { map, of: (bold, fmt, border, wrap) => { const k = `${bold ? 1 : 0}|${fmt}|${border ? 1 : 0}|${wrap ? 1 : 0}`; if (!map.has(k)) map.set(k, map.size); return map.get(k); } };
+}
+function sheetXml(g, st, first) {
+  let xml = '';
+  g.table.forEach((cells, ri) => {
+    xml += `<row r="${ri + 1}">${cells.map(([c, it]) => {
+      const ref = colName(c) + (ri + 1), s = st.of(it.bold, it.num ? it.num.fmt : 0, it.border, it.wrap || /\n/.test(it.text));
+      return it.num ? `<c r="${ref}"${s ? ` s="${s}"` : ''}><v>${it.num.v}</v></c>` : `<c r="${ref}"${s ? ` s="${s}"` : ''} t="inlineStr"><is><t xml:space="preserve">${XE(it.text)}</t></is></c>`;
+    }).join('')}</row>`;
+  });
+  return `<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView workbookViewId="0"${first ? ' tabSelected="1"' : ''}/></sheetViews><sheetFormatPr defaultRowHeight="15"/>${g.widths.length ? `<cols>${g.widths.map((w, i) => `<col min="${i + 1}" max="${i + 1}" width="${w}" customWidth="1"/>`).join('')}</cols>` : ''}<sheetData>${xml}</sheetData><pageMargins left="0.5" right="0.5" top="0.5" bottom="0.5" header="0.3" footer="0.3"/></worksheet>`;
+}
+function xlsxPack(sheets, st) {
+  const xfs = [...st.map.keys()].map(k => { const [b, f, br, w] = k.split('|').map(Number); return `<xf numFmtId="${f}" fontId="${b}" fillId="0" borderId="${br}" xfId="0"${f ? ' applyNumberFormat="1"' : ''}${b ? ' applyFont="1"' : ''}${br ? ' applyBorder="1"' : ''}${w ? ' applyAlignment="1"><alignment wrapText="1" vertical="top"/></xf>' : '/>'}`; });
   const files = [
     { name: '[Content_Types].xml', data: XML + `<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${sheets.map((s, i) => `<Override PartName="/xl/worksheets/sheet${i + 1}.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>`).join('')}<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/></Types>` },
     { name: '_rels/.rels', data: XML + `<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/></Relationships>` },
@@ -5680,6 +5821,16 @@ async function toExcel() {
     ...sheets.map((s, i) => ({ name: `xl/worksheets/sheet${i + 1}.xml`, data: XML + s.xml })),
   ];
   return zipPack(files);
+}
+async function toExcel() {
+  const src = await convSource(), sheets = [], st = xlsxStyles();
+  try {
+    const texts = []; const pages = [];
+    for (let i = 0; i < src.pages.length; i++) { busy(`Converting to Excel… page ${i + 1} of ${src.pages.length}`, null); await nextFrame(); const pd = await readPage(src.pages[i]); pages.push(pd); for (const P of pd.paras) texts.push(paraText(P)); }
+    const style = numStyle(texts);
+    pages.forEach((pd, pi) => sheets.push({ name: `Page ${pi + 1}`, xml: sheetXml(sheetGrid(sheetItems(pd, style)), st, !pi) }));
+  } finally { convDrop(src); }
+  return xlsxPack(sheets, st);
 }
 
 /* ---------- PowerPoint: every page as a picture on a slide of its own ---------- */
@@ -5763,7 +5914,141 @@ async function convertTo(kind) {
   });
 }
 popButton($('#btnConvert'), $('#cvMenu'));
-$('#cvMenu').addEventListener('click', ev => { const k = ev.target.closest('[data-cv]')?.dataset.cv; if (k) convertTo(k); });
+$('#cvMenu').addEventListener('click', ev => { const k = ev.target.closest('[data-cv]')?.dataset.cv; if (k === 'area') { if (S.editing) endEdit(); setTool('xlarea'); toast('Drag a box over the table you want in Excel.', 'info', 5000); } else if (k) convertTo(k); });
+
+/* ---------- a table from an area of a page, to Excel ----------
+   Convert → "Table from an area": drag a box over a table. That page is read the way Convert reads it (cells of drawn tables, columns
+   of figures that line up), only what is inside the box goes into the sheet, and figures become numbers Excel can count with. */
+const areaEl = mk('div', 'marq area');
+function areaMove(d, ev) {
+  if (!d.moved && Math.hypot(ev.clientX - d.sx, ev.clientY - d.sy) < 4) return;
+  if (!d.moved) { d.moved = true; d.v.sheet.append(areaEl); }
+  const p = ptOf(ev, d.v), x = clamp(Math.min(d.start.x, p.x), 0, d.pg.w), y = clamp(Math.min(d.start.y, p.y), 0, d.pg.h);
+  d.R = { x, y, w: clamp(Math.max(d.start.x, p.x), 0, d.pg.w) - x, h: clamp(Math.max(d.start.y, p.y), 0, d.pg.h) - y };
+  areaEl.style.cssText = `left:${d.R.x}px;top:${d.R.y}px;width:${d.R.w}px;height:${d.R.h}px`;
+}
+async function areaUp(d) {
+  if (!d.moved || !d.R || d.R.w < 8 || d.R.h < 6) { areaEl.remove(); toast('Drag a box over the table.'); return; }
+  const pg = d.pg, R = d.R;
+  await job('Reading the table…', async () => {
+    try {
+      const bytes = await areaToExcel(pg, R); busy(false);
+      if (!bytes) {
+        const scan = !hasOcr(pg) && !!(await scanKind(pg).catch(() => ''));
+        toast(scan ? 'This page is a picture of text. Run OCR on it first, then take the table again.' : 'No text was found inside that box.', 'info', 8000, scan ? { label: 'OCR…', run: () => openOcr() } : null);
+        return;
+      }
+      const name = `${baseName()} - table, page ${pageIndex(pg.id) + 1}.xlsx`, kb = bytes.length / 1024;
+      saveNote(await saveFile(name, bytes, CONV.xlsx.mime), `${name} · ${fmtNum(Math.max(1, kb))} KB`);
+      setTool('select');
+    } finally { areaEl.remove(); }
+  });
+}
+async function areaToExcel(pg, R) {         // null when the box holds no text
+  const keep = S.flatten; S.flatten = true; let bytes;
+  try { bytes = (await buildPdf([pg])).bytes; } finally { S.flatten = keep; }
+  const src = await addSource('table.pdf', bytes);
+  try {
+    const p0 = src.pages[0], pd = await readPage(p0, true);
+    const box = pg.crop ? { ...R, x: R.x - pg.crop.x, y: R.y - pg.crop.y } : R;      // a cropped page starts at its crop
+    const items = sheetItems(pd, numStyle(pd.paras.map(paraText)), box).filter(it => it.text.trim());
+    if (!items.length) return null;
+    const st = xlsxStyles();
+    return xlsxPack([{ name: 'Table', xml: sheetXml(sheetGrid(items), st, true) }], st);
+  } finally { convDrop(src); }
+}
+
+/* ---------- Compress PDF ----------
+   The document (with every edit) is built as for saving, then its pictures are saved again: scaled down to the resolution of the
+   level chosen (measured against the largest page) and stored as JPEG. Pictures that are already small, have a colour-key mask,
+   are CMYK or use a form this browser cannot decode are left as they are; a picture is only replaced when that makes it smaller.
+   Text, lines and fonts are not touched. The file structure is written compactly (object streams). The result is a new file. */
+const ZLV = { small: { dpi: 100, q: 0.55, label: 'Smallest file' }, medium: { dpi: 150, q: 0.7, label: 'Balanced' }, high: { dpi: 220, q: 0.82, label: 'Best quality' } };
+const zN = n => L.PDFName.of(n), zNum = o => (o instanceof L.PDFNumber ? o.asNumber() : NaN);
+async function zInflate(bytes) { return new Uint8Array(await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'))).arrayBuffer()); }
+function zUnpredict(raw, cols, comps, h) {   // PNG predictors: every row starts with its filter type
+  const bpr = cols * comps, out = new Uint8Array(bpr * h); let i = 0;
+  for (let y = 0; y < h; y++) {
+    const f = raw[i++], o = y * bpr, up = o - bpr;
+    for (let x = 0; x < bpr; x++) {
+      const a = x >= comps ? out[o + x - comps] : 0, b = y ? out[up + x] : 0, c = x >= comps && y ? out[up + x - comps] : 0, v = raw[i++];
+      out[o + x] = (f === 1 ? v + a : f === 2 ? v + b : f === 3 ? v + ((a + b) >> 1) : f === 4 ? v + (() => { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); return pa <= pb && pa <= pc ? a : pb <= pc ? b : c; })() : v) & 255;
+    }
+  }
+  return out;
+}
+function zComps(cs) {                        // colour components of a colour space we can redraw (null: leave the picture alone)
+  if (cs === zN('DeviceRGB')) return 3; if (cs === zN('DeviceGray')) return 1;
+  if (cs instanceof L.PDFArray) {
+    const k = cs.lookup(0);
+    if (k === zN('CalRGB')) return 3; if (k === zN('CalGray')) return 1;
+    if (k === zN('ICCBased')) { const s = cs.lookup(1), n = s && s.dict ? zNum(s.dict.lookup(zN('N'))) : NaN; return n === 3 || n === 1 ? n : null; }
+  }
+  return null;
+}
+async function zBitmap(st, W, H) {           // the picture's pixels, or null
+  const d = st.dict; let f = d.lookup(zN('Filter'));
+  if (f instanceof L.PDFArray) { if (f.size() !== 1) return null; f = f.lookup(0); }
+  const comps = zComps(d.lookup(zN('ColorSpace'))), bpc = zNum(d.lookup(zN('BitsPerComponent'))) || 8;
+  if (!comps || bpc !== 8) return null;
+  if (f === zN('DCTDecode')) {
+    const b = await createImageBitmap(new Blob([st.contents], { type: 'image/jpeg' }), { imageOrientation: 'none' });
+    if (b.width !== W || b.height !== H) { b.close(); return null; }
+    return b;
+  }
+  if (f !== zN('FlateDecode')) return null;
+  let raw = await zInflate(st.contents);
+  const dp = d.lookup(zN('DecodeParms')), pred = dp instanceof L.PDFDict ? zNum(dp.lookup(zN('Predictor'))) || 1 : 1;
+  if (pred >= 10) { const cols = dp instanceof L.PDFDict ? zNum(dp.lookup(zN('Columns'))) || W : W; if (cols !== W) return null; raw = zUnpredict(raw, W, comps, H); }
+  else if (pred !== 1) return null;
+  if (raw.length < W * H * comps) return null;
+  const id = new ImageData(W, H), px = id.data;
+  for (let i = 0, j = 0; i < W * H; i++, j += comps) { const r = raw[j]; px[i * 4] = r; px[i * 4 + 1] = comps === 3 ? raw[j + 1] : r; px[i * 4 + 2] = comps === 3 ? raw[j + 2] : r; px[i * 4 + 3] = 255; }
+  return createImageBitmap(id);
+}
+async function compressPdf(bytes, level, onStep) {
+  const lv = ZLV[level] || ZLV.medium, doc = await L.PDFDocument.load(bytes, { updateMetadata: false });
+  const maxPt = Math.max(...doc.getPages().map(p => { const s = p.getSize(); return Math.max(s.width, s.height); })), maxPx = Math.round(maxPt / 72 * lv.dpi);
+  const list = doc.context.enumerateIndirectObjects().filter(([, o]) => o instanceof L.PDFRawStream && o.dict.lookup(zN('Subtype')) === zN('Image'));
+  let done = 0, i = 0;
+  for (const [ref, st] of list) {
+    i++; if (onStep && (i % 3 === 1 || i === list.length)) await onStep(i, list.length);
+    const d = st.dict, W = zNum(d.lookup(zN('Width'))), H = zNum(d.lookup(zN('Height')));
+    if (!(W > 0 && H > 0) || W * H < 40000 || d.lookup(zN('ImageMask')) === L.PDFBool.True || d.has(zN('Mask')) || d.has(zN('Decode'))) continue;
+    let bmp = null;
+    try { bmp = await zBitmap(st, W, H); } catch { bmp = null; }
+    if (!bmp) continue;
+    const k = Math.min(1, maxPx / Math.max(W, H)), nw = Math.max(1, Math.round(W * k)), nh = Math.max(1, Math.round(H * k));
+    const c = document.createElement('canvas'); c.width = nw; c.height = nh; const g = c.getContext('2d');
+    g.fillStyle = '#fff'; g.fillRect(0, 0, nw, nh); g.imageSmoothingQuality = 'high'; g.drawImage(bmp, 0, 0, nw, nh); bmp.close();
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', lv.q)); c.width = c.height = 1;
+    if (!blob) continue;
+    const nb = new Uint8Array(await blob.arrayBuffer());
+    if (nb.length >= st.contents.length * 0.92) continue;          // no real gain: the picture stays as it was
+    const nd = doc.context.obj({});
+    for (const [key, val] of d.entries()) if (!['Filter', 'DecodeParms', 'Length', 'ColorSpace', 'BitsPerComponent', 'Width', 'Height'].includes(key.decodeText())) nd.set(key, val);
+    nd.set(zN('Width'), L.PDFNumber.of(nw)); nd.set(zN('Height'), L.PDFNumber.of(nh)); nd.set(zN('ColorSpace'), zN('DeviceRGB'));
+    nd.set(zN('BitsPerComponent'), L.PDFNumber.of(8)); nd.set(zN('Filter'), zN('DCTDecode'));
+    doc.context.assign(ref, L.PDFRawStream.of(nd, nb)); done++;
+  }
+  return { bytes: await doc.save({ useObjectStreams: true, updateFieldAppearances: false }), images: done, total: list.length };
+}
+const zSize = n => { const kb = n / 1024; return kb > 1024 ? fmtNum(kb / 1024, 1) + ' MB' : fmtNum(Math.max(1, kb)) + ' KB'; };
+function openCompress() { if (S.editing) endEdit(); const d = $('#dlgZip'); d.returnValue = ''; d.showModal(); }
+$('#btnCompress').addEventListener('click', openCompress);
+$('#dlgZip').addEventListener('close', () => {
+  if ($('#dlgZip').returnValue !== 'yes') return;
+  const level = $('#dlgZip').querySelector('input[name="zlv"]:checked')?.value || 'medium';
+  job('Compressing…', async () => {
+    const { bytes } = await buildPdf(S.pages, (i, n) => busy(`Building PDF… ${i}/${n}`));
+    const res = await compressPdf(bytes, level, async (i, n) => { busy(`Compressing pictures… ${i}/${n}`); await nextFrame(); });
+    busy(false);
+    const before = bytes.length, after = res.bytes.length;
+    if (after >= before * 0.97) { toast(`This PDF has little to compress: its pictures are already small (${zSize(before)}). Nothing was saved.`, 'info', 8000); return; }
+    const name = `${baseName()}-compressed.pdf`, pct = Math.round((1 - after / before) * 100);
+    saveNote(await saveFile(name, res.bytes, 'application/pdf'), `${name} · ${zSize(before)} → ${zSize(after)} (${pct}% smaller)`);
+  });
+});
 
 /* ---------- export ---------- */
 const colL = h => L.rgb(...hexRgb(h));
@@ -6429,7 +6714,7 @@ async function boot() {
   });
   setTimeout(newsMaybe, 900);      // once: Reef PDF on phones
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, selLines, objTextLines, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

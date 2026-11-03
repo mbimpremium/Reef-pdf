@@ -100,6 +100,20 @@ Tombol **Convert** di toolbar mengubah dokumen yang sedang tampil, lengkap denga
 - Halaman hasil scan ditawari OCR dulu, supaya teksnya ikut bisa diedit. Kalau tidak, halaman itu masuk sebagai gambar.
 - Bagan dan gambar vektor tetap menjadi gambar. Bila font aslinya tidak ada di komputer yang membuka file, baris bisa terpotong di kata yang berbeda.
 
+## Tabel dari area tertentu ke Excel
+
+Menu **Convert → Table from an area → Excel…**, lalu tarik kotak di atas tabel (misalnya rincian bukti potong atau faktur). Hanya isi kotak itu yang disimpan sebagai file Excel: baris dan kolom tabel mengikuti aslinya, dan angka seperti `12,500,000` atau `1.250.000` menjadi angka yang bisa dijumlahkan. Setelah itu alat kembali ke **Select**. Untuk halaman hasil scan, jalankan **OCR** dulu.
+
+## Compress PDF
+
+Tombol **Compress** di toolbar (di tempat Stamp sebelumnya; **Stamp** sekarang ada di menu **More**) memperkecil ukuran file dengan menyimpan ulang gambar dan hasil scan pada resolusi lebih rendah. Ada tiga pilihan: **Smallest file** (100 dpi), **Balanced** (150 dpi, disarankan), dan **Best quality** (220 dpi). Teks, garis, dan font tidak diubah, sehingga tetap tajam dan bisa dicari. Hasilnya disimpan sebagai file baru (`nama-compressed.pdf`) dan muncul pesan ukuran sebelum dan sesudah. Dokumen yang sedang dibuka tidak berubah.
+
+## Highlight
+
+Dengan alat **Highlight**, tarik dari satu kata ke kata lain: tanda mengikuti kata per kata dan baris per baris, seperti memilih teks. Klik sekali menandai satu kata. Pada halaman hasil scan yang belum di-OCR, kotak yang ditarik otomatis menyesuaikan diri dengan tinggi baris tulisan di dalamnya, dan kata yang terpotong kotak diambil utuh.
+
+Teks yang sudah diedit atau dipindah dengan **Edit text** tetap bisa dipilih huruf per huruf dengan alat **Select** (juga klik dua kali untuk satu kata), lalu disalin atau di-highlight. Untuk mengubah atau memindahkannya lagi, pakai **Edit text**.
+
 ## Link di PDF
 
 Link di dalam PDF (alamat web, e-mail, atau link ke halaman lain di dokumen yang sama) bisa diklik dengan alat **Select**. Saat kursor di atas link, alamat tujuannya tampil di tooltip dan di status bar bawah. Seret dari atas link tetap memilih teks, tidak membuka link.
