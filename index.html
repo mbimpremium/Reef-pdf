@@ -229,6 +229,78 @@ button,input,select,textarea{font:inherit;color:inherit}
 .zopt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:var(--raise);cursor:pointer}
 .zopt:has(input:checked){border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .zopt input{margin-top:3px;accent-color:var(--accent)}
+
+/* ---------- Tax Check (Beta) ---------- */
+.tax{--warn:#a35f00}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tax{--warn:#f0b44c}}
+:root[data-theme="dark"] .tax{--warn:#f0b44c}
+.tax.side{width:340px}
+.beta-tag{display:inline-block;margin-left:5px;padding:2px 4px 1px;border-radius:3px;background:var(--accent-soft);color:var(--accent);font:700 8.5px/1 var(--f-ui);letter-spacing:.06em;text-transform:uppercase;vertical-align:1px}
+.tool .beta-tag{margin-left:-1px;vertical-align:5px}
+.tool.on .beta-tag{background:var(--raise)}
+.tx-x{margin:-6px -6px -6px 6px}
+.taxb{flex:1;min-height:0;overflow:auto;padding:2px 12px 16px;display:flex;flex-direction:column;gap:10px;font-size:12.5px}
+.tx-p{margin:0;color:var(--muted);line-height:1.5}
+.tx-intro{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.tx-top{display:flex;flex-direction:column;gap:6px}
+.tx-btns{display:flex;flex-wrap:wrap;gap:6px}
+.tx-case{border:1px solid var(--line);border-radius:8px;background:var(--raise);padding:10px;display:flex;flex-direction:column;gap:8px}
+.tx-case h3{margin:0;font:600 13px/1.35 var(--f-ui);overflow-wrap:anywhere}
+.tx-sub{margin:-4px 0 0;color:var(--muted);font-size:11.5px;line-height:1.4}
+.tx-score{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tx-score span{font:600 11.5px/1 var(--f-ui);padding:4px 8px;border-radius:99px;background:var(--panel)}
+.tx-score .ok{color:var(--ok)} .tx-score .warn{color:var(--warn)} .tx-score .bad{color:var(--danger)}
+.tx-score .tx-miss{color:var(--muted);font-weight:500}
+.tx-checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.tx-c{display:grid;grid-template-columns:18px minmax(0,1fr);gap:8px;padding:6px 4px;border-top:1px solid var(--line);cursor:pointer;border-radius:4px}
+.tx-c:first-child{border-top:0}
+.tx-c:hover,.tx-c:focus-visible{background:var(--accent-soft);outline:none}
+.tx-c i{font-style:normal;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;font:700 11px/1 var(--f-ui);color:var(--paper);margin-top:1px}
+.tx-c.ok i{background:var(--ok)} .tx-c.bad i{background:var(--danger)} .tx-c.warn i{background:var(--warn)} .tx-c.info i{background:var(--muted)}
+.tx-c b{display:block;font-weight:600;line-height:1.35}
+.tx-c.bad b{color:var(--danger)}
+.tx-c small{display:block;color:var(--muted);font-size:11.5px;line-height:1.45;margin-top:2px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+.tx-own{margin-top:6px;height:26px}
+.tx-pph{border-top:1px solid var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px}
+.tx-ph{display:flex;flex-direction:column;gap:5px}
+.tx-pph select{max-width:100%;height:28px;border:1px solid var(--line);border-radius:5px;background:var(--raise);color:inherit;font:inherit}
+.tx-row select{height:26px;max-width:150px}
+.tx-row{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:26px}
+.tx-row span{color:var(--muted);display:flex;align-items:center;gap:5px}
+.tx-row b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.tx-row.tot{border-top:1px solid var(--line);padding-top:7px;margin-top:2px}
+.tx-row.tot span{color:var(--ink);font-weight:600}
+.tx-row.tot b{font-size:14px}
+.tx-why{margin:0;color:var(--muted);font-size:11.5px;line-height:1.45}
+.tx-in{height:26px;border:1px solid var(--line);border-radius:4px;padding:0 6px;background:var(--raise);color:inherit;font:inherit;min-width:0}
+.tx-in:focus{border-color:var(--accent);outline:none;box-shadow:0 0 0 2px var(--accent-soft)}
+.tx-rate{width:52px;text-align:right}
+.tx-num{width:130px;text-align:right}
+.tx-fields summary,.tx-set summary,.tx-okd summary{cursor:pointer;font-weight:600;padding:2px 0}
+.tx-okd summary{color:var(--ok)}
+.tx-all{margin:0;color:var(--ok);font-weight:600}
+.tx-legend{display:flex;flex-wrap:wrap;gap:4px 10px;margin:6px 0;color:var(--muted);font-size:11px}
+.tx-legend span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;background:var(--c)}
+.tx-f{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr) auto auto;gap:4px;align-items:center;padding:2px 0}
+.tx-f label{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:11.5px;min-width:0;white-space:nowrap;overflow:hidden}
+.tx-f .tx-in{width:100%;font-variant-numeric:tabular-nums}
+.tx-f .btn.ico{width:26px;height:26px}
+.tx-f .btn.ico .ic{width:15px;height:15px}
+.taxb .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--c)}
+.taxb .pdf{--c:var(--muted)} .taxb .agree,.taxb .confirmed{--c:var(--ok)} .taxb .single{--c:var(--warn)} .taxb .conflict{--c:var(--danger)} .taxb .user{--c:var(--accent)} .taxb .none{--c:transparent}
+.taxb .dot.none{box-shadow:inset 0 0 0 1px var(--line-2)}
+.tx-foot{display:flex;flex-wrap:wrap;gap:6px}
+.tx-set{border-top:1px solid var(--line);padding-top:8px}
+.tx-set > .tx-p{margin:6px 0}
+.tx-own-row{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--line)}
+.tx-own-row small{display:block;color:var(--muted);font-variant-numeric:tabular-nums}
+.tx-add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:4px;margin:8px 0}
+.tx-add input{height:30px;border:1px solid var(--line);border-radius:4px;padding:0 6px;background:var(--raise);color:inherit;font:inherit;min-width:0}
+.tx-beta{margin:0;padding:8px 10px;border-radius:6px;background:var(--accent-soft);color:var(--ink);font-size:11.5px;line-height:1.45}
+.tx-empty{font-style:italic}
+.tx-spot{position:absolute;border:2px solid var(--find-cur);border-radius:3px;box-shadow:0 0 0 3px rgba(255,106,0,.28);animation:txPulse 1s ease-in-out 3}
+@keyframes txPulse{50%{box-shadow:0 0 0 8px rgba(255,106,0,.06)}}
+.stage.tx-picking .sheet{cursor:crosshair!important}
 .zopt span{display:grid;gap:2px}
 .zopt small{color:var(--muted);font-size:12px}
 .zopt em{font-style:normal;font-size:11px;font-weight:600;color:var(--accent);margin-left:4px}
@@ -304,7 +376,10 @@ dialog::backdrop{background:rgba(10,20,17,.5)}
 .busy{position:absolute;z-index:40;top:12px;left:50%;transform:translateX(-50%);padding:7px 14px;border-radius:99px;background:var(--ink);color:var(--chrome);font-size:12px;box-shadow:var(--shadow);white-space:nowrap}
 .fatal{margin:48px auto;max-width:520px;padding:0 16px;line-height:1.6}
 
+@media (max-width:1680px){.tool.lab2 span{display:none}}      /* the less used tools lose their names first */
 @media (max-width:1340px){.tool span{display:none}}
+#btnTax{position:relative}
+@media (max-width:1340px){#btnTax .beta-tag{position:absolute;top:1px;right:-1px;margin:0;padding:1px 2px;font-size:6.5px}}
 @media (max-width:1400px){.top .grp .btn:not(.ico) span{display:none} .top .grp .btn:not(.ico){width:30px;padding:0}}
 @media (max-width:860px){
   .work{grid-template-columns:minmax(0,1fr)} .stage{grid-column:1} .side.left,.side.right{grid-column:auto}
@@ -426,6 +501,7 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
 .news-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 .news-grid .news-item{grid-template-columns:34px minmax(0,1fr);padding:12px}
 .news-grid .news-ic{width:34px;height:34px}
+.news-grid .news-wide{grid-column:1 / -1}
 .news-phone{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:10px 12px;border:1px dashed var(--line-2);border-radius:10px}
 .news-phone .news-qr{width:auto;padding:4px;border:0;background:none}
 .news-phone .qr{width:72px;height:72px}
@@ -482,6 +558,7 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
   .tools{padding:5px 12px}
   .tool{height:42px;min-width:40px;justify-content:center}
   .tool .ic{width:20px;height:20px}
+  .tools .sep{margin:0 1px}
   .menu.pop button{padding:11px 12px}
 }
 @media (max-width:640px), (max-height:500px) and (pointer:coarse){
@@ -518,6 +595,7 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
   .tools .tool{flex-direction:column;justify-content:center;gap:3px;height:54px;min-width:62px;padding:0 4px;border-radius:10px;font-size:10.5px;scroll-snap-align:start}
   .tools .tool span{display:block;line-height:1}
   .tools .tool .ic{width:22px;height:22px}
+  .tools #btnTax{position:relative} .tools #btnTax .beta-tag{position:absolute;top:3px;right:2px;margin:0}
   .tools .tool[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent)}
   .tools .tool[aria-pressed="true"] span{font-weight:650}
   .app.is-editing .tools{display:none}
@@ -671,17 +749,18 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
     <button class="tool shape-tool" data-tool="line" title="Line (L)"><i data-ic="line"></i></button>
     <button class="tool shape-tool" data-tool="arrow" title="Arrow (A)"><i data-ic="arrow"></i></button>
     <span class="sep"></span>
-    <button class="tool" data-tool="image" title="Insert an image (I)"><i data-ic="image"></i><span>Image</span></button>
-    <button class="tool" data-tool="sign" title="Signature (S)"><i data-ic="sign"></i><span>Signature</span></button>
-    <button class="tool" id="btnCompress" title="Compress PDF: make the file smaller" aria-haspopup="dialog"><i data-ic="compress"></i><span>Compress</span></button>
-    <button class="tool" data-tool="note" title="Sticky note (N)"><i data-ic="note"></i><span>Note</span></button>
+    <button class="tool lab2" data-tool="image" title="Insert an image (I)"><i data-ic="image"></i><span>Image</span></button>
+    <button class="tool lab2" data-tool="sign" title="Signature (S)"><i data-ic="sign"></i><span>Signature</span></button>
+    <button class="tool lab2" id="btnCompress" title="Compress PDF: make the file smaller" aria-haspopup="dialog"><i data-ic="compress"></i><span>Compress</span></button>
+    <button class="tool lab2" data-tool="note" title="Sticky note (N)"><i data-ic="note"></i><span>Note</span></button>
     <span class="sep"></span>
-    <button class="tool" data-tool="wipe" title="Cover an area with the background colour"><i data-ic="wipe"></i><span>Eraser</span></button>
-    <button class="tool" data-tool="redact" title="Permanent redaction: content underneath is removed on download"><i data-ic="redact"></i><span>Redact</span></button>
+    <button class="tool lab2" data-tool="wipe" title="Cover an area with the background colour"><i data-ic="wipe"></i><span>Eraser</span></button>
+    <button class="tool lab2" data-tool="redact" title="Permanent redaction: content underneath is removed on download"><i data-ic="redact"></i><span>Redact</span></button>
     <span class="sep"></span>
     <button class="tool" id="btnOcr" title="Recognize the text of scanned pages (OCR), so it can be found, selected and edited" aria-haspopup="dialog"><i data-ic="ocr"></i><span>OCR</span></button>
     <button class="tool" id="btnConvert" title="Convert the document to Word, Excel or PowerPoint" aria-haspopup="true"><i data-ic="convert"></i><span>Convert</span></button>
-    <button class="tool" id="btnWm" title="Watermark" aria-haspopup="true"><i data-ic="drop"></i><span>Watermark</span></button>
+    <button class="tool" id="btnTax" title="Tax Check (Beta): check an invoice and its faktur pajak, and work out the PPh to withhold" aria-controls="tax"><i data-ic="tax"></i><span>Tax Check</span><b class="beta-tag">Beta</b></button>
+    <button class="tool lab2" id="btnWm" title="Watermark" aria-haspopup="true"><i data-ic="drop"></i><span>Watermark</span></button>
     <button class="tool" id="btnMore" title="Header and footer, crop, form fields, split, export, properties" aria-haspopup="true"><i data-ic="more"></i><span>More</span></button>
     <button class="tool push" id="togThumbs" title="Pages panel" aria-label="Pages panel"><i data-ic="pages"></i></button>
     <button class="tool" id="togProps" title="Properties panel" aria-label="Properties panel"><i data-ic="sliders"></i></button>
@@ -712,6 +791,10 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
       <div class="side-head"><span id="propsTitle">Properties</span><button type="button" class="btn ico ghost side-x" data-close="props" title="Close" aria-label="Close the Properties panel"><i data-ic="x"></i></button></div>
       <div id="propsBody" class="props"></div>
     </aside>
+    <aside id="tax" class="side right tax" aria-label="Tax Check" hidden>
+      <div class="side-head"><span>Tax Check <b class="beta-tag">Beta</b></span><button type="button" class="btn ico ghost tx-x" id="taxClose" title="Close" aria-label="Close Tax Check"><i data-ic="x"></i></button></div>
+      <div id="taxBody" class="taxb"></div>
+    </aside>
     <div id="busy" class="busy" hidden></div>
     <div id="sideScrim" class="scrim" hidden></div>
     <div id="pagePill" class="page-pill mono" aria-hidden="true"></div>
@@ -740,10 +823,15 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
 <input type="file" id="fSig" accept="image/png,image/jpeg,image/webp" hidden>
 <input type="file" id="fFont" accept=".ttf,.ttc,font/ttf,font/collection" multiple hidden>
 
-<dialog id="dlgNews" class="news" aria-labelledby="nwTitle" data-update="2026-11-02"><form method="dialog" class="dlg">
-  <div class="news-head"><span class="news-badge">What's new</span><h2 id="nwTitle">Reef PDF has been updated</h2><p class="news-date">Update of 2 November 2026</p></div>
+<dialog id="dlgNews" class="news" aria-labelledby="nwTitle" data-update="2026-11-09"><form method="dialog" class="dlg">
+  <div class="news-head"><span class="news-badge">What's new</span><h2 id="nwTitle">Reef PDF has been updated</h2><p class="news-date">Update of 9 November 2026</p></div>
   <div class="news-items news-grid">
-    <section class="news-item" style="--tc:#1d7a4f">
+    <section class="news-item news-wide" style="--tc:#1d7a4f">
+      <span class="news-ic"><i data-ic="tax"></i></span>
+      <div><h3>Tax Check <span class="beta-tag">Beta</span></h3>
+        <p>The <b>Tax Check</b> button checks an invoice and its faktur pajak: the sums to the rupiah, DPP nilai lain (11/12) and PPN (12%), whether invoice and faktur match, and the <b>PPh to withhold</b> with the amount left to pay. Scans are read with OCR, here on your device. Click a check to see its figures on the page.</p></div>
+    </section>
+    <section class="news-item" style="--tc:#0f7c86">
       <span class="news-ic"><i data-ic="grid"></i></span>
       <div><h3>Table from an area to Excel</h3>
         <p><b>Convert → Table from an area</b>: drag a box over a table and its rows and columns are saved as an Excel file. Amounts become numbers you can add up.</p></div>
@@ -921,6 +1009,7 @@ dialog.news{width:min(760px,calc(100vw - 32px))}
   <hr>
   <button data-mob="pages" role="menuitem">Pages: reorder, rotate, delete</button>
   <button data-mob="props" role="menuitem">Properties and guide</button>
+  <button data-mob="tax" role="menuitem">Tax Check (Beta)</button>
   <hr>
   <button data-mob="print" role="menuitem">Print</button>
 </div>
@@ -1225,6 +1314,9 @@ const ICONS = {
   phone: '<rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 18h2"/>',
   move: '<path d="M12 3v18M3 12h18M12 3l-2.500 2.500M12 3l2.500 2.500M12 21l-2.500-2.500M12 21l2.500-2.500M3 12l2.500-2.500M3 12l2.500 2.500M21 12l-2.500-2.500M21 12l-2.500 2.500"/>',
   compress: '<path d="M4 4l5 5M9 5v4H5M20 4l-5 5M15 5v4h4M4 20l5-5M5 15h4v4M20 20l-5-5M19 15h-4v4"/>',
+  tax: '<path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21zM9 7.5h6M9 11h6M9.5 15.5l1.7 1.6 3.3-3.4"/>',
+  locate: '<circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v4M12 17.5v4M2.5 12h4M17.5 12h4"/>',
+  pick: '<path d="M7 4l10 7.5-4.4 1.1 2.6 5.4-2.1 1-2.6-5.4L7 16.6z"/>',
   spark: '<path d="M12 3l1.800 5.200L19 10l-5.200 1.800L12 17l-1.800-5.200L5 10l5.200-1.800z"/><path d="M18.500 15.500l.700 1.800 1.800.700-1.800.700-.700 1.800-.700-1.800-1.800-.700 1.800-.700z"/>',
 };
 const ic = n => `<svg class="ic" viewBox="0 0 24 24" aria-hidden="true">${ICONS[n] || ''}</svg>`;
@@ -1402,7 +1494,7 @@ function travel(d) {
   S.cur = clamp(S.cur, 0, S.pages.length - 1);
   refresh();
 }
-function refresh() { if (S.tsel && !pageById(S.tsel.pageId)) S.tsel = null; if (S.msel && !pageById(S.msel.pageId)) S.msel = null; syncPages(); syncThumbs(); drawSel(); drawTsel(); renderProps(); updateStatus(); updateButtons(); }
+function refresh() { if (S.tsel && !pageById(S.tsel.pageId)) S.tsel = null; if (S.msel && !pageById(S.msel.pageId)) S.msel = null; syncPages(); syncThumbs(); drawSel(); drawTsel(); renderProps(); updateStatus(); updateButtons(); taxSync(); }
 function updateButtons() {
   $('#btnUndo').disabled = H.i <= 0; $('#btnRedo').disabled = H.i >= H.stack.length - 1;
   $('#pageCount').textContent = S.pages.length;
@@ -2778,7 +2870,7 @@ function ocrEngine(scope) {
       } else if (m.type === 'rec') {
         if (!api) api = new M.TessBaseAPI();
         if (cur !== m.lang) { cur = ''; if (api.Init(null, m.lang, 1) !== 0) throw new Error('the language data could not be read'); cur = m.lang; }      // 1: the neural (LSTM) recogniser
-        api.SetVariable('tessedit_pageseg_mode', '3'); api.SetVariable('user_defined_dpi', String(m.dpi));
+        api.SetVariable('tessedit_pageseg_mode', String(m.psm || 3)); api.SetVariable('user_defined_dpi', String(m.dpi)); api.SetVariable('tessedit_char_whitelist', m.chars || '');      // psm 7 + figures only: a closer look at one line of numbers
         M.FS.writeFile('/input', m.image); api.SetImageFile(); api.Recognize(null);
         const lines = [], ri = api.GetIterator(); let ln = null;
         if (ri) {
@@ -4532,13 +4624,13 @@ $('#btnRedo').addEventListener('click', () => travel(1));
 $('#btnSave').addEventListener('click', () => saveDoc());
 $('#docName').addEventListener('change', e => { let n = e.target.value.trim() || 'document.pdf'; if (!/\.pdf$/i.test(n)) n += '.pdf'; S.name = e.target.value = n; renderTabs(); });
 const narrow = () => window.matchMedia('(max-width:860px)').matches;
-$('#togThumbs').addEventListener('click', () => { $('#thumbs').hidden = !$('#thumbs').hidden; if (narrow() && !$('#thumbs').hidden) $('#props').hidden = true; });
-$('#togProps').addEventListener('click', () => { const p = $('#props'); p.hidden = !p.hidden; if (p.hidden) propsAuto = false; if (narrow() && !p.hidden) $('#thumbs').hidden = true; });
+$('#togThumbs').addEventListener('click', () => { $('#thumbs').hidden = !$('#thumbs').hidden; if (narrow() && !$('#thumbs').hidden) { $('#props').hidden = true; if (!$('#tax').hidden) txOpen(false); } });
+$('#togProps').addEventListener('click', () => { const p = $('#props'); p.hidden = !p.hidden; if (p.hidden) propsAuto = false; else if (!$('#tax').hidden) txOpen(false); if (narrow() && !p.hidden) $('#thumbs').hidden = true; });
 /* The Properties panel starts hidden. It shows itself the first time there is something to set (a selected object, text being edited,
    a drawing tool's style), and then stays. Closed with its button, it no longer shows itself. */
 let propsAuto = true, propsTimer = 0;
 function propsWanted() { if (!propsAuto || propsTimer || !docNow || narrow() || !$('#props').hidden) return; propsTimer = setTimeout(propsTry, 300); }
-function propsTry() { propsTimer = 0; if (!propsAuto || !docNow || !$('#props').hidden || !propTarget()) return; if (drag) { propsTimer = setTimeout(propsTry, 200); return; } $('#props').hidden = false; }
+function propsTry() { propsTimer = 0; if (!propsAuto || !docNow || !$('#props').hidden || !$('#tax').hidden || !propTarget()) return; if (drag) { propsTimer = setTimeout(propsTry, 200); return; } $('#props').hidden = false; }
 let findTimer = 0;
 $('#findInput').addEventListener('input', e => { clearTimeout(findTimer); findTimer = setTimeout(() => runFind(e.target.value.trim()), 220); });
 $('#findInput').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); gotoHit(S.find.i + (e.shiftKey ? -1 : 1)); } else if (e.key === 'Escape') { e.target.value = ''; runFind(''); e.target.blur(); } });
@@ -4870,6 +4962,7 @@ function docSwitch(d) {
 function docStart(name, pages, sample) {      // a new, untouched document becomes the one that is shown
   Object.assign(S, { pages, sel: null, selPages: new Set(), cur: 0, name, handle: null, dirty: false, sample: !!sample, flatten: false, meta: { title: '', author: '', subject: '', keywords: '' }, find: { q: '', hits: [], i: -1 } });
   $('#docName').value = name; $('#findInput').value = ''; $('#findCount').textContent = ''; homeOff();
+  txForget();                       // a document opened in place of another: the Tax Check results were the other one's
 }
 async function docOpen(g) {         // g: { pages, name, project, handle, size } — in a new tab (the sample document, used by the tests, is replaced)
   let old = null;
@@ -5162,8 +5255,9 @@ $('#mobMenu').addEventListener('click', ev => {
     find: () => { const on = appEl.classList.toggle('m-find'); if (on) setTimeout(() => $('#findInput').focus(), 60); },
     fitw: () => setZoom(fitZoom('width'), 'width'),
     fitp: () => setZoom(fitZoom('page'), 'page'),
-    pages: () => { $('#props').hidden = true; $('#thumbs').hidden = false; },
-    props: () => { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; },
+    pages: () => { $('#props').hidden = true; if (!$('#tax').hidden) txOpen(false); $('#thumbs').hidden = false; },
+    props: () => { $('#thumbs').hidden = true; if (!$('#tax').hidden) txOpen(false); renderProps(true); $('#props').hidden = false; },
+    tax: () => txOpen(true),
     print: () => printDoc(),
   })[k]?.();
 });
@@ -5176,9 +5270,9 @@ document.addEventListener('gesturestart', ev => ev.preventDefault());      // Sa
 
 /* ---------- side panels over the page: a tap outside closes them ---------- */
 const scrim = $('#sideScrim');
-function sideSync() { scrim.hidden = !(narrow() && docNow && (!$('#thumbs').hidden || !$('#props').hidden)); }
-for (const id of ['#thumbs', '#props']) new MutationObserver(sideSync).observe($(id), { attributes: true, attributeFilter: ['hidden'] });
-scrim.addEventListener('click', () => { $('#thumbs').hidden = true; $('#props').hidden = true; });
+function sideSync() { scrim.hidden = !(narrow() && docNow && (!$('#thumbs').hidden || !$('#props').hidden || !$('#tax').hidden)); }
+for (const id of ['#thumbs', '#props', '#tax']) new MutationObserver(sideSync).observe($(id), { attributes: true, attributeFilter: ['hidden'] });
+scrim.addEventListener('click', () => { $('#thumbs').hidden = true; $('#props').hidden = true; if (!$('#tax').hidden) txOpen(false); });
 matchMedia(PHONE_Q).addEventListener('change', () => { sideSync(); selBarSync(); });
 
 /* ---------- two fingers: zoom and move ---------- */
@@ -5289,7 +5383,7 @@ selBar.addEventListener('click', ev => {
   const k = ev.target.closest('[data-sb]')?.dataset.sb; if (!k) return;
   const s = getSel(), t = S.tsel;
   if (k === 'edit' && s) startEdit(s.pg, s.o, false);
-  else if (k === 'style') { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; }
+  else if (k === 'style') { $('#thumbs').hidden = true; if (!$('#tax').hidden) txOpen(false); renderProps(true); $('#props').hidden = false; }
   else if (k === 'dup' && s) pasteObj(s.o, s.pg);
   else if (k === 'del') deleteSel();
   else if (k === 'copy' && t) copyText(t.text);
@@ -5308,7 +5402,7 @@ fmtBar.addEventListener('pointerup', ev => {
   const b = ev.target.closest('[data-fmt]'); if (!b || !S.editing) return;
   const k = b.dataset.fmt, t = propTarget(); if (!t) return;
   if (k === 'done') { endEdit(); return; }
-  if (k === 'more') { $('#thumbs').hidden = true; renderProps(true); $('#props').hidden = false; return; }
+  if (k === 'more') { $('#thumbs').hidden = true; if (!$('#tax').hidden) txOpen(false); renderProps(true); $('#props').hidden = false; return; }
   if (k === 'bold' || k === 'italic') { if (editRange()) { if (styleSelection({ [k]: 'toggle' })) renderProps(true); } else setProp(k, !t.o[k], false); }
   else if (k === 'smaller' || k === 'bigger') setProp('size', Math.round(((t.o.size || 11) + (k === 'bigger' ? 1 : -1)) * 2) / 2, false);
   selBarSync();
@@ -6050,6 +6144,878 @@ $('#dlgZip').addEventListener('close', () => {
   });
 });
 
+/* ---------- Tax Check (Beta), part 1: reading invoices and faktur pajak ----------
+   Pure functions, no page and no screen: from the text lines of pages (read from the PDF itself or recognised by OCR) to fields,
+   and from fields to checks. A field keeps every reading of it (each copy of an invoice, a second, closer look at a number on a
+   scan), so a misread digit can be outvoted or caught by the sums. Money is compared in cents: a difference of one rupiah is a
+   difference. Only what a faktur pajak itself works out (DPP nilai lain 11/12, PPN 12%) is rounded to whole rupiah, as the faktur does. */
+const TXMON = { jan: 1, januari: 1, january: 1, feb: 2, februari: 2, february: 2, peb: 2, pebruari: 2, mar: 3, maret: 3, march: 3, apr: 4, april: 4, mei: 5, may: 5, jun: 6, juni: 6, june: 6, jul: 7, juli: 7, july: 7, agu: 8, ags: 8, agt: 8, agustus: 8, aug: 8, august: 8, sep: 9, sept: 9, september: 9, okt: 10, oktober: 10, oct: 10, october: 10, nov: 11, november: 11, nopember: 11, des: 12, desember: 12, dec: 12, december: 12 };
+const TXMN = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const txC = v => Math.round(v * 100);                                   // money in cents
+const txRp = c => Math.round(c / 100) * 100;                            // cents rounded to whole rupiah, as a faktur pajak does
+const txDigits = s => String(s ?? '').replace(/\D/g, '');
+const txMoney = v => v == null || !isFinite(v) ? '—' : (v < 0 ? '−' : '') + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: Math.abs(v % 1) > 1e-9 ? 2 : 0, maximumFractionDigits: 2 });
+const txDateText = d => d ? `${String(d.d).padStart(2, '0')} ${TXMN[d.m]} ${d.y || '????'}` : '—';
+const txNorm = s => String(s ?? '').toUpperCase().replace(/[OQ]/g, '0').replace(/[IL|!]/g, '1').replace(/[^A-Z0-9]/g, '');
+
+/* '7.544.744.164,00' · '89,366.31' · '10,009.000' · '54,161489.00' (a separator lost on a scan) → a number, or null */
+function txNum(s) {
+  const t = String(s).replace(/\s+/g, '').replace(/^[.,]+|[.,]+$/g, '');
+  if (!/^\d[\d.,]*$/.test(t)) return null;
+  const last = Math.max(t.lastIndexOf('.'), t.lastIndexOf(','));
+  if (last < 0) return +t;
+  const mark = t[last], tail = t.length - last - 1, other = mark === '.' ? ',' : '.';
+  const dec = tail === 3 ? t.indexOf(other) >= 0 && t.indexOf(other) < last : tail < 3;
+  return +((dec ? t.slice(0, last) : t).replace(/[.,]/g, '') + (dec ? '.' + t.slice(last + 1) : ''));
+}
+/* x of every character of a line: from the recognised words, or spread evenly */
+function txCx(l) {
+  if (l._cx) return l._cx;
+  const t = l.text, n = t.length, cx = new Array(n + 1);
+  if (l.words && l.words.length && l.words.map(w => w[0]).join(' ') === t) {
+    let i = 0;
+    for (const [s, x, w] of l.words) { for (let k = 0; k < s.length; k++) cx[i + k] = x + w * k / s.length; i += s.length; cx[i] = x + w; i++; }
+  } else for (let i = 0; i <= n; i++) cx[i] = l.x + l.w * i / Math.max(1, n);
+  return (l._cx = cx);
+}
+const txSrc = (pid, l, i, j) => { const cx = txCx(l); i = Math.max(0, i); j = Math.min(l.text.length, Math.max(i + 1, j)); return { pid, x: cx[i], y: l.y, w: Math.max(2, cx[j] - cx[i]), h: l.h }; };
+/* the amounts written in a line, with where each one is */
+const TXNUM = /(\(\s*)?((?:IDR|Rp\.?|USD)\s*)?(-\s?)?(\d{1,3}\s(?=\d{3}[.,]\d)\d[\d.,]*|\d[\d.,]*)(\s?%)?(\s*\))?/giu;      // "94 502,009.31": a separator read as a space
+function txNums(l) {
+  if (l._nums) return l._nums;
+  const t = l.text, cx = txCx(l), out = [];
+  for (const m of t.matchAll(TXNUM)) {
+    const raw = m[4].replace(/[.,]+$/, ''), si = m.index + m[0].indexOf(m[4]), se = si + raw.length, prev = t[m.index - 1], next = t[se], sep = /[.,]/.test(raw);
+    if (prev && /[\p{L}\d_/\-.,]/u.test(prev)) continue;                       // part of a code (PPH22, TKT0126…) or of a date
+    if (!sep && next && (/\p{L}/u.test(next) || /[/\-]/.test(next))) continue;
+    const v = txNum(raw); if (v == null) continue;
+    out.push({ v: m[3] || (m[1] && m[6]) ? -v : v, pct: !!m[5], raw, i: si, n: raw.length, x0: cx[si], x1: cx[se], l });
+  }
+  return (l._nums = out);
+}
+/* dates: 06/10/2026 · 03-Nov-2026 · 23 October 2026 · 06 Oktober 2026 · October 23, 2026 → { d, m, y (null when not written) } */
+function txDate(s) {
+  s = String(s ?? ''); let m = /(?<!\d)(\d{1,2})\s?[/.\-]\s?(\d{1,2})\s?[/.\-]\s?(\d{4}|\d{2})(?!\d)/.exec(s);
+  const ok = (d, mo, y) => d >= 1 && d <= 31 && mo >= 1 && mo <= 12 && (y == null || (y >= 2000 && y <= 2100));
+  if (m) { const d = +m[1], mo = +m[2], y = m[3].length === 2 ? 2000 + +m[3] : +m[3]; if (ok(d, mo, y)) return { d, m: mo, y, i: m.index, n: m[0].length }; }
+  const re = /(?<!\d)(\d{1,2})[\s\-.]*([A-Za-z]{3,10})\.?(?:[\s\-.,]*(\d{4})(?!\d))?/g;
+  while ((m = re.exec(s))) { const mo = TXMON[m[2].toLowerCase()], d = +m[1], y = m[3] ? +m[3] : null; if (mo && ok(d, mo, y)) return { d, m: mo, y, i: m.index, n: m[0].length }; }
+  m = /([A-Za-z]{3,10})\.?\s+(\d{1,2}),?\s+(\d{4})(?!\d)/.exec(s);
+  if (m) { const mo = TXMON[m[1].toLowerCase()], d = +m[2], y = +m[3]; if (mo && ok(d, mo, y)) return { d, m: mo, y, i: m.index, n: m[0].length }; }
+  return null;
+}
+const txDateKey = d => d ? (d.y || 0) * 10000 + d.m * 100 + d.d : 0;
+const txNpwp = s => { const m = /(?<![\d#])(\d{2}[.\s]?\d{3}[.\s]?\d{3}[.\s]?\d[\-.\s]?\d{3}[.\s]?\d{3}\d?)(?!\d)/.exec(String(s ?? '')); return m ? txDigits(m[1]) : ''; };
+
+/* lines → rows: pieces of text that share a line on the page, left to right */
+function txRows(lines) {
+  const ls = lines.filter(l => l.text && l.text.trim() && l.h > 0).sort((a, b) => (a.y + a.h / 2) - (b.y + b.h / 2)), rows = [];
+  for (const l of ls) {
+    const cy = l.y + l.h / 2; let hit = null;
+    for (let i = rows.length - 1; i >= 0 && i >= rows.length - 4; i--) { const r = rows[i]; if (Math.abs(r.cy - cy) <= 0.5 * Math.max(r.h, l.h)) { hit = r; break; } }
+    if (hit) { hit.ls.push(l); hit.cy = (hit.cy * (hit.ls.length - 1) + cy) / hit.ls.length; hit.h = Math.max(hit.h, l.h); } else rows.push({ cy, h: l.h, ls: [l] });
+  }
+  rows.forEach((r, i) => { r.i = i; r.ls.sort((a, b) => a.x - b.x); r.text = r.ls.map(l => l.text).join('  '); r.y = Math.min(...r.ls.map(l => l.y)); r.b = Math.max(...r.ls.map(l => l.y + l.h)); });
+  return rows;
+}
+/* a label at the start of a piece of text ("11. Remarks", "[14. Price" count too) → { r, l, ei: where it ends in the text, end: x } */
+function txFind(P, re) {
+  const out = [];
+  for (const r of P.rows) for (const l of r.ls) {
+    const t = l.text.replace(/^[\s[\]|(]*(?:\d{1,2}\s?[.,)]\s*)?/, ''), off = l.text.length - t.length, m = re.exec(t);
+    if (!m || m.index !== 0) continue;
+    const ei = off + m[0].length; out.push({ r, l, ei, m, end: txCx(l)[ei] });
+  }
+  return out;
+}
+const txAfter = h => h.r.ls.flatMap(l => txNums(l).filter(k => !k.pct && (l === h.l ? k.i >= h.ei : k.x0 >= h.end - 1))).sort((a, b) => a.x0 - b.x0);
+/* the words after a label: on its line, else the next piece on its row, else the line right under it */
+function txTextAfter(P, h) {
+  const strip = s => s.replace(/^\s*[:;]\s*/, '').replace(/^[1il|]\s+(?=\S)/, '');
+  const s = strip(h.l.text.slice(h.ei)); if (s.trim()) { const i = h.l.text.length - s.length; return { s: s.trim(), l: h.l, i }; }
+  const nx = h.r.ls.find(l => l !== h.l && l.x >= h.end - 2); if (nx) { const t = strip(nx.text); return { s: t.trim(), l: nx, i: nx.text.length - t.length }; }
+  const below = P.rows.find(r => r.i > h.r.i && r.y > h.l.y + h.l.h * 0.5 && r.y < h.l.y + h.l.h * 2.8);
+  const bl = below && below.ls.find(l => Math.abs(l.x - h.l.x) < 40); if (bl) return { s: bl.text.trim(), l: bl, i: 0 };
+  return null;
+}
+/* readings of fields: every reading kept, with where it was read */
+function txBag() {
+  const m = new Map(), miss = [];
+  return { m, miss, add(k, v, src, via) { if (v == null || v === '' || (typeof v === 'number' && !isFinite(v))) return; let a = m.get(k); if (!a) m.set(k, a = []); a.push({ v, src, via: via || 'pdf' }); } };
+}
+const txVia = l => (l.ocr ? 'ocr' : 'pdf');
+
+/* ---------- what a page is ---------- */
+function txKind(P) {
+  const lo = P.lines.map(l => l.text).join('\n').toLowerCase().replace(/\s+/g, ' ');
+  if (/faktur\s?pajak/.test(lo) && /(kode dan nomor seri|nomor seri faktur|pengusaha kena pajak|dasar pengenaan pajak)/.test(lo)) return 'faktur';
+  if (/(faktur pajak ini|ditandatangani secara elektronik|pkp yang membuat faktur)/.test(lo)) return 'fakturMore';
+  if (/(invoice|faktur penjualan|tagihan|billing|\bnota\b|kwitansi|receipt|debit note)/.test(lo) && /(total|jumlah|amount|ppn|vat)/.test(lo)) return 'invoice';
+  return 'other';
+}
+
+/* ---------- a faktur pajak (Coretax layout): labels and the values on their rows ---------- */
+const TXHJ = /^harga\s?jual\s?\/?\s?penggantian\s?\/?\s?uang\s?muka\s?\/?\s?termin/i;
+const TXFSUM = [['hj', TXHJ], ['pot', /^dikurangi\s?potongan\s?harga/i], ['um', /^dikurangi\s?uang\s?muka/i], ['dpp', /^dasar\s?pengenaan\s?pajak/i], ['ppn', /^jumlah\s?ppn\b/i], ['ppnbm', /^jumlah\s?ppn\s?bm/i]];
+function txFaktur(pages) {
+  const R = txBag(), F = { pages: pages.map(P => P.id), R, items: 0 };
+  for (const P of pages) {
+    for (const h of txFind(P, /^kode\s?dan\s?nomor\s?seri\s?faktur\s?pajak\s?:?/i)) { const t = txTextAfter(P, h); const d = t && txDigits((/[\d.\-\s]{13,}/.exec(t.s) || [''])[0]); if (d && d.length >= 13) R.add('nsfp', d, txSrc(P.id, t.l, t.i, t.l.text.length), txVia(t.l)); }
+    const at = re => { const h = txFind(P, re)[0]; return h ? h.r.i : -1; };
+    const iS = at(/^pengusaha\s?kena\s?pajak/i), iB = at(/^pembeli\s?barang\s?kena\s?pajak/i), iT = (() => { const r = P.rows.find(r => /nama\s?barang\s?kena\s?pajak/i.test(r.text)); return r ? r.i : -1; })();
+    const party = (pre, a, b) => {
+      for (const h of txFind(P, /^nama\s?:?/i)) if (h.r.i > a && h.r.i < b) { const t = txTextAfter(P, h); if (t && t.s.length > 2) { R.add(pre + 'name', t.s.replace(/\s{2,}.*/, ''), txSrc(P.id, t.l, t.i, t.l.text.length), txVia(t.l)); break; } }
+      for (const h of txFind(P, /^npwp\s?:?/i)) if (h.r.i > a && h.r.i < b) { const t = txTextAfter(P, h), d = t && txNpwp(t.s); if (d) { R.add(pre + 'npwp', d, txSrc(P.id, t.l, t.i, t.l.text.length), txVia(t.l)); break; } }
+    };
+    if (iS >= 0) party('s.', iS, iB >= 0 ? iB : iS + 8);
+    if (iB >= 0) party('b.', iB, iT >= 0 ? iT : iB + 12);
+    /* items: "Rp 900.000,00 x 4,00", the discount under it, the amount in the right column */
+    const used = new Set(), sumRow = P.rows.find(r => TXHJ.test(r.ls[0].text));
+    for (const r of P.rows) {
+      if (r.i <= iT || (sumRow && r.i >= sumRow.i)) continue;
+      for (const l of r.ls) {
+        const m = /^rp\s?([\d.,]+)\s?[x×]\s?([\d.,]+)/i.exec(l.text); if (!m) continue;
+        const k = F.items++, key = `it.${k}.`, cy = r.cy, nums = txNums(l), via = txVia(l);
+        if (nums[0]) R.add(key + 'price', Math.abs(nums[0].v), txSrc(P.id, l, nums[0].i, nums[0].i + nums[0].n), via);
+        if (nums[1]) R.add(key + 'qty', Math.abs(nums[1].v), txSrc(P.id, l, nums[1].i, nums[1].i + nums[1].n), via);
+        let best = null;
+        for (const q of P.rows) if (q.cy > cy - r.h * 1.2 && q.cy < cy + r.h * 2.2) for (const ql of q.ls) for (const t of txNums(ql)) if (t.x0 > P.w * 0.62 && !used.has(t) && (!best || Math.abs(q.cy - cy - r.h * 0.5) < best.d)) best = { t, d: Math.abs(q.cy - cy - r.h * 0.5), l: ql };
+        if (best) { used.add(best.t); R.add(key + 'amt', Math.abs(best.t.v), txSrc(P.id, best.l, best.t.i, best.t.i + best.t.n), txVia(best.l)); }
+        for (const q of P.rows) if (q.cy >= cy - 1 && q.cy < cy + r.h * 2.4) for (const ql of q.ls) { const d = /potongan\s?harga\s?[=\-–~:]*\s?rp\s?([\d.,]+)/i.exec(ql.text); if (d) { const i = ql.text.indexOf(d[1], d.index); R.add(key + 'disc', txNum(d[1]), txSrc(P.id, ql, i, i + d[1].length), txVia(ql)); } }
+        const above = P.rows.filter(q => q.cy < cy - 2 && q.cy > cy - r.h * 2).pop(), nl = above && above.ls.find(q => Math.abs(q.x - l.x) < 15 && !/^(rp|potongan|ppnbm)/i.test(q.text));
+        if (nl) R.add(key + 'name', nl.text.trim(), txSrc(P.id, nl, 0, nl.text.length), txVia(nl));
+      }
+    }
+    for (const [k, re] of TXFSUM) for (const h of txFind(P, re)) {
+      if (h.l.x > P.w * 0.35) continue;
+      const v = txAfter(h).pop();
+      if (v) R.add(k, Math.abs(v.v), txSrc(P.id, v.l, v.i, v.i + v.n), txVia(v.l));
+      else R.miss.push({ key: k, pid: P.id, x: Math.max(h.end + 6, P.w * 0.55), y: h.l.y - h.l.h * 0.35, w: P.w * 0.97 - Math.max(h.end + 6, P.w * 0.55), h: h.l.h * 1.7, ocr: !!h.l.ocr });
+    }
+    /* "KOTA SURABAYA, 06 Oktober 2026" above the signature; the year may sit on the next line */
+    for (const r of P.rows) for (const l of r.ls) {
+      const m = /,\s?(\d{1,2})\s+([A-Za-z]{3,10})\s?(\d{4})?\s*$/.exec(l.text); if (!m || !TXMON[m[2].toLowerCase()]) continue;
+      let y = m[3] ? +m[3] : null;
+      if (!y) { const nx = P.rows.find(q => q.i > r.i && q.y < l.y + l.h * 2.4), yl = nx && nx.ls.find(q => Math.abs(q.x - l.x) < 60 && /^\s?\d{4}\b/.test(q.text)); if (yl) y = +/\d{4}/.exec(yl.text)[0]; }
+      R.add('date', { d: +m[1], m: TXMON[m[2].toLowerCase()], y: y && y >= 2000 && y <= 2100 ? y : null }, txSrc(P.id, l, m.index + 1, l.text.length), txVia(l));
+    }
+    let ref = null;
+    for (const r of P.rows) for (const l of r.ls) { const m = /referensi\s?:?\s?(.*?)\)?\s*$/i.exec(l.text); if (m && m[1].trim()) ref = { s: m[1].trim(), l, i: m.index }; }
+    if (!ref) {                     // the "(Referensi:" part can be lost on a scan: a line ending in ")" under the signature
+      const dl = (R.m.get('date') || []).find(q => q.src.pid === P.id), stop = P.rows.find(r => /^pemberitahuan/i.test(r.text));
+      if (dl) for (const r of P.rows) if (r.y > dl.src.y + 10 && (!stop || r.i < stop.i)) for (const l of r.ls) if (/\)\s*$/.test(l.text) && l.x < P.w * 0.4 && /\d/.test(l.text)) ref = { s: l.text.replace(/^\(?/, '').replace(/\)\s*$/, '').trim(), l, i: 0 };
+    }
+    if (ref) R.add('ref', ref.s, txSrc(P.id, ref.l, ref.i, ref.l.text.length), txVia(ref.l));
+    for (const r of P.rows) { const m = /(\d+)\s?dari\s?(\d+)/i.exec(r.text); if (m) F.of = [+m[1], +m[2]]; }
+  }
+  return F;
+}
+
+/* ---------- an invoice: its number and dates, the table of items, the amounts under it ---------- */
+const TXISUM = [
+  ['sub', /^(sub\s?-?\s?total|harga\s?jual(\s?\/\s?penggantian)?|jumlah\s?harga|total\s?harga|total\s?before\s?(tax|vat)|total\s?dpp)\b/i],
+  ['disc', /^(potongan(\s?harga)?|discount|diskon)\b/i],
+  ['um', /^(uang\s?muka(\s?yang\s?telah\s?diterima)?|down\s?payment|advance\s?payment)\b/i],
+  ['dpp', /^(dasar\s?pengenaan\s?pajak|dpp(\s?nilai\s?lain)?)\b/i],
+  ['ppn', /^(ppn|vat|pajak\s?pertambahan\s?nilai)(?!\s?bm|\s?tix)\b/i],
+  ['pph', /^(pph|withholding\s?tax)/i],
+  ['stamp', /^(bea\s?m[ae]t[ae]rai|m[ae]t[ae]rai|stamp\s?duty)\b/i],
+  ['total', /^(jumlah\s?yang\s?harus\s?dibayar|total\s?yang\s?harus\s?dibayar|grand\s?total|total\s?amount|amount\s?due|final\s?amount(\s?to\s?be\s?paid)?|total\s?tagihan|jumlah\s?tagihan|total\s?invoice|total\s?payment|balance\s?due|total(?=\s?:?\s?(?:idr|rp\.?)?\s?(?:[\d(]|$)))/i],
+];
+const TXNO = /^(no\.?\s?(?:&|dan|and)?\s?(?:date\s?of\s?)?invoice|invoice\s?(?:no\.?|number|nr\.?|#)|no\.?\s?invoice|nomor\s?(?:invoice|faktur|tagihan|nota)|no\.?\s?faktur(?!\s?pajak)|billing\s?no\.?|bill\s?no\.?|no\.?\s?tagihan|no\.?\s?nota)/i;
+const TXHEAD = [      // column headings → what the column holds
+  ['fee', /(\bfee\b|jasa\s?(pengurusan|manajemen|agen)|komisi|commission)/i],
+  ['vat', /^(ppn|vat)(\s?\(?\d+\s?%\)?)?$/i],
+  ['qty', /(qty|quantity|kuantitas|kuantum|banyaknya|volume|jml\.?$|weight)/i],
+  ['unit', /^(sat\.?|satuan|unit|uom)$/i],
+  ['price', /(harga\s?satuan|unit\s?price|price|^harga$|^rate$|^tarif$)/i],
+  ['disc', /(disc\.?|diskon|potongan)/i],
+  ['amount', /(jumlah|amount|total|nilai|subtotal)$/i],
+  ['desc', /(nama\s?barang|description|uraian|keterangan|deskripsi|commodity|goods|^item|^name|barang)/i],
+  ['no', /^(no\.?|#|nomor)$/i],
+  ['other', /(nett?$|tax|tix|charge|biaya|ongkos)/i],
+];
+function txHeader(P) {      // the first row that reads like the head of a table of items
+  for (const r of P.rows) {
+    const segs = [];
+    for (const l of r.ls) { const g = segs[segs.length - 1]; if (g && l.x - g.x1 < Math.max(4, l.h * 0.8) && !txNums(l).length) { g.text += ' ' + l.text; g.x1 = l.x + l.w; } else segs.push({ text: l.text, x0: l.x, x1: l.x + l.w }); }
+    const cols = [];
+    for (const g of segs) { const t = g.text.replace(/^[\s[\]|(]*\d{0,3}[.,]?\s*/, '').trim(), role = (TXHEAD.find(([, re]) => re.test(t)) || [])[0]; if (/\p{L}/u.test(t)) cols.push({ role: role || 'other', label: t, x0: g.x0, x1: g.x1 }); }
+    const known = cols.filter(c => c.role !== 'no' && c.role !== 'other');
+    if (known.length >= 2 && cols.length >= 3 && cols.some(c => ['amount', 'price', 'fee', 'qty'].includes(c.role)) && !/:\s?\S/.test(r.text)) {
+      const pi = cols.findIndex(c => c.role === 'price' || c.role === 'qty'), last = cols[cols.length - 1];      // a heading the scan lost, right of the price: the amount
+      if (!cols.some(c => c.role === 'amount') && pi >= 0 && cols.indexOf(last) > pi && last.role === 'other') last.role = 'amount';
+      return { row: r, cols, pid: P.id };
+    }
+  }
+  return null;
+}
+function txStampBox(P) {     // [y from, y to, x from, x to] of a reviewer's stamp: TAX BASE, VAT, WHT, TOTAL with values written by hand
+  const hs = [/^tax\s?base\b/i, /^vat\b/i, /^wht\b/i, /^total\b/i].map(re => txFind(P, re));
+  for (const a of [...hs[0], ...hs[2]]) {
+    const near = hs.map(list => list.find(h => Math.abs(h.r.cy - a.r.cy) < 70 && Math.abs(h.l.x - a.l.x) < 50)).filter(Boolean);
+    if (near.length >= 2) { const ys = near.map(h => h.r.cy), xs = near.map(h => h.l.x); return [Math.min(...ys) - 14, Math.max(...ys) + 16, Math.min(...xs) - 30, Math.max(...xs) + 30]; }
+  }
+  return null;
+}
+const txColOf = (cols, k) => { let c = -1; cols.forEach((q, i) => { if (q.x0 < k.x1 - 1) c = i; }); return c; };
+function txInvoicePage(P, head, G, other) {
+  const R = G.R, at = (k, v, l, a, b) => R.add(k, v, txSrc(P.id, l, a, b), txVia(l));
+  for (const h of txFind(P, TXNO)) {
+    const t = txTextAfter(P, h); if (!t) continue;
+    const m = /[A-Z0-9][A-Z0-9\-/.]*\d[A-Z0-9\-/.]*/i.exec(t.s); if (m && m[0].length >= 4) at('no', m[0].replace(/[.,]$/, ''), t.l, t.i + m.index, t.i + m.index + m[0].length);
+    const d = txDate(t.s.slice(m ? m.index + m[0].length : 0)); if (d) { const off = t.i + (m ? m.index + m[0].length : 0); at('date', { d: d.d, m: d.m, y: d.y }, t.l, off + d.i, off + d.i + d.n); }
+  }
+  for (const h of txFind(P, /^no\.?\s(?=[A-Z]{2,}[\w\-/]*\d)/i)) { const t = h.l.text.slice(h.ei).trim().split(/\s/)[0]; if (t.length >= 5) at('no2', t, h.l, h.ei, h.ei + t.length); }
+  for (const [k, re] of [['date', /^(tgl\.?\s?faktur|tanggal\s?(faktur|invoice|tagihan|nota)?|invoice\s?date|billing\s?date|date\s?of\s?invoice|date)\b/i], ['due', /^(batas\s?pembayaran|due\s?date|jatuh\s?tempo|payment\s?due)/i]]) for (const h of txFind(P, re)) {
+    const t = txTextAfter(P, h), d = t && txDate(t.s); if (d) at(k, { d: d.d, m: d.m, y: d.y }, t.l, t.i + d.i, t.i + d.i + d.n);
+  }
+  for (const h of txFind(P, /^npwp\b\s?:?/i)) { const t = txTextAfter(P, h), d = t && txNpwp(t.s); if (d) at('npwp', d, t.l, t.i, t.l.text.length); }
+  for (const r of P.rows) if (r.y < P.h * 0.3) for (const l of r.ls) if (/^(pt|cv|ud|pd)\b\.?\s?[A-Z]/i.test(l.text) && !G.seller) G.seller = l.text.trim();
+  if (other) return;
+  /* the amounts under the table (a reviewer's stamp with TAX BASE, VAT, WHT and TOTAL filled in by hand is not the invoice's) */
+  const sumRows = new Set(), stamp = txStampBox(P);
+  for (const [k, re] of TXISUM) for (const h of txFind(P, re)) {
+    if (head && head.pid === P.id && h.r.i <= head.row.i) continue;
+    if (stamp && h.r.cy >= stamp[0] && h.r.cy <= stamp[1] && h.l.x >= stamp[2] && h.l.x <= stamp[3]) continue;
+    const toks = txAfter(h).filter(t => !(Math.abs(t.v) > 0 && Math.abs(t.v) < 100 && k !== 'disc' && k !== 'um')); if (!toks.length) continue;
+    sumRows.add(h.r);
+    const v = toks[toks.length - 1];
+    if (k === 'pph') { const km = /(?:pph|pasal)\s?(21|22|23|26|15|4\s?\(?\s?2\s?\)?)/i.exec(h.l.text), rm = /(\d+(?:[.,]\d+)?)\s?%/.exec(h.l.text); G.pphLine = { kind: km ? 'PPh ' + km[1].replace(/\s/g, '').replace(/^4\(?2\)?$/, '4(2)') : null, rate: rm ? txNum(rm[1]) : null }; }
+    at(k, Math.abs(v.v), v.l, v.i, v.i + v.n);
+    if (k === 'total' && head && toks.length >= 2) {      // a total row under a table with several columns: one total per column
+      const cols = head.cols;
+      for (const t of toks) { const c = txColOf(cols, t); if (c >= 0 && !['desc', 'no', 'unit', 'qty', 'price'].includes(cols[c].role)) at('tc.' + c, Math.abs(t.v), t.l, t.i, t.i + t.n); }
+      G.totalRows.push({ pid: P.id, x: toks[0].x0 - 6, y: h.r.y - h.r.h * 0.35, w: Math.max(...toks.map(t => t.x1)) - toks[0].x0 + 12, h: h.r.b - h.r.y + h.r.h * 0.7, ocr: !!h.l.ocr });
+    }
+  }
+  /* the items: one row per line of the table, its figures sorted into the columns by where they end */
+  if (!head || !head.cols.some(c => c.role === 'amount') || !head.cols.some(c => c.role === 'qty' || c.role === 'price')) return;
+  const cols = head.cols, items = [];
+  for (const r of P.rows) {
+    if (head.pid === P.id && r.i <= head.row.i) continue;
+    if (sumRows.has(r) || TXISUM.some(([, re]) => r.ls.some(l => re.test(l.text.replace(/^[\s[\]|(]*(?:\d{1,2}\s?[.,)]\s*)?/, ''))))) break;
+    const it = {};
+    for (const l of r.ls) for (const t of txNums(l)) { if (t.pct) continue; const c = txColOf(cols, t); if (c < 0) continue; const role = cols[c].role; if (['qty', 'price', 'amount', 'disc'].includes(role) && !it[role]) it[role] = { v: Math.abs(t.v), l, t }; }
+    if (!it.amount || (!it.qty && !it.price)) continue;
+    const dl = r.ls.find(l => { const c = txColOf(cols, { x1: l.x + l.w }); return c >= 0 && cols[c].role === 'desc'; });
+    if (dl) it.desc = dl.text.trim();
+    items.push(it);
+  }
+  if (!items.length) return;
+  const copy = G.items && G.items.length === items.length;      // the same table again: a copy of the invoice
+  const base = copy ? 0 : (G.items ? G.items.length : 0);
+  if (!G.items) G.items = []; if (!copy) for (const it of items) G.items.push({ desc: it.desc || '' });
+  items.forEach((it, j) => { for (const k of ['qty', 'price', 'amount', 'disc']) if (it[k]) at(`it.${base + j}.${k}`, it[k].v, it[k].l, it[k].t.i, it[k].t.i + it[k].t.n); if (it.desc && !G.items[base + j].desc) G.items[base + j].desc = it.desc; });
+  G.itemRows = true;
+}
+function txInvoice(pages) {
+  const G = { pages: pages.map(P => P.id), R: txBag(), totalRows: [], items: null, seller: '', pphLine: null }, heads = pages.map(txHeader), head0 = heads.find(Boolean) || null;
+  const sig = h => [...new Set(h.cols.map(c => c.role).filter(r => ['qty', 'price', 'amount', 'fee', 'vat', 'disc'].includes(r)))].sort().join(',');
+  pages.forEach((P, i) => txInvoicePage(P, heads[i] || head0, G, !!(heads[i] && head0 && heads[i] !== head0 && sig(heads[i]) !== sig(head0))));      // a page with another table (a detail list, an attachment): only its number and dates
+  G.cols = head0 ? head0.cols : [];
+  G.text = pages.flatMap(P => P.lines.map(l => l.text)).join('\n');
+  return G;
+}
+
+/* ---------- a document: its pages sorted into fakturs and invoices, and each faktur matched to its invoice ---------- */
+const txSameNo = (a, b) => { a = txNorm(a); b = txNorm(b); if (!a || !b) return false; if (a === b) return true; const [s, l] = a.length < b.length ? [a, b] : [b, a]; return s.length >= 5 && l.length - s.length <= 1 && (l.startsWith(s) || l.endsWith(s)); };
+const txRefHas = (ref, no) => { const r = txNorm(ref), n = txNorm(no); return n.length >= 4 && (r.includes(n) || (n.length > 6 && /^1/.test(n) && r.includes(n.slice(1)))); };
+function txPageNo(P) {          // the invoice number written on a page, for grouping pages and copies
+  for (const h of txFind(P, TXNO)) { const t = txTextAfter(P, h), m = t && /[A-Z0-9][A-Z0-9\-/.]*\d[A-Z0-9\-/.]*/i.exec(t.s); if (m && m[0].length >= 4) return m[0]; }
+  return '';
+}
+function txDocument(pages) {
+  for (const P of pages) { if (!P.rows) P.rows = txRows(P.lines); P.kind = txKind(P); }
+  const fakturs = [], groups = [];
+  let fk = null, ig = null;
+  for (const P of pages) {
+    if (P.kind === 'faktur') { fk = [P]; fakturs.push(fk); ig = null; continue; }
+    if (P.kind === 'fakturMore' && fk && fk[fk.length - 1].no === P.no - 1) { fk.push(P); continue; }
+    fk = null;
+    if (P.kind === 'invoice') {
+      const no = txPageNo(P);
+      if (ig && ig.last === P.no - 1 && (!no || !ig.no || txSameNo(no, ig.no))) { ig.pages.push(P); ig.last = P.no; if (!ig.no) ig.no = no; }
+      else groups.push(ig = { pages: [P], last: P.no, no });
+    } else ig = null;
+  }
+  const F = fakturs.map(txFaktur), I = groups.map(g => txInvoice(g.pages)).filter(g => [...g.R.m.keys()].some(k => /^(total|sub|ppn|dpp|tc\.\d+|it\.\d+\.amount)$/.test(k)));      // a page that only mentions an invoice is not one
+  /* pairs: the faktur's reference names the invoice, or its harga jual is one of the invoice's amounts */
+  const first = (R, k) => { const a = R.m.get(k); return a && a.length ? a[0].v : null; };
+  const pairs = [], usedI = new Set();
+  for (const f of F) {
+    let best = null;
+    I.forEach((g, gi) => {
+      if (usedI.has(gi)) return;
+      const ref = first(f.R, 'ref') || '', nos = [...(g.R.m.get('no') || []), ...(g.R.m.get('no2') || [])].map(q => q.v), hj = first(f.R, 'hj');
+      let s = nos.some(n => txRefHas(ref, n)) ? 10 : 0;
+      if (hj != null && [...g.R.m.entries()].some(([k, a]) => /^(sub|tc\.\d+|it\.\d+\.amount)$/.test(k) && a.some(q => txC(q.v) === txC(hj)))) s += 5;
+      if (I.length === 1 && F.length === 1) s += 1;
+      if (s && (!best || s > best.s)) best = { s, gi };
+    });
+    if (best) usedI.add(best.gi);
+    pairs.push({ f, i: best ? I[best.gi] : null });
+  }
+  I.forEach((g, gi) => { if (!usedI.has(gi)) pairs.push({ f: null, i: g }); });
+  return { pages: pages.map(P => ({ id: P.id, no: P.no, kind: P.kind })), cases: pairs.map(txCase) };
+}
+
+/* ---------- a case: one invoice and its faktur, every field with its readings, a chosen value and the checks ---------- */
+function txCase({ f, i }) {
+  const C = { f: !!f, i: !!i, R: new Map(), miss: [], rows: [], cols: i ? i.cols : [], items: { f: f ? f.items : 0, i: i && i.items ? i.items.length : 0 }, idesc: i && i.items ? i.items.map(x => x.desc) : [], seller: i ? i.seller : '', pphLine: i ? i.pphLine : null, text: i ? i.text : '', pages: [...(i ? i.pages : []), ...(f ? f.pages : [])], fpages: f ? f.pages : [], ipages: i ? i.pages : [], of: f ? f.of : null, user: new Map(), pph: null };
+  if (f) { for (const [k, a] of f.R.m) C.R.set('f.' + k, a.slice()); C.miss.push(...f.R.miss.map(q => ({ ...q, key: 'f.' + q.key }))); }
+  if (i) { for (const [k, a] of i.R.m) C.R.set('i.' + k, a.slice()); C.rows = i.totalRows; }
+  return C;
+}
+/* readings of one field → the values it may have, most often read first */
+function txCands(C, k) {
+  const a = C.R.get(k) || [], by = new Map();
+  for (const q of a) { const key = typeof q.v === 'object' ? JSON.stringify(q.v) : String(typeof q.v === 'number' ? txC(q.v) : q.v); let e = by.get(key); if (!e) by.set(key, e = { v: q.v, n: 0, rs: [] }); e.n++; e.rs.push(q); }
+  return [...by.values()].sort((x, y) => y.n - x.n);
+}
+const txFieldKeys = C => [...new Set([...C.R.keys(), ...C.user.keys()])];
+/* the value of every field: the reading most often seen, or, where readings differ, the one the checks agree with */
+function txSolve(C, cfg) {
+  const keys = txFieldKeys(C), pick = new Map(), unsure = [];
+  for (const k of keys) {
+    if (C.user.has(k)) { pick.set(k, C.user.get(k)); continue; }
+    const cs = txCands(C, k); if (!cs.length) continue;
+    if (k === 'f.ref' || k.endsWith('.name') || k.endsWith('.desc')) { pick.set(k, cs[0].v); continue; }
+    pick.set(k, cs[0].v);
+    if (cs.length > 1) unsure.push([k, cs.slice(0, 4)]);
+  }
+  const val = k => pick.get(k), score = () => { let s = 0; for (const c of txChecks(C, val, cfg)) s += c.st === 'ok' ? 100 : c.st === 'bad' ? -100 : 0; return s; };
+  /* each unsure field in turn takes the candidate that makes the most checks pass (ties: the one read most often) */
+  for (let round = 0; round < 3 && unsure.length; round++) {
+    let moved = false;
+    for (const [k, cs] of unsure) {
+      let best = null;
+      for (const c of cs) { pick.set(k, c.v); const s = score() + c.n; if (!best || s > best.s) best = { s, v: c.v }; }
+      if (best.v !== pick.get(k)) moved = true;
+      pick.set(k, best.v);
+    }
+    if (!moved) break;
+  }
+  C.val = pick;
+  C.checks = txChecks(C, val, cfg);
+  const P = C.pph = txPph(C, val, cfg);
+  if (P.check === 'ok') C.checks.push({ st: 'ok', id: 'pph', title: `${P.kind} on the invoice = what is due`, detail: `${P.rate}% × ${txMoney(P.base.v)} = ${txMoney(P.exact)} → ${txMoney(P.withheld)}`, keys: ['i.pph'] });
+  else if (P.check === 'bad') C.checks.push({ st: 'bad', id: 'pph', title: `${P.kind} on the invoice differs from what is due`, detail: `${P.rate}% × ${P.base ? txMoney(P.base.v) : '?'} = ${txMoney(P.exact)} → ${txMoney(P.withheld)}, the invoice deducts ${txMoney(P.shown)} (difference ${txMoney((txC(P.shown) - P.withheld * 100) / 100)})`, keys: ['i.pph'] });
+  else if (P.check === 'warn') C.checks.push({ st: 'warn', id: 'pph', title: 'The invoice deducts PPh, but none is suggested', detail: `${C.pphLine && C.pphLine.kind ? C.pphLine.kind + ' ' : ''}${txMoney(P.shown)}. Choose the PPh below if it applies.`, keys: ['i.pph'] });
+  return C;
+}
+/* how sure a field is: read from the PDF's text · read alike several times · read once from a scan · read differently · set by hand */
+function txHow(C, k) {
+  if (C.user.has(k)) return 'user';
+  const cs = txCands(C, k), v = C.val && C.val.get(k); if (!cs.length) return 'none';
+  const same = cs.find(c => (typeof v === 'number' ? txC(c.v) === txC(v) : JSON.stringify(c.v) === JSON.stringify(v)));
+  if (same && same.rs.every(q => q.via === 'pdf')) return 'pdf';
+  if (cs.length > 1) return 'conflict';
+  if (same && same.n >= 2) return 'agree';
+  return C.checks && C.checks.some(c => c.st === 'ok' && c.keys.includes(k)) ? 'confirmed' : 'single';
+}
+
+/* ---------- the checks ----------
+   ok: it adds up / it matches · bad: it does not (a difference of 1 rupiah is a difference) · warn: worth a look · info: to know */
+const TXKT = { '01': 'normal delivery (DPP = harga jual)', '02': 'to a government collector', '03': 'to a VAT collector other than government', '04': 'DPP nilai lain (11/12 of the price)', '05': 'deemed PPN (besaran tertentu)', '06': 'to foreign tourists / other', '07': 'PPN not collected (tidak dipungut)', '08': 'PPN exempt (dibebaskan)', '09': 'delivery of assets (aktiva Pasal 16D)', '10': 'other deliveries' };
+function txChecks(C, val, cfg) {
+  const out = [], n = k => { const v = val(k); return typeof v === 'number' ? v : null; }, add = (st, id, title, detail, keys) => out.push({ st, id, title, detail: detail || '', keys: keys || [] });
+  const M = txMoney, eq = (a, b) => txC(a) === txC(b), own = (cfg && cfg.own) || [];
+  /* faktur */
+  if (C.f) {
+    const ns = val('f.nsfp');
+    if (ns) {
+      const kt = ns.slice(0, 2), fg = ns[2], okLen = ns.length === 17 || ns.length === 16;
+      if (okLen && TXKT[kt] && (fg === '0' || fg === '1')) add('ok', 'nsfp', 'Faktur number (NSFP) is well formed', `${ns} · kode transaksi ${kt}: ${TXKT[kt]}${fg === '1' ? ' · this is a replacement faktur (pengganti)' : ''}`, ['f.nsfp']);
+      else add('bad', 'nsfp', 'Faktur number (NSFP) does not look right', `${ns}: expected 17 digits starting with a kode transaksi 01–10`, ['f.nsfp']);
+    } else add('warn', 'nsfp', 'Faktur number (NSFP) not found', 'Click a number on the page to fill it in.', ['f.nsfp']);
+    const bn = val('f.b.npwp'), bname = val('f.b.name');
+    if (bn) {
+      const nm = x => String(x || '').toUpperCase().replace(/\b(PT|CV|TBK|PERSERO|UD)\b\.?/g, '').replace(/[^A-Z0-9]/g, '');
+      const hit = own.find(o => txDigits(o.npwp) === bn || (txDigits(o.npwp).length === 15 && '0' + txDigits(o.npwp) === bn) || (!o.npwp && o.name && nm(o.name) === nm(bname)));
+      if (hit) add('ok', 'buyer', 'The faktur is addressed to your company', `${bname || hit.name} · NPWP ${bn}`, ['f.b.npwp', 'f.b.name']);
+      else if (own.length) add('bad', 'buyer', 'The faktur is not addressed to one of your companies', `Buyer on the faktur: ${bname || '?'} · NPWP ${bn}`, ['f.b.npwp', 'f.b.name']);
+      else add('info', 'buyer', 'Is the buyer your company?', `The faktur is addressed to ${bname || '?'} (NPWP ${bn}). Add your company in Settings so this is checked every time.`, ['f.b.npwp', 'f.b.name']);
+    } else add('warn', 'buyer', 'Buyer NPWP not found on the faktur', '', ['f.b.npwp']);
+    const sn = val('f.s.npwp'); if (sn && sn.length !== 16 && sn.length !== 15) add('warn', 'snpwp', 'Seller NPWP has an unusual length', sn, ['f.s.npwp']);
+    /* items and totals of the faktur */
+    let sum = 0, all = true, bad = [];
+    for (let k = 0; k < C.items.f; k++) {
+      const p = n(`f.it.${k}.price`), q = n(`f.it.${k}.qty`), d = n(`f.it.${k}.disc`) || 0, a = n(`f.it.${k}.amt`);
+      if (a == null) { all = false; continue; } sum += txC(a);
+      if (p != null && q != null && txC(p * q) !== txC(a) && txC(p * q - d) !== txC(a)) bad.push(k);
+    }
+    if (C.items.f) {
+      if (bad.length) bad.forEach(k => add('bad', 'fitem' + k, `Faktur item ${k + 1}: price × quantity ≠ amount`, `${M(n(`f.it.${k}.price`))} × ${M(n(`f.it.${k}.qty`))} = ${M(n(`f.it.${k}.price`) * n(`f.it.${k}.qty`))}, the faktur says ${M(n(`f.it.${k}.amt`))}`, [`f.it.${k}.price`, `f.it.${k}.qty`, `f.it.${k}.amt`]));
+      else add('ok', 'fitems', `Faktur items: price × quantity matches on ${C.items.f > 1 ? 'all ' + C.items.f + ' lines' : 'its one line'}`, '', []);
+      const hj = n('f.hj');
+      if (hj != null && all) add(sum === txC(hj) ? 'ok' : 'bad', 'fsum', sum === txC(hj) ? 'Faktur items add up to the harga jual' : 'Faktur items do not add up to the harga jual', `${M(sum / 100)} vs ${M(hj)}`, ['f.hj', ...Array.from({ length: C.items.f }, (_, k) => `f.it.${k}.amt`)]);
+    }
+    const hj = n('f.hj'), pot = n('f.pot') || 0, um = n('f.um') || 0, dpp = n('f.dpp'), ppn = n('f.ppn'), kt = ns ? ns.slice(0, 2) : '';
+    if (hj != null && dpp != null) {
+      const base = txC(hj) - txC(pot) - txC(um), want = kt === '04' ? txRp(base * 11 / 12) : base;
+      if (txC(dpp) === want) add('ok', 'fdpp', kt === '04' ? 'DPP nilai lain = 11/12 × (harga jual − potongan − uang muka)' : 'DPP = harga jual − potongan − uang muka', `${M(base / 100)}${kt === '04' ? ` × 11/12 = ${M(base * 11 / 12 / 100)} → ${M(want / 100)} (rounded, as on the faktur)` : ''}`, ['f.dpp', 'f.hj', 'f.pot', 'f.um']);
+      else if (kt !== '04' && txC(dpp) === txRp(base * 11 / 12)) add('warn', 'fdpp', 'DPP is 11/12 of the price, but the kode transaksi is not 04', `Kode transaksi ${kt || '?'} · DPP ${M(dpp)}`, ['f.dpp', 'f.nsfp']);
+      else add('bad', 'fdpp', 'DPP on the faktur is not what the price gives', `Expected ${M(want / 100)}${kt === '04' ? ' (11/12, rounded)' : ''}, the faktur says ${M(dpp)} (difference ${M((txC(dpp) - want) / 100)})`, ['f.dpp', 'f.hj']);
+    } else if (hj == null) add('warn', 'fdpp', 'Harga jual not found on the faktur', '', ['f.hj']); else add('warn', 'fdpp', 'DPP not found on the faktur', '', ['f.dpp']);
+    if (dpp != null && ppn != null) {
+      const w12 = txRp(txC(dpp) * 0.12), w11 = txRp(txC(dpp) * 0.11);
+      if (txC(ppn) === w12) add('ok', 'fppn', 'PPN = 12% × DPP', `${M(dpp)} × 12% = ${M(dpp * 0.12)} → ${M(w12 / 100)} (rounded, as on the faktur)`, ['f.ppn', 'f.dpp']);
+      else if (kt !== '04' && txC(ppn) === w11) add('ok', 'fppn', 'PPN = 11% × DPP', `${M(dpp)} × 11% = ${M(w11 / 100)}`, ['f.ppn', 'f.dpp']);
+      else add('bad', 'fppn', 'PPN on the faktur is not 12% of the DPP', `Expected ${M(w12 / 100)}, the faktur says ${M(ppn)} (difference ${M((txC(ppn) - w12) / 100)})`, ['f.ppn', 'f.dpp']);
+    } else if (ppn == null) add('warn', 'fppn', 'PPN not found on the faktur', 'Click the PPN amount on the page to fill it in.', ['f.ppn']);
+    if (['07', '08'].includes(kt)) add('info', 'fkt', `Kode transaksi ${kt}: ${TXKT[kt]}`, 'The PPN on this faktur is not paid to the seller.', ['f.nsfp']);
+    if (['02', '03'].includes(kt)) add('info', 'fkt', `Kode transaksi ${kt}: ${TXKT[kt]}`, 'The buyer pays this PPN to the state itself (pemungut PPN).', ['f.nsfp']);
+    const fd = val('f.date'); if (!fd) add('warn', 'fdate', 'Faktur date not found', '', ['f.date']);
+    if (!val('f.ref')) add('info', 'fref', 'No reference (Referensi) found on the faktur', '', ['f.ref']);
+  }
+  /* invoice */
+  if (C.i) {
+    let isum = 0, iall = C.items.i > 0;
+    for (let k = 0; k < C.items.i; k++) {
+      const q = n(`i.it.${k}.qty`), p = n(`i.it.${k}.price`), d = n(`i.it.${k}.disc`) || 0, a = n(`i.it.${k}.amount`);
+      if (a == null) { iall = false; continue; } isum += txC(a);
+      if (q != null && p != null) {
+        const got = txC(q * p);
+        if (got === txC(a) || got - txC(d) === txC(a)) add('ok', 'iitem' + k, `Invoice line ${k + 1}: quantity × price = amount`, `${M(q)} × ${M(p)} = ${M(a)}`, [`i.it.${k}.qty`, `i.it.${k}.price`, `i.it.${k}.amount`]);
+        else add('bad', 'iitem' + k, `Invoice line ${k + 1}: quantity × price ≠ amount`, `${M(q)} × ${M(p)} = ${M(got / 100)}, the invoice says ${M(a)} (difference ${M((txC(a) - got) / 100)})`, [`i.it.${k}.qty`, `i.it.${k}.price`, `i.it.${k}.amount`]);
+      }
+    }
+    const sub = n('i.sub');
+    if (iall && sub != null) add(isum === txC(sub) ? 'ok' : 'bad', 'isum', isum === txC(sub) ? 'Invoice lines add up to the subtotal' : 'Invoice lines do not add up to the subtotal', `${M(isum / 100)} vs ${M(sub)}`, ['i.sub']);
+    const base = sub != null ? txC(sub) : iall ? isum : null, disc = txC(n('i.disc') || 0), um = txC(n('i.um') || 0), net = base == null ? null : base - disc - um;
+    const idpp = n('i.dpp'), ippn = n('i.ppn'), stamp = n('i.stamp'), pph = n('i.pph'), total = n('i.total');
+    if (net != null && idpp != null) { const w = txRp(net * 11 / 12); add(txC(idpp) === w || txC(idpp) === net ? 'ok' : 'bad', 'idpp', txC(idpp) === w || txC(idpp) === net ? 'DPP on the invoice follows from the price' : 'DPP on the invoice does not follow from the price', `${M(net / 100)}${txC(idpp) === net ? '' : ` × 11/12 → ${M(w / 100)}`}, the invoice says ${M(idpp)}`, ['i.dpp', 'i.sub']); }
+    /* a table with a fee and a PPN column (travel agents): PPN is 11% of the fee */
+    const ci = role => C.cols.findIndex(c => c.role === role), fee = ci('fee') >= 0 ? n('i.tc.' + ci('fee')) : null, vatc = ci('vat') >= 0 ? n('i.tc.' + ci('vat')) : null, amtc = ci('amount') >= 0 ? n('i.tc.' + ci('amount')) : null;
+    const ivat = ippn != null ? ippn : vatc, vatBase = fee != null ? txC(fee) : net;
+    if (ivat != null && vatBase != null) {
+      const e11 = Math.round(vatBase * 0.11), dp = idpp != null ? txRp(txC(idpp) * 0.12) : txRp(Math.round(vatBase * 11 / 12) * 0.12);
+      if (txC(ivat) === e11) add('ok', 'ippn', `PPN on the invoice = 11% of the ${fee != null ? 'service fee' : 'price'}`, `${M(vatBase / 100)} × 11% = ${M(e11 / 100)}`, [fee != null ? 'i.tc.' + ci('fee') : 'i.sub', ippn != null ? 'i.ppn' : 'i.tc.' + ci('vat')]);
+      else if (txC(ivat) === dp || txC(ivat) === txRp(e11)) add('ok', 'ippn', 'PPN on the invoice = 12% × DPP nilai lain', `${M(vatBase / 100)} × 11/12 → ${M((idpp != null ? txC(idpp) : txRp(vatBase * 11 / 12)) / 100)} × 12% → ${M(ivat)}`, [ippn != null ? 'i.ppn' : 'i.tc.' + ci('vat')]);
+      else add('bad', 'ippn', 'PPN on the invoice does not follow from the price', `Expected ${M(e11 / 100)} (11% of ${M(vatBase / 100)}) or ${M(dp / 100)} (12% × DPP), the invoice says ${M(ivat)}`, [ippn != null ? 'i.ppn' : 'i.tc.' + ci('vat')]);
+    }
+    /* the total */
+    const tcs = C.cols.map((c, j) => [c, j]).filter(([c, j]) => c.role !== 'amount' && n('i.tc.' + j) != null);
+    if (amtc != null && tcs.length >= 2) {
+      const s = tcs.reduce((a, [, j]) => a + txC(n('i.tc.' + j)), 0);
+      if (s === txC(amtc)) add('ok', 'itotal', 'The column totals add up to the grand total', tcs.map(([, j]) => M(n('i.tc.' + j))).join(' + ') + ` = ${M(amtc)}`, [...tcs.map(([, j]) => 'i.tc.' + j), 'i.tc.' + ci('amount')]);
+      else add('bad', 'itotal', 'The column totals do not add up to the grand total', `${tcs.map(([, j]) => M(n('i.tc.' + j))).join(' + ')} = ${M(s / 100)}, the invoice says ${M(amtc)} (difference ${M((txC(amtc) - s) / 100)})`, [...tcs.map(([, j]) => 'i.tc.' + j), 'i.tc.' + ci('amount')]);
+    } else if (total != null && net != null) {
+      const s = net + (ivat != null ? txC(ivat) : 0) + (stamp != null ? txC(stamp) : 0) - (pph != null ? txC(pph) : 0);
+      const parts = [`${M(net / 100)}`, ivat != null ? `+ PPN ${M(ivat)}` : '', stamp != null ? `+ stamp duty ${M(stamp)}` : '', pph != null ? `− PPh ${M(pph)}` : ''].filter(Boolean).join(' ');
+      add(s === txC(total) ? 'ok' : 'bad', 'itotal', s === txC(total) ? 'The invoice total adds up' : 'The invoice total does not add up', `${parts} = ${M(s / 100)}, the invoice says ${M(total)}${s === txC(total) ? '' : ` (difference ${M((txC(total) - s) / 100)})`}`, ['i.total', 'i.sub', 'i.ppn', 'i.stamp', 'i.pph']);
+    } else if (total == null && amtc == null) add('warn', 'itotal', 'Invoice total not found', 'Click the total on the page to fill it in.', ['i.total']);
+    if (!val('i.no')) add('warn', 'ino', 'Invoice number not found', '', ['i.no']);
+    const idt = val('i.date'), due = val('i.due');
+    if (!idt) add('warn', 'idate', 'Invoice date not found', '', ['i.date']);
+    if (idt && due && txDateKey(due) < txDateKey(idt)) add('warn', 'idue', 'The due date is before the invoice date', `${txDateText(idt)} → ${txDateText(due)}`, ['i.date', 'i.due']);
+  }
+  /* invoice ↔ faktur */
+  if (C.f && C.i) {
+    const ref = val('f.ref'), nos = [...txCands(C, 'i.no'), ...txCands(C, 'i.no2')].map(c => c.v), ino = val('i.no');
+    if (ref) {
+      const exact = x => txNorm(x).length >= 4 && txNorm(ref).includes(txNorm(x)), anyExact = nos.some(exact), hit = ino && (exact(ino) || (!anyExact && txRefHas(ref, ino)));
+      add(hit ? 'ok' : 'warn', 'mref', hit ? 'The faktur refers to this invoice' : 'The faktur reference does not name this invoice', hit ? `Referensi: ${ref}` : `Referensi: ${ref} · invoice ${ino || '?'}`, ['f.ref', 'i.no']);
+    }
+    const hj = n('f.hj');
+    if (hj != null) {
+      const ci = role => C.cols.findIndex(c => c.role === role);
+      let isum = 0, ok = C.items.i > 0; for (let k = 0; k < C.items.i; k++) { const a = n(`i.it.${k}.amount`); if (a == null) ok = false; else isum += txC(a); }
+      const opts = [['the invoice subtotal', 'i.sub', n('i.sub')], ['the invoice lines', null, ok ? isum / 100 : null], ['the service fee (the faktur covers the fee only)', 'i.tc.' + ci('fee'), ci('fee') >= 0 ? n('i.tc.' + ci('fee')) : null]].filter(o => o[2] != null);
+      const hit = opts.find(o => eq(o[2], hj));
+      if (hit) add('ok', 'mhj', `Harga jual on the faktur = ${hit[0]}`, M(hj), ['f.hj', hit[1]].filter(Boolean));
+      else if (opts.length) add('bad', 'mhj', 'Harga jual on the faktur differs from the invoice', `Faktur ${M(hj)} · invoice ${M(opts[0][2])} (difference ${M((txC(hj) - txC(opts[0][2])) / 100)})`, ['f.hj', opts[0][1]].filter(Boolean));
+    }
+    const fdpp = n('f.dpp'), idpp = n('i.dpp'); if (fdpp != null && idpp != null) add(eq(fdpp, idpp) ? 'ok' : 'bad', 'mdpp', eq(fdpp, idpp) ? 'DPP is the same on the invoice and the faktur' : 'DPP differs between the invoice and the faktur', `${M(idpp)} · ${M(fdpp)}`, ['f.dpp', 'i.dpp']);
+    const ci = role => C.cols.findIndex(c => c.role === role), fppn = n('f.ppn'), ippn = n('i.ppn') != null ? n('i.ppn') : ci('vat') >= 0 ? n('i.tc.' + ci('vat')) : null, ik = n('i.ppn') != null ? 'i.ppn' : 'i.tc.' + ci('vat');
+    if (fppn != null && ippn != null) {
+      if (eq(fppn, ippn)) add('ok', 'mppn', 'PPN is the same on the invoice and the faktur', M(fppn), ['f.ppn', ik]);
+      else if (txRp(txC(ippn)) === txC(fppn)) add('ok', 'mppn', 'PPN matches the faktur once rounded to whole rupiah', `The invoice shows ${M(ippn)}; the faktur rounds it to ${M(fppn)}`, ['f.ppn', ik]);
+      else add('bad', 'mppn', 'PPN differs between the invoice and the faktur', `Invoice ${M(ippn)} · faktur ${M(fppn)} (difference ${M((txC(ippn) - txC(fppn)) / 100)})`, ['f.ppn', ik]);
+    }
+    const inp = txCands(C, 'i.npwp').map(c => c.v), bn = val('f.b.npwp'), sn = val('f.s.npwp');
+    if (inp.length && (bn || sn)) { const m = inp.find(x => x === bn || x === sn); add(m ? 'ok' : 'warn', 'mnpwp', m ? `The NPWP on the invoice is the ${m === bn ? 'buyer' : 'seller'}'s on the faktur` : 'The NPWP on the invoice is not on the faktur', m || inp[0], ['i.npwp', m === sn ? 'f.s.npwp' : 'f.b.npwp']); }
+    const fd = val('f.date'), id = val('i.date');
+    if (fd && id) {
+      const same = fd.d === id.d && fd.m === id.m && (!fd.y || !id.y || fd.y === id.y);
+      add(same ? 'ok' : 'warn', 'mdate', same ? 'Faktur date = invoice date' + (fd.y ? '' : ' (the year is not legible on the faktur)') : 'The faktur date differs from the invoice date', same ? txDateText(id) : `Faktur ${txDateText(fd)} · invoice ${txDateText(id)}. The faktur should be dated when the goods or services were delivered, or when payment was received if that came first.`, ['f.date', 'i.date']);
+    }
+  }
+  return out;
+}
+
+/* ---------- withholding tax (PPh): which, on what, how much ----------
+   A suggestion from what the documents say; it can be changed. The amount is worked out exactly and withheld in whole rupiah
+   (cents dropped). */
+const TXPPH = {
+  none: { kind: null, rate: 0, label: 'No PPh' },
+  p22: { kind: 'PPh 22', rate: 1.5, label: 'PPh 22 · 1.5%' },
+  p23: { kind: 'PPh 23', rate: 2, label: 'PPh 23 · 2%' },
+  p42r: { kind: 'PPh 4(2)', rate: 10, label: 'PPh 4(2) · rent of land/buildings 10%' },
+  p42c: { kind: 'PPh 4(2)', rate: 2.65, label: 'PPh 4(2) · construction 2.65%' },
+  p26: { kind: 'PPh 26', rate: 20, label: 'PPh 26 · 20% (foreign seller, before treaty)' },
+  custom: { kind: 'PPh', rate: 0, label: 'Other…' },
+};
+function txPphRule(C, val) {
+  const t = [C.text, ...C.idesc, ...Array.from({ length: C.items.f }, (_, k) => val(`f.it.${k}.name`) || '')].join('\n').toLowerCase();
+  const fee = C.cols.findIndex(c => c.role === 'fee');
+  if (fee >= 0 && val('i.tc.' + fee) != null) return { id: 'p23', base: 'fee', why: 'A travel agent or broker: only its service fee is income for its services; tickets, airport tax and other costs passed on at cost are not. PPh 23 is 2% of the fee (excluding PPN).' };
+  if (/batu\s?bara|\bcoal\b|mineral\s?(logam|bukan\s?logam)|bijih|\bore\b|nikel|bauksit/.test(t)) return { id: 'p22', base: 'price', why: 'Purchase of coal or minerals from a mining licence holder: a business buyer collects PPh 22 of 1.5% of the price excluding PPN (PMK 34/PMK.010/2017).' };
+  if (/sewa\s?(gedung|ruang(an)?|kantor|bangunan|tanah|gudang|rumah|apartemen)|(office|building|warehouse|space)\s?rent/.test(t)) return { id: 'p42r', base: 'price', why: 'Rent of land or buildings: final PPh 4(2) of 10% of the gross rent.' };
+  if (/jasa\s?konstruksi|pekerjaan\s?konstruksi|construction\s?(work|services?)|pembangunan\s?gedung|renovasi/.test(t)) return { id: 'p42c', base: 'price', why: 'Construction work: final PPh 4(2). 2.65% for a certified contractor; 1.75% for a small qualification, 4% without a certificate (PP 9/2022). Check the contractor\'s certificate.' };
+  if (/\b(jasa|services?|sewa|rental|maintenance|perbaikan|perawatan|repair|consult\w*|konsultan|cleaning|kebersihan|catering|katering|keamanan|security|outsourc\w*|instalasi|installation|ekspedisi|freight|trucking|kalibrasi|calibration|training|pelatihan|management fee|service fee)\b/.test(t)) return { id: 'p23', base: 'price', why: 'Payment for services, or rent of things other than land and buildings: PPh 23 of 2% of the amount excluding PPN.' };
+  if (C.items.i || C.items.f) return { id: 'none', base: 'price', why: 'A purchase of goods: the buyer withholds no PPh on it.' };
+  return { id: 'none', base: 'price', why: 'Nothing in the documents points to a withholding tax. Choose one if it applies.' };
+}
+function txPph(C, val, cfg) {
+  const rule = txPphRule(C, val), u = C.pphUser || {}, id = u.id || rule.id, def = TXPPH[id] || TXPPH.none, rate = u.rate != null ? u.rate : def.rate;
+  const fee = C.cols.findIndex(c => c.role === 'fee');
+  let isum = 0, ok = C.items.i > 0; for (let k = 0; k < C.items.i; k++) { const a = val(`i.it.${k}.amount`); if (a == null) ok = false; else isum += txC(a); }
+  const bases = {
+    fee: fee >= 0 && val('i.tc.' + fee) != null ? { v: val('i.tc.' + fee), label: 'service fee on the invoice', key: 'i.tc.' + fee } : null,
+    price: val('f.hj') != null ? { v: (txC(val('f.hj')) - txC(val('f.pot') || 0) - txC(val('f.um') || 0)) / 100, label: 'price excluding PPN (harga jual on the faktur)', key: 'f.hj' } : val('i.sub') != null ? { v: (txC(val('i.sub')) - txC(val('i.disc') || 0)) / 100, label: 'price excluding PPN (invoice subtotal)', key: 'i.sub' } : ok ? { v: isum / 100, label: 'price excluding PPN (invoice lines)', key: null } : null,
+  };
+  const bk = u.base || rule.base, base = bk === 'custom' ? (u.baseV != null ? { v: u.baseV, label: 'amount entered', key: null } : null) : bases[bk] || bases.price || bases.fee;
+  const exact = def.kind && base ? Math.round(txC(base.v) * rate) / 100 / 100 : 0, withheld = Math.floor(exact + 1e-9);
+  const shown = val('i.pph'), total = (() => { const amt = C.cols.findIndex(c => c.role === 'amount'); return val('i.total') != null ? val('i.total') : amt >= 0 ? val('i.tc.' + amt) : null; })();
+  const deducted = shown != null;
+  const P = { id, rule, kind: def.kind, label: def.label, rate, base, bases, exact, withheld, shown, total, deducted, line: C.pphLine };
+  P.payable = total == null ? null : deducted ? total : (txC(total) - withheld * 100) / 100;
+  if (def.kind && shown != null) P.check = txC(shown) === withheld * 100 ? 'ok' : 'bad';
+  if (shown != null && !def.kind) P.check = 'warn';
+  if (cfg && cfg.noNpwp) P.note = 'Without an NPWP the rate is 100% higher.';
+  return P;
+}
+
+/* ---------- Tax Check (Beta), part 2: reading the pages, and the panel ----------
+   The first pages of the document are read (OCR for scans; a page lying on its side is turned upright first and stays so, one
+   Undo turns it back), sorted into invoices and fakturs, and every figure that is not yet certain gets a second, closer look: the
+   strip of the scan it sits on is read again at a higher resolution, figures only. Each field can be shown on its page, typed in,
+   or picked by clicking a figure on the page. Your companies are kept in this browser (Settings), and can go to a file and back. */
+const TXKEY = 'reef.tax', TXLANG = 'ind+eng', TXFIRST = 6;
+const TX = { running: false, stop: false, pick: null, res: new WeakMap(), shown: undefined, spotT: 0 };
+const txPanel = $('#tax'), txBody = $('#taxBody');
+function txCfg() {
+  try { const c = JSON.parse(localStorage.getItem(TXKEY) || '{}'); return { own: txOwnClean(c.own) }; } catch { return { own: [] }; }
+}
+const txOwnClean = a => (Array.isArray(a) ? a : []).filter(o => o && typeof o === 'object' && (o.npwp || o.name)).slice(0, 50).map(o => ({ name: String(o.name || '').trim().slice(0, 120), npwp: txDigits(o.npwp).slice(0, 16) }));
+function txCfgSave(c) { try { localStorage.setItem(TXKEY, JSON.stringify({ v: 1, own: txOwnClean(c.own) })); } catch { } }
+
+/* ---------- reading ---------- */
+function txTurn(pg, dir) {          // as the rotate buttons of the Pages panel do, for one page
+  const v = V.get(pg.id), W = pg.w, Hh = pg.h;
+  for (const o of pg.objs) rotObj(o, W, Hh, dir, v);
+  pg.w = Hh; pg.h = W; pg.rot = ((pg.rot + dir * 90) % 360 + 360) % 360;
+}
+const txLine = l => ({ x: l.x, y: l.y, w: l.w, h: l.h, text: l.text, words: l.words || null, ocr: !!l.ocr });
+async function txReadPages(list, say) {
+  const out = [], turned = [], unread = []; let ready = false;
+  for (const pg of list) {
+    if (TX.stop) break;
+    const no = pageIndex(pg.id) + 1, label = `Reading page ${no}`;
+    say(label + '…'); await nextFrame();
+    if ((await scanKind(pg, false)) === 'pic') {
+      if (!ready) { say('Getting the text recognition engine ready…'); await ocrStart(); await ocrLang(TXLANG); ready = true; say(label + '…'); }
+      if (!pg.src) { if (!pg.objs.some(o => o.type === 'image')) continue; await ocrFlatten(pg); }
+      const prog = p => say(`${label}… ${clamp(Math.round(p), 0, 100)}%`);
+      let r = await ocrPage(pg, TXLANG, prog);
+      if (r.bad === 'side' && !pg.crop && !cutsOf(pg)) {           // on its side: turned upright, one way or the other
+        txTurn(pg, 1); r = await ocrPage(pg, TXLANG, prog);
+        if (r.bad && !TX.stop) { txTurn(pg, 1); txTurn(pg, 1); r = await ocrPage(pg, TXLANG, prog); }
+        if (r.bad) txTurn(pg, 1); else turned.push(no);
+      }
+      if (r.bad) { unread.push(no); continue; }
+    }
+    out.push({ id: pg.id, no, w: pg.w, h: pg.h, lines: (await getLines(pg).catch(() => [])).filter(l => l.text && l.text.trim()).map(txLine) });
+  }
+  return { pages: out, turned, unread };
+}
+/* a strip of a page read again, closer up and for figures only → lines in page coordinates */
+async function txStrip(pg, R) {
+  const pj = await getPdfPage(pg), k = clamp(40 / Math.max(3, R.fs || R.h / 1.5), 300 / 72, 620 / 72), pad = 14;
+  const W = Math.max(8, Math.ceil(R.w * k)), Hh = Math.max(8, Math.ceil(R.h * k)), c = document.createElement('canvas'); c.width = W; c.height = Hh;
+  const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, W, Hh);
+  await pj.render({ canvas: c, viewport: pj.getViewport({ scale: k, rotation: pageRot(pj, pg), offsetX: -R.x * k, offsetY: -R.y * k }), annotationMode: PJ.AnnotationMode.DISABLE }).promise;
+  const d = g.getImageData(0, 0, W, Hh).data, PW = W + pad * 2, PH = Hh + pad * 2, head = new TextEncoder().encode(`P5\n${PW} ${PH}\n255\n`), pgm = new Uint8Array(head.length + PW * PH);
+  pgm.set(head); pgm.fill(255, head.length);
+  for (let y = 0; y < Hh; y++) for (let x = 0, q = y * W * 4, o = head.length + (y + pad) * PW + pad; x < W; x++, q += 4) pgm[o + x] = (d[q] * 77 + d[q + 1] * 150 + d[q + 2] * 29) >> 8;
+  c.width = c.height = 1;
+  const res = await ocrCall({ type: 'rec', lang: TXLANG, dpi: Math.round(k * 72), image: pgm, psm: 7, chars: '0123456789.,()-' }, OCR.ch.local ? [] : [pgm.buffer]);
+  return res.lines.filter(L => L.w.length).map(L => {
+    const words = L.w.map(w => [w[0], R.x + (w[1] - pad) / k, (w[3] - w[1]) / k]), y0 = R.y + (L.b[1] - pad) / k, y1 = R.y + (L.b[3] - pad) / k, e = words[words.length - 1];
+    return { x: words[0][1], y: y0, w: e[1] + e[2] - words[0][1], h: Math.max(2, y1 - y0), text: words.map(w => w[0]).join(' '), words, ocr: true };
+  });
+}
+const TXNUMK = /^(f\.(hj|pot|um|dpp|ppn|ppnbm|it\.\d+\.(price|qty|amt|disc))|i\.(sub|disc|um|dpp|ppn|pph|stamp|total|tc\.\d+|it\.\d+\.(qty|price|amount|disc)))$/;
+function txRereads(C) {             // what to look at again: figures read from a scan that no check confirms, or that were read differently
+  const jobs = [], seen = new Set(), bad = new Set(C.checks.filter(c => c.st === 'bad' || c.st === 'warn').flatMap(c => c.keys)), good = new Set(C.checks.filter(c => c.st === 'ok').flatMap(c => c.keys));
+  for (const [k, rs] of C.R) {
+    if (!TXNUMK.test(k)) continue;
+    const how = txHow(C, k); if (how === 'pdf') continue;
+    if (!(bad.has(k) || how === 'conflict' || (how === 'single' && !good.has(k)))) continue;
+    for (const q of rs) { if (q.via !== 'ocr') continue; const id = `${q.src.pid}:${Math.round(q.src.x)}:${Math.round(q.src.y)}`; if (seen.has(id)) continue; seen.add(id); jobs.push({ k, kind: 'one', pid: q.src.pid, R: { x: q.src.x - q.src.h * 0.4, y: q.src.y - q.src.h * 0.25, w: q.src.w + q.src.h * 0.8, h: q.src.h * 1.5, fs: q.src.h / 1.12 }, at: q.src }); }
+  }
+  for (const m of C.miss) if (m.ocr) jobs.push({ k: m.key, kind: 'miss', pid: m.pid, R: { x: m.x, y: m.y, w: m.w, h: m.h, fs: m.h / 1.7 / 1.12 } });
+  if (C.cols.length && C.checks.some(c => c.id === 'itotal' && c.st !== 'ok')) for (const r of C.rows) if (r.ocr) jobs.push({ kind: 'row', pid: r.pid, R: { ...r, fs: r.h / 1.7 / 1.12 } });
+  return jobs.slice(0, 40);
+}
+const TXWELL = /^(\d{1,3}([.,])\d{3}(\2\d{3})*([.,]\d{1,2})?|\d{1,3}([.,]\d{1,2})?|\d{4,13}([.,]\d{1,2})?)$/;
+function txApply(C, j, lines) {
+  const toks = lines.flatMap(l => txNums(l)).filter(t => !t.pct && TXWELL.test(t.raw.replace(/\s/g, ''))); if (!toks.length) return;      // only figures written the way money is
+  const add = (k, t) => { let a = C.R.get(k); if (!a) C.R.set(k, a = []); a.push({ v: Math.abs(t.v), src: { pid: j.pid, x: t.x0, y: t.l.y, w: Math.max(2, t.x1 - t.x0), h: t.l.h }, via: 'reread' }); };
+  if (j.kind === 'row') { for (const t of toks) { const c = txColOf(C.cols, t); if (c >= 0 && !['desc', 'no', 'unit', 'qty', 'price'].includes(C.cols[c].role)) add('i.tc.' + c, t); } return; }
+  if (j.kind === 'miss') { add(j.k, toks.sort((a, b) => b.x1 - a.x1)[0]); return; }
+  const cx = j.at.x + j.at.w / 2; add(j.k, toks.sort((a, b) => Math.abs((a.x0 + a.x1) / 2 - cx) - Math.abs((b.x0 + b.x1) / 2 - cx))[0]);
+}
+async function txRun(more) {
+  if (TX.running || exporting || OCR.running || !docNow || !S.pages.length) return; if (S.editing) endEdit();
+  const prev = TX.res.get(docNow), n = S.pages.length, from = more && prev ? Math.min(prev.read, n) : 0, upto = more ? Math.min(n, from + TXFIRST) : n <= TXFIRST + 2 ? n : TXFIRST;
+  TX.running = true; TX.stop = false; OCR.running = true; OCR.stop = false; clearTsel(); txPickEnd();
+  const say = t => busy(t, () => { TX.stop = true; ocrAbort(); });
+  let out = null, failed = null, turned = [];
+  try {
+    const got = await txReadPages(S.pages.slice(from, upto), say); turned = got.turned;
+    const pages = [...(more && prev ? prev.pagesRead.filter(p => pageById(p.id)) : []), ...got.pages].sort((a, b) => pageIndex(a.id) - pageIndex(b.id));
+    pages.forEach(p => { p.no = pageIndex(p.id) + 1; p.rows = null; for (const l of p.lines) { delete l._cx; delete l._nums; } });
+    const D = txDocument(pages), cfg = txCfg();
+    for (const C of D.cases) txSolve(C, cfg);
+    const jobs = TX.stop ? [] : D.cases.flatMap(C => txRereads(C).map(j => ({ ...j, C })));
+    if (jobs.length) {
+      await ocrStart(); await ocrLang(TXLANG);
+      for (let i = 0; i < jobs.length && !TX.stop; i++) {
+        const j = jobs[i], pg = pageById(j.pid); if (!pg) continue;
+        say(`Taking a closer look at the figures… ${i + 1} of ${jobs.length}`); await nextFrame();
+        try { txApply(j.C, j, await txStrip(pg, j.R)); } catch (e) { if (TX.stop) break; console.warn('tax reread', errMsg(e)); }
+      }
+      for (const C of D.cases) txSolve(C, cfg);
+    }
+    out = { D, pagesRead: pages, read: TX.stop ? Math.max(from, pages.length ? Math.max(...pages.map(p => p.no)) : 0) : upto, total: n, turned: [...(more && prev ? prev.turned : []), ...got.turned], unread: [...(more && prev ? prev.unread : []), ...got.unread], stopped: TX.stop, at: new Date() };
+  } catch (e) { if (!TX.stop) { failed = e; console.error(e); } }
+  OCR.running = false; TX.running = false; busy(false);
+  if (turned.length) commit(); else refresh();
+  refreshTextLines();
+  if (out) TX.res.set(docNow, out);
+  if (failed) toast('Tax Check could not read the pages: ' + errMsg(failed) + '.', 'err', 9000);
+  else if (out && !out.D.cases.length) toast(`No invoice or faktur pajak was recognised on pages 1–${out.read}.${out.read < n ? ' Read more pages, or check a document that starts with them.' : ''}`, 'info', 9000);
+  txRender();
+}
+
+/* ---------- the panel ---------- */
+const TXLAB = { 'f.nsfp': 'Faktur number (NSFP)', 'f.date': 'Faktur date', 'f.ref': 'Referensi', 'f.s.name': 'Seller', 'f.s.npwp': 'Seller NPWP', 'f.b.name': 'Buyer', 'f.b.npwp': 'Buyer NPWP', 'f.hj': 'Harga jual', 'f.pot': 'Potongan harga', 'f.um': 'Uang muka', 'f.dpp': 'DPP', 'f.ppn': 'PPN', 'f.ppnbm': 'PPnBM', 'i.no': 'Invoice number', 'i.no2': 'Other number', 'i.date': 'Invoice date', 'i.due': 'Due date', 'i.npwp': 'NPWP on the invoice', 'i.sub': 'Subtotal', 'i.disc': 'Discount', 'i.um': 'Down payment', 'i.dpp': 'DPP', 'i.ppn': 'PPN', 'i.pph': 'PPh deducted', 'i.stamp': 'Stamp duty', 'i.total': 'Total' };
+const TXIT = { price: 'price', qty: 'quantity', amt: 'amount', amount: 'amount', disc: 'discount', name: 'name' };
+function txLabel(C, k) {
+  if (TXLAB[k]) return TXLAB[k];
+  let m = /^([fi])\.it\.(\d+)\.(\w+)$/.exec(k); if (m) return `${m[1] === 'f' ? 'Item' : 'Line'} ${+m[2] + 1} · ${TXIT[m[3]] || m[3]}`;
+  m = /^i\.tc\.(\d+)$/.exec(k); if (m) return `Total · ${(C.cols[+m[1]] || {}).label || 'column ' + (+m[1] + 1)}`;
+  return k;
+}
+const txKindOf = k => (/date|due/.test(k) ? 'date' : TXNUMK.test(k) ? 'money' : 'text');
+const txShow = (k, v) => v == null ? '' : txKindOf(k) === 'date' ? `${String(v.d).padStart(2, '0')}/${String(v.m).padStart(2, '0')}/${v.y || '????'}` : typeof v === 'number' ? txMoney(v) : String(v);
+function txOrder(C) {               // the fields worth showing, in reading order; the main ones even when not found, so they can be filled in
+  const want = [...(C.f ? ['f.nsfp', 'f.date', 'f.s.name', 'f.s.npwp', 'f.b.name', 'f.b.npwp', 'f.ref'] : []), ...(C.f ? Array.from({ length: C.items.f }, (_, k) => ['name', 'price', 'qty', 'disc', 'amt'].map(x => `f.it.${k}.${x}`)).flat() : []), ...(C.f ? ['f.hj', 'f.pot', 'f.um', 'f.dpp', 'f.ppn', 'f.ppnbm'] : []),
+    ...(C.i ? ['i.no', 'i.no2', 'i.date', 'i.due', 'i.npwp'] : []), ...(C.i ? Array.from({ length: C.items.i }, (_, k) => ['qty', 'price', 'disc', 'amount'].map(x => `i.it.${k}.${x}`)).flat() : []), ...(C.i ? ['i.sub', 'i.disc', 'i.um', 'i.dpp', 'i.ppn', 'i.pph', 'i.stamp', 'i.total', ...C.cols.map((c, j) => 'i.tc.' + j)] : [])];
+  const must = new Set(['f.nsfp', 'f.date', 'f.b.npwp', 'f.hj', 'f.dpp', 'f.ppn', 'i.no', 'i.date', 'i.total']);
+  return want.filter(k => C.R.has(k) || C.user.has(k) || (must.has(k) && !(k === 'i.total' && C.cols.some(c => c.role === 'amount'))));
+}
+function txHowText(C, k) {
+  const how = txHow(C, k), cs = txCands(C, k), v = C.val.get(k), list = cs.map(c => `${txShow(k, c.v)} (${c.n}×)`).join(', ');
+  return { pdf: 'Read from the text of the PDF.', agree: `Read ${cs[0] ? cs[0].n : 0} times, alike.`, confirmed: 'Read once from the scan; a check that adds up confirms it.', single: 'Read once from the scan: check it on the page.', conflict: `Read differently: ${list}. ${txShow(k, v)} is the one the sums agree with${cs[0] && txShow(k, cs[0].v) === txShow(k, v) ? ' (and the one read most often)' : ''}.`, user: 'Set by you. Empty the box to go back to what was read.', none: 'Not found. Type it in, or pick it from the page.' }[how];
+}
+const TXICON = { ok: '✓', bad: '✕', warn: '!', info: 'i' };
+function txCaseTitle(C) {
+  const v = k => C.val.get(k), parts = [];
+  if (C.i) parts.push('Invoice ' + (v('i.no') || '?'));
+  if (C.f) parts.push('Faktur ' + (v('f.nsfp') || '?'));
+  return parts.join(' · ');
+}
+function txRender() {
+  TX.shown = docNow;
+  if (txPanel.hidden) return;
+  const R = docNow && TX.res.get(docNow), cfg = txCfg(), E = esc;
+  let h = '';
+  if (!docNow) h = '<p class="tx-p">Open a PDF that holds an invoice and its faktur pajak, then check it here.</p>';
+  else if (!R) h = `<div class="tx-intro"><p class="tx-p">Checks the invoice and the faktur pajak in this document: the arithmetic, DPP nilai lain (11/12) and PPN (12%), whether the two match, and the withholding tax (PPh) to deduct.</p>
+    <p class="tx-p">Scanned pages are read with OCR, here on this device. The first ${Math.min(S.pages.length, S.pages.length <= TXFIRST + 2 ? S.pages.length : TXFIRST)} page${S.pages.length === 1 ? '' : 's'} of ${S.pages.length} are read; more can be added after.</p>
+    <button type="button" class="btn primary" data-tx="run">Check this document</button></div>`;
+  else {
+    const list = a => a.length === 1 ? 'page ' + a[0] : 'pages ' + a.join(', ');
+    h += `<div class="tx-top"><p class="tx-p">Pages 1–${R.read} of ${R.total} read${R.stopped ? ' (stopped)' : ''}.${R.turned.length ? ` ${list(R.turned)[0].toUpperCase() + list(R.turned).slice(1)} turned upright to be read (Undo turns ${R.turned.length === 1 ? 'it' : 'them'} back).` : ''}${R.unread.length ? ` ${list(R.unread)[0].toUpperCase() + list(R.unread).slice(1)} could not be read.` : ''}</p>
+      <div class="tx-btns">${R.read < R.total ? '<button type="button" class="btn" data-tx="more">Read more pages</button>' : ''}<button type="button" class="btn" data-tx="run">Check again</button></div></div>`;
+    if (!R.D.cases.length) h += '<p class="tx-p tx-empty">No invoice or faktur pajak was recognised on these pages.</p>';
+    R.D.cases.forEach((C, ci) => {
+      const n = st => C.checks.filter(c => c.st === st).length, order = { bad: 0, warn: 1, info: 2, ok: 3 };
+      const checks = C.checks.map((c, j) => [c, j]).sort((a, b) => order[a[0].st] - order[b[0].st] || a[1] - b[1]);
+      const seller = C.val.get('f.s.name') || C.seller || '';
+      h += `<section class="tx-case" data-case="${ci}"><h3>${E(txCaseTitle(C))}</h3>${seller ? `<p class="tx-sub">${E(seller)}${C.val.get('f.b.name') ? ' → ' + E(C.val.get('f.b.name')) : ''}</p>` : ''}
+        <div class="tx-score"><span class="ok" title="Adds up / matches">${TXICON.ok} ${n('ok')}</span><span class="warn" title="Worth a look">${TXICON.warn} ${n('warn')}</span><span class="bad" title="Does not add up / does not match">${TXICON.bad} ${n('bad')}</span>${!C.f ? '<span class="tx-miss">No faktur pajak found</span>' : !C.i ? '<span class="tx-miss">No invoice found</span>' : ''}</div>
+        ${(() => {
+          const li = ([c, j]) => `<li class="tx-c ${c.st}" data-tx="loc" data-j="${j}" tabindex="0" title="Show on the page"><i aria-hidden="true">${TXICON[c.st]}</i><div><b>${E(c.title)}</b>${c.detail ? `<small>${E(c.detail)}</small>` : ''}${c.id === 'buyer' && c.st === 'info' ? '<button type="button" class="btn tx-own" data-tx="own">This is my company</button>' : ''}</div></li>`;
+          const top = checks.filter(([c]) => c.st !== 'ok'), ok = checks.filter(([c]) => c.st === 'ok');
+          return (top.length ? `<ul class="tx-checks">${top.map(li).join('')}</ul>` : `<p class="tx-all">Everything adds up and matches.</p>`) + (ok.length ? `<details class="tx-okd"><summary>${ok.length} check${ok.length === 1 ? '' : 's'} add${ok.length === 1 ? 's' : ''} up</summary><ul class="tx-checks">${ok.map(li).join('')}</ul></details>` : '');
+        })()}
+        ${txPphHtml(C)}
+        <details class="tx-fields"><summary>Fields read (${txOrder(C).length})</summary><div class="tx-legend"><span class="pdf">PDF text</span><span class="agree">read alike or confirmed</span><span class="single">read once</span><span class="conflict">read differently</span><span class="user">set by you</span></div>
+        ${txOrder(C).map(k => { const how = txHow(C, k); return `<div class="tx-f"><label title="${E(txHowText(C, k))}"><i class="dot ${how}"></i>${E(txLabel(C, k))}</label><input type="text" class="tx-in" data-k="${E(k)}" value="${E(txShow(k, C.val.get(k)))}" placeholder="${how === 'none' ? 'not found' : ''}" spellcheck="false" title="${E(txHowText(C, k))}"><button type="button" class="btn ico ghost" data-tx="spot" data-k="${E(k)}" title="Show on the page" aria-label="Show ${E(txLabel(C, k))} on the page"${how === 'none' ? ' disabled' : ''}>${ic('locate')}</button><button type="button" class="btn ico ghost${TX.pick && TX.pick.ci === ci && TX.pick.k === k ? ' on' : ''}" data-tx="pick" data-k="${E(k)}" title="Pick it from the page: click a figure" aria-label="Pick ${E(txLabel(C, k))} from the page">${ic('pick')}</button></div>`; }).join('')}</details></section>`;
+    });
+    if (R.D.cases.length) h += `<div class="tx-foot"><button type="button" class="btn" data-tx="xlsx">Export review (.xlsx)</button><button type="button" class="btn" data-tx="stamp">Stamp CHECKED</button></div>`;
+  }
+  h += `<details class="tx-set"><summary>Settings: your companies</summary><p class="tx-p">The buyer on a faktur should be one of these. Kept in this browser only.</p>
+    ${cfg.own.map((o, i) => `<div class="tx-own-row"><span><b>${E(o.name || '—')}</b><small>NPWP ${E(o.npwp || '—')}</small></span><button type="button" class="btn ico ghost" data-tx="ownx" data-i="${i}" title="Remove" aria-label="Remove ${E(o.name)}">${ic('x')}</button></div>`).join('') || '<p class="tx-p tx-empty">None yet.</p>'}
+    <div class="tx-add"><input type="text" id="txOwnName" placeholder="Company name" aria-label="Company name"><input type="text" id="txOwnNpwp" placeholder="NPWP (16 digits)" inputmode="numeric" aria-label="NPWP"><button type="button" class="btn" data-tx="ownadd">Add</button></div>
+    <div class="tx-btns"><button type="button" class="btn" data-tx="cfgout">Save settings to a file</button><button type="button" class="btn" data-tx="cfgin">Load settings…</button></div></details>
+    <p class="tx-beta"><b>Beta.</b> Figures read from scans can be wrong: every check can be clicked to see where its figures were read. Money is compared to the rupiah; only what a faktur works out itself (DPP 11/12, PPN 12%) is rounded, as on the faktur.</p>`;
+  const keepOpen = [...txBody.querySelectorAll('details[open]')].map(d => d.className + (d.closest('.tx-case') ? d.closest('.tx-case').dataset.case : '')), top = txBody.scrollTop;
+  txBody.innerHTML = h;
+  for (const d of txBody.querySelectorAll('details')) if (keepOpen.includes(d.className + (d.closest('.tx-case') ? d.closest('.tx-case').dataset.case : ''))) d.open = true;
+  txBody.scrollTop = top;
+}
+function txPphHtml(C) {
+  const P = C.pph, E = esc, M = txMoney; if (!P) return '';
+  const opts = Object.entries(TXPPH).map(([id, d]) => `<option value="${id}"${id === P.id ? ' selected' : ''}>${E(d.label)}${id === P.rule.id ? ' — suggested' : ''}</option>`).join('');
+  const bases = [['fee', 'Service fee'], ['price', 'Price excluding PPN'], ['custom', 'Amount entered']].filter(([b]) => b === 'custom' || P.bases[b]);
+  let h = `<div class="tx-pph"><div class="tx-ph"><b>Withholding tax (PPh)</b><select data-tx="pphid" aria-label="Withholding tax">${opts}</select></div>`;
+  if (P.kind) {
+    h += `<div class="tx-row"><span>On <select data-tx="pphbase" aria-label="Base">${bases.map(([b, l]) => `<option value="${b}"${P.base && ((b === 'custom' && P.base.label === 'amount entered') || P.bases[b] === P.base) ? ' selected' : ''}>${l}</option>`).join('')}</select></span>${(C.pphUser || {}).base === 'custom' ? `<input type="text" class="tx-in tx-num" data-tx="pphbasev" value="${E(P.base ? M(P.base.v) : '')}" aria-label="Base amount">` : `<b>${P.base ? M(P.base.v) : '—'}</b>`}</div>
+      <div class="tx-row"><span>Rate <input type="text" class="tx-in tx-rate" data-tx="pphrate" value="${E(String(P.rate))}" inputmode="decimal" aria-label="Rate in percent"> %</span><b>${P.base ? M(P.exact) : '—'}</b></div>
+      <div class="tx-row"><span>Withheld, whole rupiah</span><b>${P.base ? M(P.withheld) : '—'}</b></div>`;
+  }
+  if (P.total != null) h += `<div class="tx-row tot"><span>${P.deducted ? 'To pay (the invoice already deducts the PPh)' : P.kind ? 'To pay: invoice total − PPh' : 'To pay: invoice total'}</span><b>${M(P.payable)}</b></div>`;
+  h += `<p class="tx-why">${E(P.id === P.rule.id ? P.rule.why : 'Chosen by you. Suggested: ' + TXPPH[P.rule.id].label + '. ' + P.rule.why)}</p></div>`;
+  return h;
+}
+function txForget() { if (docNow) TX.res.delete(docNow); TX.shown = undefined; txPickEnd(); }
+function taxSync() { if (TX.shown !== docNow && txPanel && !txPanel.hidden && !TX.running) txRender(); }
+function txOpen(show = txPanel.hidden) {
+  txPanel.hidden = !show;
+  if (show) { $('#props').hidden = true; if (narrow()) $('#thumbs').hidden = true; txRender(); }
+  else { txPickEnd(); txSpotOff(); }
+  $('#btnTax').classList.toggle('on', show);
+}
+$('#btnTax').addEventListener('click', () => txOpen());
+$('#taxClose').addEventListener('click', () => txOpen(false));
+
+/* showing a field where it was read */
+function txSpotOff() { clearTimeout(TX.spotT); for (const v of V.values()) if (v.txl) v.txl.textContent = ''; }
+function txSpot(src) {
+  const v = src && V.get(src.pid); if (!v) { toast('That page is no longer in the document.'); return; }
+  txSpotOff();
+  if (!v.txl) { v.txl = mk('div', 'layer txl'); v.sheet.insertBefore(v.txl, v.tsel); }
+  const d = mk('div', 'tx-spot'); d.style.cssText = `left:${src.x - 3}px;top:${src.y - 3}px;width:${src.w + 6}px;height:${src.h + 6}px`; v.txl.append(d);
+  const r = v.el.getBoundingClientRect(), s = stage.getBoundingClientRect();
+  const f = narrow() && !txPanel.hidden ? 0.14 : 1 / 3;     // on a phone the panel covers the lower part of the page
+  stage.scrollTo({ top: stage.scrollTop + r.top - s.top + src.y * S.zoom - s.height * f, left: Math.max(0, stage.scrollLeft + r.left - s.left + src.x * S.zoom - s.width / 3) });
+  TX.spotT = setTimeout(txSpotOff, 6000);
+}
+function txSrcOf(C, k) {            // where the chosen value of a field was read
+  const v = C.user.has(k) ? null : C.val.get(k); if (C.user.has(k)) return C.userSrc && C.userSrc.get(k) || null;
+  const c = txCands(C, k).find(c => (typeof v === 'number' ? txC(c.v) === txC(v) : JSON.stringify(c.v) === JSON.stringify(v)));
+  return c ? (c.rs.find(q => q.via !== 'reread') || c.rs[0]).src : null;
+}
+/* picking a field from the page: the next click on a figure fills it */
+function txPickEnd() { if (!TX.pick) return; TX.pick = null; stage.classList.remove('tx-picking'); txRender(); }
+function txPickAt(pg, p, lines) {
+  const { k } = TX.pick, kind = txKindOf(k), near = (x0, x1, l, m = 0) => p.x >= x0 - m && p.x <= x1 + m && p.y >= l.y - m && p.y <= l.y + l.h + m;
+  if (kind === 'money') {
+    for (const m of [1, 6, 14]) { const t = lines.flatMap(l => txNums(l)).filter(t => !t.pct && near(t.x0, t.x1, t.l, m)).sort((a, b) => Math.abs((a.x0 + a.x1) / 2 - p.x) - Math.abs((b.x0 + b.x1) / 2 - p.x))[0]; if (t) return { v: Math.abs(t.v), src: { pid: pg.id, x: t.x0, y: t.l.y, w: t.x1 - t.x0, h: t.l.h } }; }
+    return null;
+  }
+  const l = lines.find(l => near(l.x, l.x + l.w, l, 3)); if (!l) return null;
+  const src = { pid: pg.id, x: l.x, y: l.y, w: l.w, h: l.h };
+  if (kind === 'date') { const d = txDate(l.text); return d ? { v: { d: d.d, m: d.m, y: d.y }, src } : null; }
+  if (/npwp/.test(k)) { const d = txNpwp(l.text); return d ? { v: d, src } : null; }
+  if (/nsfp/.test(k)) { const d = txDigits((/\d[\d.\-\s]{12,}/.exec(l.text) || [''])[0]); return d.length >= 13 ? { v: d, src } : null; }
+  return { v: l.text.replace(/^[^:]*:\s*/, '').trim() || l.text.trim(), src };
+}
+stage.addEventListener('pointerdown', ev => {
+  if (!TX.pick) return;
+  const pe = ev.target.closest && ev.target.closest('.page'); if (!pe) return;
+  ev.preventDefault(); ev.stopPropagation();
+  const pg = pageById(pe.dataset.id), v = V.get(pe.dataset.id), R = TX.res.get(docNow); if (!pg || !v || !R) { txPickEnd(); return; }
+  const p = ptOf(ev, v), pick = TX.pick, C = R.D.cases[pick.ci];
+  (async () => {
+    const got = txPickAt(pg, p, (await getLines(pg).catch(() => [])).map(txLine));
+    TX.pick = null; stage.classList.remove('tx-picking');
+    if (!got) { toast('No figure there. Click right on the number you mean.', 'info'); txRender(); return; }
+    txSetUser(C, pick.k, got.v, got.src); txSpot(got.src);
+  })();
+}, true);
+window.addEventListener('keydown', ev => { if (TX.pick && ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); txPickEnd(); } }, true);
+function txSetUser(C, k, v, src) {
+  if (v == null) { C.user.delete(k); if (C.userSrc) C.userSrc.delete(k); }
+  else { C.user.set(k, v); (C.userSrc || (C.userSrc = new Map())).set(k, src || null); }
+  txSolve(C, txCfg()); txRender();
+}
+function txResolveAll() { const R = docNow && TX.res.get(docNow); if (R) for (const C of R.D.cases) txSolve(C, txCfg()); txRender(); }
+
+/* the panel's buttons and boxes */
+txBody.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-tx]'); if (!b || b.tagName === 'SELECT' || (b.tagName === 'INPUT')) return;
+  const a = b.dataset.tx, R = docNow && TX.res.get(docNow), ce = b.closest('.tx-case'), C = R && ce ? R.D.cases[+ce.dataset.case] : null;
+  if (a === 'run') txRun(false);
+  else if (a === 'more') txRun(true);
+  else if (a === 'loc' && C) { if (ev.target.closest('button')) return; const c = C.checks[+b.dataset.j], k = c && c.keys.find(k => txSrcOf(C, k)); if (k) txSpot(txSrcOf(C, k)); }
+  else if (a === 'spot' && C) { const s = txSrcOf(C, b.dataset.k); if (s) txSpot(s); }
+  else if (a === 'pick' && C) { if (TX.pick && TX.pick.k === b.dataset.k) { txPickEnd(); return; } TX.pick = { ci: +ce.dataset.case, k: b.dataset.k }; stage.classList.add('tx-picking'); toast(`Click the figure on the page for “${txLabel(C, b.dataset.k)}”. Esc cancels.`, 'info', 6000); txRender(); }
+  else if (a === 'own' && C) { const cfg = txCfg(), n = C.val.get('f.b.npwp'); if (n && !cfg.own.some(o => o.npwp === n)) { cfg.own.push({ name: C.val.get('f.b.name') || '', npwp: n }); txCfgSave(cfg); } txResolveAll(); }
+  else if (a === 'ownx') { const cfg = txCfg(); cfg.own.splice(+b.dataset.i, 1); txCfgSave(cfg); txResolveAll(); }
+  else if (a === 'ownadd') { const name = $('#txOwnName').value.trim(), npwp = txDigits($('#txOwnNpwp').value); if (!name && !npwp) return; if (npwp && npwp.length !== 15 && npwp.length !== 16) { toast('An NPWP has 15 or 16 digits.'); return; } const cfg = txCfg(); cfg.own.push({ name, npwp }); txCfgSave(cfg); txResolveAll(); const s = txBody.querySelector('.tx-set'); if (s) s.open = true; }
+  else if (a === 'cfgout') { const cfg = txCfg(); saveFile('reef-tax-settings.json', new TextEncoder().encode(JSON.stringify({ app: 'Reef PDF', kind: 'tax-settings', v: 1, own: cfg.own }, null, 2)), 'application/json').then(r => saveNote(r, 'reef-tax-settings.json saved')); }
+  else if (a === 'cfgin') { const inp = mk('input'); inp.type = 'file'; inp.accept = '.json,application/json'; inp.onchange = async () => { const f = inp.files[0]; if (!f) return; try { const j = JSON.parse(await f.text()); if (!j || !Array.isArray(j.own)) throw new Error('not a settings file'); const cfg = txCfg(); for (const o of txOwnClean(j.own)) if (!cfg.own.some(q => q.npwp && q.npwp === o.npwp && q.name === o.name)) cfg.own.push(o); txCfgSave(cfg); txResolveAll(); toast(`Settings loaded: ${cfg.own.length} compan${cfg.own.length === 1 ? 'y' : 'ies'}.`); } catch (e) { toast('That file could not be read as Tax Check settings.', 'err'); } }; inp.click(); }
+  else if (a === 'xlsx') txExport();
+  else if (a === 'stamp') txStampIt();
+});
+txBody.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target.matches('li[data-tx="loc"]')) { ev.preventDefault(); ev.target.click(); } });
+txBody.addEventListener('change', ev => {
+  const e = ev.target, R = docNow && TX.res.get(docNow), ce = e.closest('.tx-case'), C = R && ce ? R.D.cases[+ce.dataset.case] : null; if (!C) return;
+  if (e.dataset.k) {
+    const k = e.dataset.k, t = e.value.trim(), kind = txKindOf(k);
+    if (!t) { txSetUser(C, k, null); return; }
+    const v = kind === 'money' ? txNum(t.replace(/^(rp|idr)\.?\s*/i, '').replace(/^\((.*)\)$/, '$1')) : kind === 'date' ? (d => d && { d: d.d, m: d.m, y: d.y })(txDate(t)) : /npwp/.test(k) || /nsfp/.test(k) ? txDigits(t) : t;
+    if (v == null || v === '') { toast(kind === 'date' ? 'Write the date as dd/mm/yyyy.' : 'That is not a number.', 'info'); txRender(); return; }
+    txSetUser(C, k, v, txSrcOf(C, k)); return;
+  }
+  const u = C.pphUser || (C.pphUser = {});
+  if (e.dataset.tx === 'pphid') { u.id = e.value; u.rate = null; if (e.value === 'custom') u.rate = 0; }
+  else if (e.dataset.tx === 'pphbase') { u.base = e.value; if (e.value === 'custom' && u.baseV == null) u.baseV = C.pph.base ? C.pph.base.v : 0; }
+  else if (e.dataset.tx === 'pphbasev') { const v = txNum(e.value.replace(/^(rp|idr)\.?\s*/i, '')); if (v != null) u.baseV = v; }
+  else if (e.dataset.tx === 'pphrate') { const v = parseFloat(e.value.replace(',', '.')); if (isFinite(v) && v >= 0 && v <= 100) u.rate = v; }
+  txSolve(C, txCfg()); txRender();
+});
+
+/* ---------- the results as a workbook, and a stamp ---------- */
+async function txExport() {
+  const R = docNow && TX.res.get(docNow); if (!R) return;
+  await job('Building the review…', async () => {
+    const st = xlsxStyles(), cell = (v, bold) => v == null || v === '' ? null : typeof v === 'number' ? { text: String(v), num: { v: Math.round(v * 100) / 100, fmt: Number.isInteger(v) ? 164 : 165 }, bold } : { text: String(v), bold };
+    const sheet = (rows, widths) => ({ table: rows.map(r => r.map((v, c) => [c, v && typeof v === 'object' && 'text' in v ? v : cell(v)]).filter(([, it]) => it)), widths });
+    const B = v => cell(v, true), when = new Date(), ST = { ok: 'OK', bad: 'Does not add up / match', warn: 'Worth a look', info: 'Note' };
+    const sum = [[B('Tax Check (Beta) — review')], ['Document', S.name], ['Checked on', `${String(when.getDate()).padStart(2, '0')} ${TXMN[when.getMonth() + 1]} ${when.getFullYear()} ${String(when.getHours()).padStart(2, '0')}:${String(when.getMinutes()).padStart(2, '0')}`], ['Pages read', `1–${R.read} of ${R.total}`], []];
+    const chk = [[B('Case'), B('Result'), B('Check'), B('Detail')]], fld = [[B('Case'), B('Field'), B('Value'), B('How it was read'), B('Page'), B('Other readings')]];
+    R.D.cases.forEach((C, ci) => {
+      const v = k => C.val.get(k), P = C.pph, name = `${ci + 1}. ${txCaseTitle(C)}`;
+      sum.push([B(name)], ['Seller', v('f.s.name') || C.seller || ''], ['Seller NPWP', v('f.s.npwp') || ''], ['Buyer', v('f.b.name') || ''], ['Buyer NPWP', v('f.b.npwp') || ''], ['Invoice date', v('i.date') ? txDateText(v('i.date')) : ''], ['Faktur date', v('f.date') ? txDateText(v('f.date')) : ''],
+        ['Checks: OK', C.checks.filter(c => c.st === 'ok').length], ['Checks: worth a look', C.checks.filter(c => c.st === 'warn').length], ['Checks: do not add up / match', C.checks.filter(c => c.st === 'bad').length],
+        ['Harga jual (faktur)', v('f.hj')], ['DPP (faktur)', v('f.dpp')], ['PPN (faktur)', v('f.ppn')], ['Invoice total', P && P.total],
+        ['PPh', P && P.kind ? `${P.kind} ${P.rate}%` : 'None'], ...(P && P.kind ? [['PPh base' + (P.base ? ` (${P.base.label})` : ''), P.base && P.base.v], ['PPh, exact', P.exact], ['PPh withheld (whole rupiah)', P.withheld]] : []), ['To pay', P && P.payable], ['Why this PPh', P ? P.rule.why : ''], []);
+      for (const c of C.checks) chk.push([ci + 1, ST[c.st], c.title, c.detail]);
+      for (const k of txOrder(C)) {
+        const val = v(k), src = txSrcOf(C, k), how = txHow(C, k), others = txCands(C, k).filter(c => txShow(k, c.v) !== txShow(k, val)).map(c => `${txShow(k, c.v)} (${c.n}×)`).join(', ');
+        fld.push([ci + 1, txLabel(C, k), typeof val === 'number' ? val : txShow(k, val), { pdf: 'PDF text', agree: 'read alike several times', confirmed: 'read once, confirmed by a check', single: 'read once from the scan', conflict: 'read differently', user: 'set by hand', none: 'not found' }[how], src && pageById(src.pid) ? pageIndex(src.pid) + 1 : '', others]);
+      }
+    });
+    const sheets = [{ name: 'Summary', xml: sheetXml(sheet(sum, [34, 60]), st, true) }, { name: 'Checks', xml: sheetXml(sheet(chk, [6, 22, 52, 90]), st) }, { name: 'Fields', xml: sheetXml(sheet(fld, [6, 26, 30, 24, 6, 40]), st) }];
+    const bytes = await xlsxPack(sheets, st), name = `${baseName()} - tax check.xlsx`;
+    busy(false); saveNote(await saveFile(name, bytes, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'), name);
+  });
+}
+function txStampIt() {
+  const R = docNow && TX.res.get(docNow), C = R && R.D.cases[0], pid = C && (C.ipages[0] || C.fpages[0]), pg = pid && pageById(pid); if (!pg) return;
+  const w = 150, h = 44, o = { id: uid('o'), type: 'stamp', x: r2(pg.w - w - 28), y: 28, w, h, text: 'CHECKED', color: '#1d7a4f', rot: 0 };
+  pg.objs.push(o); S.sel = { pageId: pg.id, objId: o.id }; setTool('select'); commit(); scrollToPage(pageIndex(pg.id));
+  toast(`“CHECKED” stamped on page ${pageIndex(pg.id) + 1}. Drag it where you want it.`);
+}
+
 /* ---------- export ---------- */
 const colL = h => L.rgb(...hexRgb(h));
 async function fillForm(doc, src, flatten, warn) {
@@ -6714,7 +7680,7 @@ async function boot() {
   });
   setTimeout(newsMaybe, 900);      // once: Reef PDF on phones
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, selLines, objTextLines, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, selLines, objTextLines, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr, TX, txRun, txOpen, txSolve, txCfg, txCfgSave, txHow, txCands, txSrcOf };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

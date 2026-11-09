@@ -114,6 +114,35 @@ Dengan alat **Highlight**, tarik dari satu kata ke kata lain: tanda mengikuti ka
 
 Teks yang sudah diedit atau dipindah dengan **Edit text** tetap bisa dipilih huruf per huruf dengan alat **Select** (juga klik dua kali untuk satu kata), lalu disalin atau di-highlight. Untuk mengubah atau memindahkannya lagi, pakai **Edit text**.
 
+## Tax Check (Beta): cek invoice, faktur pajak, dan PPh
+
+Tombol **Tax Check** di toolbar membuka panel di kanan. Klik **Check this document**: Reef PDF membaca halaman-halaman awal dokumen (6 halaman pertama; dokumen sampai 8 halaman dibaca semua; **Read more pages** untuk 6 halaman berikutnya), memisahkan invoice dan faktur pajak, lalu memeriksa:
+
+- **Faktur pajak**: format NSFP dan kode transaksinya, harga × kuantitas per barang, jumlah barang = harga jual, **DPP nilai lain = 11/12 × (harga jual − potongan − uang muka)** dan **PPN = 12% × DPP**.
+- **Invoice**: kuantitas × harga per baris, jumlah baris = subtotal, DPP dan PPN di invoice, dan total (subtotal + PPN + bea meterai − PPh bila dipotong di invoice). Untuk invoice berbentuk tabel kolom (misalnya travel agent), total tiap kolom harus sama dengan grand total, dan PPN = 11% dari service fee.
+- **Invoice ↔ faktur**: referensi faktur menyebut nomor invoice, harga jual = subtotal (atau service fee saja), DPP, PPN, NPWP, dan tanggal faktur = tanggal invoice.
+- **Pembeli**: apakah faktur ditujukan ke perusahaan Anda. Klik **This is my company** sekali, atau isi di **Settings: your companies** (tersimpan di browser ini; bisa disimpan ke file dan dibuka lagi di komputer lain).
+
+Pembulatan hanya untuk angka yang dihitung oleh faktur pajak sendiri (DPP nilai lain dan PPN, dibulatkan ke rupiah seperti di faktur). Di luar itu tidak ada pembulatan: **selisih 1 rupiah tetap ditandai ✕**. PPN invoice yang memakai sen (misalnya 89,366.31) dianggap cocok dengan PPN faktur 89,366 karena faktur membulatkannya; ini ditulis di keterangan cek.
+
+**PPh** disarankan dari isi dokumen dan bisa diganti di panel (jenis, dasar, tarif):
+
+- pembelian **batu bara/mineral** → **PPh 22 1,5%** dari harga sebelum PPN;
+- **travel agent** atau tagihan dengan kolom **service/management fee** → **PPh 23 2% dari fee saja** (tiket, airport tax, dan biaya lain yang diteruskan tidak dipotong);
+- **jasa** atau sewa selain tanah/bangunan → **PPh 23 2%**; sewa tanah/bangunan → **PPh 4(2) 10%**; konstruksi → **PPh 4(2)** (tarif tergantung sertifikat);
+- **barang** → tidak ada PPh.
+
+PPh dihitung persis (dengan sen), lalu dipotong dalam rupiah penuh (sen dibuang). Panel menampilkan **To pay**: total invoice − PPh, atau total invoice saja bila invoice sudah memotong PPh-nya (dan PPh di invoice dicek sama dengan yang seharusnya).
+
+Cara kerja dan tampilan:
+
+- Masalah (✕ tidak cocok, ! perlu dilihat) tampil di atas; cek yang lolos dilipat di **N checks add up**. Klik sebuah cek untuk melihat angkanya ditandai di halaman.
+- **Fields read** berisi semua angka yang terbaca, dengan titik warna: abu-abu = teks PDF, hijau = terbaca sama beberapa kali atau dikonfirmasi oleh cek, oranye = terbaca sekali dari scan, merah = terbaca berbeda-beda, biru = diisi sendiri. Setiap angka bisa diketik ulang, ditandai di halaman (ikon target), atau diambil dengan klik angka di halaman (ikon panah). Kosongkan kotak untuk kembali ke hasil baca.
+- Halaman **scan** dibaca dengan OCR di perangkat ini, tanpa internet. Halaman yang miring 90° diputar tegak dulu (tetap tegak setelahnya; **Undo** mengembalikan). Salinan invoice (asli/copy) dibaca semuanya dan hasilnya "divoting"; angka yang belum pasti dibaca ulang dari dekat (resolusi lebih tinggi, khusus angka). Kalau bacaan berbeda, dipilih yang membuat hitungan cocok.
+- Kotak stempel pemeriksa yang ditulis tangan (TAX BASE / VAT / WHT / TOTAL) tidak dianggap angka invoice.
+- **Export review (.xlsx)** menyimpan ringkasan, daftar cek, dan semua field. **Stamp CHECKED** menaruh stempel di halaman invoice (bisa di-Undo).
+- Beta: hasil baca scan bisa salah. Selalu klik cek yang penting untuk melihat sumber angkanya.
+
 ## Link di PDF
 
 Link di dalam PDF (alamat web, e-mail, atau link ke halaman lain di dokumen yang sama) bisa diklik dengan alat **Select**. Saat kursor di atas link, alamat tujuannya tampil di tooltip dan di status bar bawah. Seret dari atas link tetap memilih teks, tidak membuka link.
@@ -141,7 +170,7 @@ Tombol printer di sebelah **Download PDF**, atau **Ctrl+P**, mencetak halaman do
 
 Tampilan menyesuaikan sendiri dengan layar:
 
-- **HP**: bar atas satu baris (nama file, Undo, Redo, Save, dan tombol **⋮**). Alat-alat ada di bawah layar dengan ikon dan nama, bisa digeser ke samping. Rectangle, Ellipse, Line, dan Arrow digabung di tombol **Shapes**. Tombol **⋮** berisi Open, Insert pages, Find text, Fit width/Fit page, Pages, Properties, dan Print. Nomor halaman tampil di pojok kanan atas.
+- **HP**: bar atas satu baris (nama file, Undo, Redo, Save, dan tombol **⋮**). Alat-alat ada di bawah layar dengan ikon dan nama, bisa digeser ke samping. Rectangle, Ellipse, Line, dan Arrow digabung di tombol **Shapes**. Tombol **⋮** berisi Open, Insert pages, Find text, Fit width/Fit page, Pages, Properties, Tax Check, dan Print. Nomor halaman tampil di pojok kanan atas.
 - **Tablet** (posisi tegak): toolbar tetap di atas, tombol lebih besar, Find dan Shapes masuk ke **⋮** dan **Shapes**.
 - Panel **Pages** terbuka sebagai laci dari kiri, panel **Properties** sebagai lembar dari bawah, dan menu sebagai lembar dari bawah. Ketuk di luar panel atau tombol × untuk menutup.
 
