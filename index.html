@@ -4459,19 +4459,36 @@ $('#pgExtract').addEventListener('click', () => { const t = targetPages(); doExp
 /* ---------- open / merge ---------- */
 let openMode = 'replace';
 const fileHandles = new WeakMap();  // File → the handle it was read from
-const fsAccess = () => typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function' && window.self === window.top;      // not inside another site's frame
+/* File System Access (open a file with a handle, save over it later) can be switched off by an organisation's browser policy. When it fails
+   that way, the plain file chooser is used for a week before it is tried again (overwriting the original file then falls back to Save as). */
+const FSA_KEY = 'reef.fsa';
+let fsaOff = (() => { try { const t = +localStorage.getItem(FSA_KEY); return t > 0 && Date.now() - t < 7 * 864e5; } catch { return false; } })();
+function fsaFail(e) {
+  console.warn('file access', e);
+  if (e && /^(SecurityError|NotAllowedError)$/.test(e.name)) { fsaOff = true; try { localStorage.setItem(FSA_KEY, String(Date.now())); } catch { } }
+}
+const fsAccess = () => !fsaOff && typeof window.showOpenFilePicker === 'function' && typeof window.showSaveFilePicker === 'function' && window.self === window.top;      // not inside another site's frame
 const PICS = { 'image/png': ['.png'], 'image/jpeg': ['.jpg', '.jpeg'], 'image/webp': ['.webp'] };
 let openAfter = null;
 async function pickOpen(mode, opt = {}) {      // opt: { kind: 'images', after: what to do once the file is open }
   openMode = mode; openAfter = opt.after || null;
   const pics = opt.kind === 'images', accept = pics ? PICS : mode === 'combine' ? { 'application/pdf': ['.pdf'], ...PICS } : { 'application/pdf': ['.pdf'], ...PICS, 'application/json': ['.json'] };
+  const plain = () => { const f = $('#fOpen'); f.accept = Object.entries(accept).flatMap(([k, v]) => [k, ...v]).join(','); f.value = ''; f.click(); };
   if (fsAccess()) {
-    let hs;
-    try { hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: pics ? 'Pictures' : mode === 'combine' ? 'PDFs and pictures' : 'PDF, pictures or Reef PDF projects', accept }] }); }
-    catch (e) { if (e && e.name === 'AbortError') return; console.warn('file picker', e); hs = null; }
-    if (hs) { const files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })); if (files.length) openFiles(files, mode, S.cur + 1, openAfter); return; }
+    let files = null, err = null;
+    try {
+      const hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: pics ? 'Pictures' : mode === 'combine' ? 'PDFs and pictures' : 'PDF, pictures or Reef PDF projects', accept }] });
+      files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; }));
+    } catch (e) { if (e && e.name === 'AbortError') return; err = e; }
+    if (files) { if (files.length) openFiles(files, mode, S.cur + 1, openAfter); return; }
+    /* the browser refused (an organisation's policy, or a protected folder): the plain chooser instead, which needs a click of its own
+       once the first one has been used up */
+    fsaFail(err);
+    if (navigator.userActivation && navigator.userActivation.isActive) { plain(); return; }
+    toast(`This browser did not let Reef PDF use its file picker (${(err && err.name) || 'blocked'}), which an organisation's settings can do. Choose the file with the button instead.`, 'info', 20000, { label: 'Choose file…', run: plain });
+    return;
   }
-  const f = $('#fOpen'); f.accept = Object.entries(accept).flatMap(([k, v]) => [k, ...v]).join(','); f.value = ''; f.click();
+  plain();
 }
 const dropHandles = dt => [...(dt?.items || [])].filter(i => i.kind === 'file').map(i => (typeof i.getAsFileSystemHandle === 'function' ? i.getAsFileSystemHandle().catch(() => null) : Promise.resolve(null)));
 $('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1, openAfter); openAfter = null; });
@@ -7667,6 +7684,34 @@ async function setupWorker() {
   PJ.GlobalWorkerOptions.workerSrc = url;         // worker blocked: run the PDF engine on the main thread instead
   await new Promise(res => { globalThis.__reefWorkerReady = res; const s = document.createElement('script'); s.type = 'module'; s.textContent = txt + '\n;globalThis.__reefWorkerReady();'; s.onerror = res; document.head.append(s); setTimeout(res, 6000); });
 }
+/* ---------- files handed over by the system (File Explorer, Outlook) ----------
+   The manifest's file handler opens Reef PDF at ./?from=file. A file the browser does not pass on (it refuses files in protected
+   folders such as AppData\Local, where New Outlook keeps the attachments it opens) leaves a launch without files: that is said, with
+   what to do. A file that cannot be read at once (still being written or scanned) is tried again for a few seconds. */
+const LAUNCH = { fromFile: /[?&]from=file\b/.test(location.search), got: false };
+async function launchRead(h) {
+  let err = null;
+  for (let i = 0; i < 6; i++) {
+    try { const f = await h.getFile(); await f.slice(0, 8).arrayBuffer(); return { f }; }
+    catch (e) { err = e; if (e && /^(SecurityError|NotAllowedError)$/.test(e.name)) break; await new Promise(r => setTimeout(r, 300 + i * 300)); }
+  }
+  return { err };
+}
+async function launchFiles(lp) {
+  const list = (lp && lp.files) || [];
+  if (!list.length) { if (/[?&]from=file\b/.test((lp && lp.targetURL) || '') && !LAUNCH.fromFile) launchMissed(); return; }
+  LAUNCH.got = true;
+  const got = [], bad = [];
+  for (const h of list) { const r = await launchRead(h); if (r.f) { fileHandles.set(r.f, h); got.push(r.f); } else bad.push({ name: h.name || 'the file', err: r.err }); }
+  if (got.length) openFiles(got, 'replace');
+  if (bad.length) {
+    fsaFail(bad[0].err);
+    toast(`Reef PDF could not read ${bad.map(b => '“' + b.name + '”').join(', ')} (${(bad[0].err && bad[0].err.name) || 'error'}). The browser may not allow it in that folder, or your organisation's settings block it. Drag the file onto this window, or open it with Open File.`, 'err', 20000, { label: 'Open File…', run: () => pickOpen('replace') });
+  }
+}
+function launchMissed() {
+  toast('A PDF was sent to Reef PDF, but the browser did not pass it on. That happens with attachments opened from New Outlook: Outlook keeps them in a protected system folder (AppData), which browsers do not let web apps read. Drag the attachment from Outlook onto this window, or save it first (Download / Save as) and open it from there.', 'err', 30000, { label: 'Open File…', run: () => pickOpen('replace') });
+}
 async function boot() {
   for (const i of $$('i[data-ic]')) i.outerHTML = ic(i.dataset.ic);
   if (narrow()) { $('#thumbs').hidden = true; $('#props').hidden = true; }
@@ -7674,13 +7719,13 @@ async function boot() {
   stage.style.setProperty('--z', S.zoom); syncZoomSel(); setTool('select'); busy('Getting ready…');
   await setupWorker();
   homeShow(); busy(false);
-  if ('launchQueue' in window) window.launchQueue.setConsumer(async lp => {     // when installed as a web app, PDFs opened from the file manager arrive here
-    if (!lp.files || !lp.files.length) return;
-    openFiles(await Promise.all(lp.files.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })), 'replace');
-  });
-  setTimeout(newsMaybe, 900);      // once: Reef PDF on phones
+  if ('launchQueue' in window) window.launchQueue.setConsumer(launchFiles);     // when installed as a web app, PDFs opened from the file manager arrive here
+  if (LAUNCH.fromFile) {            // started to open a file: if none arrives, say why instead of showing Home without a word
+    try { history.replaceState(null, '', location.pathname + location.hash); } catch { }
+    setTimeout(() => { if (!LAUNCH.got && !docNow) launchMissed(); LAUNCH.fromFile = false; }, 3000);
+  } else setTimeout(newsMaybe, 900);      // once: Reef PDF on phones
   try { navigator.permissions.query({ name: 'local-fonts' }).then(p => { if (p.state === 'granted') useLocalFonts(true); }).catch(() => { }); } catch { }      // fonts of this computer, if that was allowed before
-  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, selLines, objTextLines, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr, TX, txRun, txOpen, txSolve, txCfg, txCfgSave, txHow, txCands, txSrcOf };
+  globalThis.__reef = { S, V, CF, LF, buildPdf, doExport, openFiles, setTool, getLines, getParas, domLines, commit, travel, rotatePages, select, useLocalFonts, cfLoad, cfFace, setProp, flowPage, paraObject, DOCS, docSwitch, docClose, scrollToPage, docSample, homeShow, renderRecent, recentAll, recentNote, isHome: () => !docNow, phone, touchUI, selBarSync, newsShow, newsMaybe, selLines, objTextLines, fitZoom, setZoom, OCR, runOcr, removeOcr, hasOcr, ocrPage, ocrStart, ocrLang, openOcr, launchFiles, LAUNCH, TX, txRun, txOpen, txSolve, txCfg, txCfgSave, txHow, txCands, txSrcOf };
 }
 if (!L || !PJ) document.getElementById('app').innerHTML = '<div class="fatal"><h2>The PDF engine failed to load</h2><p>This page is incomplete. Reload it, or get a fresh copy of this file.</p></div>';
 else boot().catch(e => { console.error(e); busy(false); toast('Could not start: ' + errMsg(e), 'err', 12000); });

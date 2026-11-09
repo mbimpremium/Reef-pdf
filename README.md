@@ -44,6 +44,10 @@ Di HP Android (Chrome): menu **⋮ → Add to Home screen** atau **Install app**
 
 Setiap PDF yang dibuka dengan cara ini tampil di jendela Reef PDF sendiri.
 
+Bila PDF dikirim ke Reef PDF tetapi browser tidak meneruskan file-nya (misalnya izin **File handling** untuk Reef PDF sedang mati, atau file ada di folder yang dilindungi browser), Reef PDF tidak lagi diam di Home: muncul pesan penyebabnya dan tombol **Open File…**. Cara lain yang selalu bisa: seret file (juga lampiran dari Outlook) ke jendela Reef PDF.
+
+Bila browser menolak pemilih file modern (misalnya karena pengaturan IT), tombol **Open File** dan **+** otomatis memakai pemilih file biasa. Dalam keadaan itu **Save** menyimpan sebagai file baru, bukan menimpa file asli.
+
 ## Font Microsoft Office
 
 Aplikasi membawa font yang ukurannya sama dengan font Office: Carlito (setara Calibri), Caladea (Cambria), Liberation Sans (Arial), Liberation Serif (Times New Roman), dan Liberation Mono (Courier New).

@@ -54,7 +54,7 @@
   },
   "file_handlers": [
     {
-      "action": "./",
+      "action": "./?from=file",
       "accept": {
         "application/pdf": [
           ".pdf"
