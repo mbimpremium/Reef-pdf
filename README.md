@@ -44,7 +44,7 @@ Di HP Android (Chrome): menu **⋮ → Add to Home screen** atau **Install app**
 
 Setiap PDF yang dibuka dengan cara ini tampil di jendela Reef PDF sendiri.
 
-Bila PDF dikirim ke Reef PDF tetapi browser tidak meneruskan file-nya (misalnya izin **File handling** untuk Reef PDF sedang mati, atau file ada di folder yang dilindungi browser), Reef PDF tidak lagi diam di Home: muncul pesan penyebabnya dan tombol **Open File…**. Cara lain yang selalu bisa: seret file (juga lampiran dari Outlook) ke jendela Reef PDF.
+PDF yang dibuka langsung dari dalam zip (7-Zip, WinRAR) atau lampiran yang dibuka dari New Outlook berada di folder sistem **AppData**, dan Chrome/Edge tidak mengizinkan web app membacanya. Reef PDF lalu menampilkan pesan penyebabnya, dengan tombol **Choose the file…** (pemilih file biasa, yang bisa masuk ke folder itu). Yang paling mudah: **seret** file dari 7-Zip/Outlook ke jendela Reef PDF, atau **extract / save** dulu ke folder biasa (Desktop, Documents, Downloads).
 
 Bila browser menolak pemilih file modern (misalnya karena pengaturan IT), tombol **Open File** dan **+** otomatis memakai pemilih file biasa. Dalam keadaan itu **Save** menyimpan sebagai file baru, bukan menimpa file asli.
 

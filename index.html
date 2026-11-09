@@ -4459,9 +4459,10 @@ $('#pgExtract').addEventListener('click', () => { const t = targetPages(); doExp
 /* ---------- open / merge ---------- */
 let openMode = 'replace';
 const fileHandles = new WeakMap();  // File → the handle it was read from
-/* File System Access (open a file with a handle, save over it later) can be switched off by an organisation's browser policy. When it fails
-   that way, the plain file chooser is used for a week before it is tried again (overwriting the original file then falls back to Save as). */
-const FSA_KEY = 'reef.fsa';
+/* File System Access (open a file with a handle, save over it later) can be switched off by an organisation's browser policy. When the
+   picker itself is refused, the plain file chooser is used for a week before it is tried again (overwriting the original file then falls
+   back to Save as). A single file the browser will not read (one in a protected folder) does not count: the picker still works elsewhere. */
+const FSA_KEY = 'reef.fsa.picker';
 let fsaOff = (() => { try { const t = +localStorage.getItem(FSA_KEY); return t > 0 && Date.now() - t < 7 * 864e5; } catch { return false; } })();
 function fsaFail(e) {
   console.warn('file access', e);
@@ -4475,20 +4476,22 @@ async function pickOpen(mode, opt = {}) {      // opt: { kind: 'images', after: 
   const pics = opt.kind === 'images', accept = pics ? PICS : mode === 'combine' ? { 'application/pdf': ['.pdf'], ...PICS } : { 'application/pdf': ['.pdf'], ...PICS, 'application/json': ['.json'] };
   const plain = () => { const f = $('#fOpen'); f.accept = Object.entries(accept).flatMap(([k, v]) => [k, ...v]).join(','); f.value = ''; f.click(); };
   if (fsAccess()) {
-    let files = null, err = null;
-    try {
-      const hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: pics ? 'Pictures' : mode === 'combine' ? 'PDFs and pictures' : 'PDF, pictures or Reef PDF projects', accept }] });
-      files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; }));
-    } catch (e) { if (e && e.name === 'AbortError') return; err = e; }
+    let files = null, err = null, hs = null;
+    try { hs = await window.showOpenFilePicker({ multiple: true, id: 'reef-open', types: [{ description: pics ? 'Pictures' : mode === 'combine' ? 'PDFs and pictures' : 'PDF, pictures or Reef PDF projects', accept }] }); }
+    catch (e) { if (e && e.name === 'AbortError') return; err = e; fsaFail(e); }
+    if (hs) try { files = await Promise.all(hs.map(async h => { const f = await h.getFile(); fileHandles.set(f, h); return f; })); } catch (e) { err = e; console.warn('file access', e); }
     if (files) { if (files.length) openFiles(files, mode, S.cur + 1, openAfter); return; }
     /* the browser refused (an organisation's policy, or a protected folder): the plain chooser instead, which needs a click of its own
        once the first one has been used up */
-    fsaFail(err);
     if (navigator.userActivation && navigator.userActivation.isActive) { plain(); return; }
     toast(`This browser did not let Reef PDF use its file picker (${(err && err.name) || 'blocked'}), which an organisation's settings can do. Choose the file with the button instead.`, 'info', 20000, { label: 'Choose file…', run: plain });
     return;
   }
   plain();
+}
+function pickPlain(mode) {         // the plain file chooser: no handle (Save then saves a new file), but no folder is off limits to it
+  openMode = mode; openAfter = null;
+  const f = $('#fOpen'); f.accept = 'application/pdf,.pdf,image/png,.png,image/jpeg,.jpg,.jpeg,image/webp,.webp,application/json,.json'; f.value = ''; f.click();
 }
 const dropHandles = dt => [...(dt?.items || [])].filter(i => i.kind === 'file').map(i => (typeof i.getAsFileSystemHandle === 'function' ? i.getAsFileSystemHandle().catch(() => null) : Promise.resolve(null)));
 $('#fOpen').addEventListener('change', ev => { if (ev.target.files.length) openFiles(ev.target.files, openMode, S.cur + 1, openAfter); openAfter = null; });
@@ -7684,10 +7687,10 @@ async function setupWorker() {
   PJ.GlobalWorkerOptions.workerSrc = url;         // worker blocked: run the PDF engine on the main thread instead
   await new Promise(res => { globalThis.__reefWorkerReady = res; const s = document.createElement('script'); s.type = 'module'; s.textContent = txt + '\n;globalThis.__reefWorkerReady();'; s.onerror = res; document.head.append(s); setTimeout(res, 6000); });
 }
-/* ---------- files handed over by the system (File Explorer, Outlook) ----------
-   The manifest's file handler opens Reef PDF at ./?from=file. A file the browser does not pass on (it refuses files in protected
-   folders such as AppData\Local, where New Outlook keeps the attachments it opens) leaves a launch without files: that is said, with
-   what to do. A file that cannot be read at once (still being written or scanned) is tried again for a few seconds. */
+/* ---------- files handed over by the system (File Explorer, Outlook, 7-Zip) ----------
+   The manifest's file handler opens Reef PDF at ./?from=file. Browsers refuse files in system folders (AppData, Temp: where New Outlook
+   and 7-Zip put the files they open for you), with a SecurityError on reading or no file at all: that is said, with what to do (drag the
+   file in, or extract it to a normal folder; the plain file chooser can reach those folders too). A file that cannot be read at once (still being written or scanned) is tried again for a few seconds. */
 const LAUNCH = { fromFile: /[?&]from=file\b/.test(location.search), got: false };
 async function launchRead(h) {
   let err = null;
@@ -7705,12 +7708,14 @@ async function launchFiles(lp) {
   for (const h of list) { const r = await launchRead(h); if (r.f) { fileHandles.set(r.f, h); got.push(r.f); } else bad.push({ name: h.name || 'the file', err: r.err }); }
   if (got.length) openFiles(got, 'replace');
   if (bad.length) {
-    fsaFail(bad[0].err);
-    toast(`Reef PDF could not read ${bad.map(b => '“' + b.name + '”').join(', ')} (${(bad[0].err && bad[0].err.name) || 'error'}). The browser may not allow it in that folder, or your organisation's settings block it. Drag the file onto this window, or open it with Open File.`, 'err', 20000, { label: 'Open File…', run: () => pickOpen('replace') });
+    const e = bad[0].err, names = bad.map(b => '“' + b.name + '”').join(', ');
+    console.warn('file access', e);
+    if (e && e.name === 'SecurityError') toast(`Reef PDF could not open ${names}: browsers do not let web apps read files in system folders (AppData). 7-Zip, New Outlook and some other programs put the files they open for you there. Drag the file onto this window, or first extract / save it to a normal folder (Desktop, Documents, Downloads) and open it from there.`, 'err', 45000, { label: 'Choose the file…', run: () => pickPlain('replace') });
+    else toast(`Reef PDF could not read ${names} (${(e && e.name) || 'error'}). Drag the file onto this window, or choose it again.`, 'err', 20000, { label: 'Choose the file…', run: () => pickPlain('replace') });
   }
 }
 function launchMissed() {
-  toast('A PDF was sent to Reef PDF, but the browser did not pass it on. That happens with attachments opened from New Outlook: Outlook keeps them in a protected system folder (AppData), which browsers do not let web apps read. Drag the attachment from Outlook onto this window, or save it first (Download / Save as) and open it from there.', 'err', 30000, { label: 'Open File…', run: () => pickOpen('replace') });
+  toast('A PDF was sent to Reef PDF, but the browser did not pass it on. That happens with files in system folders (AppData), where 7-Zip, New Outlook and some other programs put the files they open for you: browsers do not let web apps read them. Drag the file onto this window, or first extract / save it to a normal folder and open it from there.', 'err', 45000, { label: 'Choose the file…', run: () => pickPlain('replace') });
 }
 async function boot() {
   for (const i of $$('i[data-ic]')) i.outerHTML = ic(i.dataset.ic);
