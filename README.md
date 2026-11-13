@@ -147,6 +147,12 @@ Cara kerja dan tampilan:
 - **Export review (.xlsx)** menyimpan ringkasan, daftar cek, dan semua field. **Stamp CHECKED** menaruh stempel di halaman invoice (bisa di-Undo).
 - Beta: hasil baca scan bisa salah. Selalu klik cek yang penting untuk melihat sumber angkanya.
 
+## Proteksi password
+**More → Protect with password…** menyimpan PDF terenkripsi AES-256 (sama seperti Acrobat). Bisa juga hanya membatasi print, copy, atau edit dengan password pemilik. PDF berpassword yang dibuka di Reef dibuka dengan password-nya dan tetap bisa diedit.
+
+## Tanda tangan digital bersertifikat
+**More → Sign with certificate…** menandatangani PDF dengan sertifikat .p12 / .pfx (PKCS#7, SHA-256). Tanda tangan tampil di panel Signatures Acrobat; perubahan setelah ditandatangani akan terdeteksi. Belum punya sertifikat? Klik **Make a certificate** untuk membuat sertifikat pribadi (self-signed). Sertifikat seperti ini sah secara teknis, tetapi Acrobat menandainya "identity unknown" sampai penerima mempercayainya. Untuk dokumen resmi, pakai sertifikat dari penyedia (CA) yang diakui. Semua proses terjadi di perangkat Anda; sertifikat dan password tidak dikirim ke mana pun.
+
 ## Link di PDF
 
 Link di dalam PDF (alamat web, e-mail, atau link ke halaman lain di dokumen yang sama) bisa diklik dengan alat **Select**. Saat kursor di atas link, alamat tujuannya tampil di tooltip dan di status bar bawah. Seret dari atas link tetap memilih teks, tidak membuka link.
